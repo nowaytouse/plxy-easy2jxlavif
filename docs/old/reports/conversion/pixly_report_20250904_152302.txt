@@ -1,0 +1,178 @@
+=== Pixly 媒体转换详细报告 ===
+生成时间: 2025-09-04 15:22:58
+转换模式: quality
+源目录: /Users/nameko_1/Downloads/test/test_data/quality_variations
+处理时长: 22.940470209s
+
+=== 转换统计 ===
+总文件数: 47
+处理文件数: 47
+成功转换: 28
+转换失败: 5
+跳过文件: 14
+总压缩率: 96.79%
+节省空间: 22.41 MB
+
+=== 格式统计 ===
+.png: 21个文件, 平均压缩率: 99.12%
+.webp: 1个文件, 平均压缩率: 21.68%
+
+=== 文件转换详情 (前20个) ===
+✅ 成功 - test_webp_q35.webp
+  原始大小: 0.01 MB
+  输出大小: 0.01 MB
+  压缩率: 0.00%
+  格式: .webp → .webp
+  处理时间: 5.638223083s
+
+✅ 成功 - test_webp_q45.webp
+  原始大小: 0.01 MB
+  输出大小: 0.01 MB
+  压缩率: 0.00%
+  格式: .webp → .webp
+  处理时间: 5.491168917s
+
+✅ 成功 - test_png_compression9.png
+  原始大小: 0.07 MB
+  输出大小: 0.04 MB
+  压缩率: 39.50%
+  格式: .png → .jxl
+  处理时间: 10.233567125s
+
+❌ 失败 - test_webp_q5.webp
+  原始大小: 0.01 MB
+  错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory
+  处理时间: 5.062805125s
+
+❌ 失败 - test_webp_q15.webp
+  原始大小: 0.01 MB
+  错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory
+  处理时间: 5.264297083s
+
+✅ 成功 - test_webp_q85.webp
+  原始大小: 0.02 MB
+  输出大小: 0.02 MB
+  压缩率: 21.68%
+  格式: .webp → .jxl
+  处理时间: 6.127172125s
+
+✅ 成功 - test_webp_q25.webp
+  原始大小: 0.01 MB
+  输出大小: 0.01 MB
+  压缩率: 0.00%
+  格式: .webp → .webp
+  处理时间: 5.638645125s
+
+✅ 成功 - test_png_compression3.png
+  原始大小: 0.13 MB
+  输出大小: 0.04 MB
+  压缩率: 67.35%
+  格式: .png → .jxl
+  处理时间: 8.539740042s
+
+✅ 成功 - test_png_compression3.png
+  原始大小: 0.13 MB
+  输出大小: 0.04 MB
+  压缩率: 67.35%
+  格式: .png → .jxl
+  处理时间: 8.539740042s
+
+✅ 成功 - test_png_compression0.png
+  原始大小: 15.83 MB
+  输出大小: 0.04 MB
+  压缩率: 99.73%
+  格式: .png → .jxl
+  处理时间: 8.762798958s
+
+✅ 成功 - test_png_compression3.png
+  原始大小: 0.13 MB
+  输出大小: 0.04 MB
+  压缩率: 67.35%
+  格式: .png → .jxl
+  处理时间: 8.539740042s
+
+✅ 成功 - test_png_compression0.png
+  原始大小: 15.83 MB
+  输出大小: 0.04 MB
+  压缩率: 99.73%
+  格式: .png → .jxl
+  处理时间: 8.762798958s
+
+✅ 成功 - test_png_compression3.png
+  原始大小: 0.13 MB
+  输出大小: 0.04 MB
+  压缩率: 67.35%
+  格式: .png → .jxl
+  处理时间: 8.539740042s
+
+✅ 成功 - test_png_compression0.png
+  原始大小: 15.83 MB
+  输出大小: 0.04 MB
+  压缩率: 99.73%
+  格式: .png → .jxl
+  处理时间: 8.762798958s
+
+✅ 成功 - test_png_compression3.png
+  原始大小: 0.13 MB
+  输出大小: 0.04 MB
+  压缩率: 67.35%
+  格式: .png → .jxl
+  处理时间: 8.539740042s
+
+✅ 成功 - test_png_compression0.png
+  原始大小: 15.83 MB
+  输出大小: 0.04 MB
+  压缩率: 99.73%
+  格式: .png → .jxl
+  处理时间: 8.762798958s
+
+✅ 成功 - test_png_compression3.png
+  原始大小: 0.13 MB
+  输出大小: 0.04 MB
+  压缩率: 67.35%
+  格式: .png → .jxl
+  处理时间: 8.539740042s
+
+✅ 成功 - test_png_compression0.png
+  原始大小: 15.83 MB
+  输出大小: 0.04 MB
+  压缩率: 99.73%
+  格式: .png → .jxl
+  处理时间: 8.762798958s
+
+✅ 成功 - test_png_compression3.png
+  原始大小: 0.13 MB
+  输出大小: 0.04 MB
+  压缩率: 67.35%
+  格式: .png → .jxl
+  处理时间: 8.539740042s
+
+✅ 成功 - test_png_compression6.png
+  原始大小: 0.07 MB
+  输出大小: 0.04 MB
+  压缩率: 41.00%
+  格式: .png → .jxl
+  处理时间: 10.125359458s
+
+=== 错误详情 ===
+文件: /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp
+错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory
+
+文件: /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp
+错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory
+
+文件: /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp
+错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory
+
+文件: /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp
+错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory
+
+文件: /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp
+错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory
+
+文件: /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp
+错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory
+
+文件: /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp
+错误: failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory
+

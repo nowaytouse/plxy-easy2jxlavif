@@ -1,0 +1,55 @@
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"pixly/internal/ui"
+	"pixly/internal/terminal"
+	"pixly/pkg/i18n"
+	"pixly/pkg/theme"
+)
+
+func main() {
+	// 初始化国际化管理器
+	i18n.InitializeGlobalI18n()
+	
+	// 初始化主题管理器
+	theme.InitializeGlobalTheme()
+	
+	// 显示启动信息
+	fmt.Println("Terminal Compatibility Demo")
+	fmt.Println("==========================")
+	
+	// 获取终端信息
+	terminalInfo := terminal.GetInfo()
+	fmt.Printf("Terminal Info: Width=%d, Height=%d, IsIDE=%v\n", 
+		terminalInfo.Width, terminalInfo.Height, terminalInfo.IsIDE)
+	
+	// 测试IDE环境检测
+	isIDE := terminal.IsInIDEEnvironment()
+	fmt.Printf("Is IDE Environment: %v\n", isIDE)
+	
+	// 测试增强终端功能检测
+	isEnhanced := terminal.IsEnhancedTerminal()
+	fmt.Printf("Is Enhanced Terminal: %v\n", isEnhanced)
+	
+	// 测试清屏功能
+	fmt.Println("\nTesting ClearScreen function...")
+	ui.ClearScreen()
+	time.Sleep(50 * time.Millisecond)
+	
+	// 显示测试菜单
+	menuOptions := []ui.MenuOption{
+		{Icon: "💼", Text: "Start Conversion", Description: "Begin file conversion process", Enabled: true},
+		{Icon: "⚙️", Text: "Settings", Description: "Configure application settings", Enabled: true},
+		{Icon: "🧪", Text: "Test Suite", Description: "Run test suite", Enabled: true},
+		{Icon: "❓", Text: "Help", Description: "View help documentation", Enabled: true},
+		{Icon: "ℹ️", Text: "About", Description: "View application information", Enabled: true},
+		{Icon: "🚪", Text: "Exit", Description: "Exit the application", Enabled: true},
+	}
+	
+	ui.DisplayEnhancedMenu("Main Menu", menuOptions)
+	
+	fmt.Println("\nDemo completed successfully!")
+}

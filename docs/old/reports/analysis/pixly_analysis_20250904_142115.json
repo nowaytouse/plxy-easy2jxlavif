@@ -1,0 +1,46 @@
+{
+  "total_files": 47,
+  "total_size": 24273777,
+  "format_stats": {
+    ".gif": {
+      "count": 6,
+      "total_size": 82212,
+      "avg_size": 13702
+    },
+    ".jpg": {
+      "count": 19,
+      "total_size": 636092,
+      "avg_size": 33478
+    },
+    ".png": {
+      "count": 11,
+      "total_size": 23394894,
+      "avg_size": 2126808
+    },
+    ".webp": {
+      "count": 11,
+      "total_size": 160579,
+      "avg_size": 14598
+    }
+  },
+  "type_stats": {
+    "image": 47
+  },
+  "size_distribution": {
+    "10-50MB": 1,
+    "5-10MB": 1,
+    "\u003c 1MB": 45
+  },
+  "largest_files": [
+    {
+      "path": "/Users/nameko_1/Downloads/test/TEST_QUALITY_VARIATIONS/test_png_compression0.png",
+      "size": 16598191,
+      "type": "image"
+    }
+  ],
+  "recommendations": [
+    "发现11个PNG文件，建议根据透明度需求转换为AVIF或JXL",
+    "发现6个GIF文件，建议使用表情包模式优化",
+    "发现1个大文件(\u003e10MB)，重点关注这些文件的转换效果"
+  ]
+}

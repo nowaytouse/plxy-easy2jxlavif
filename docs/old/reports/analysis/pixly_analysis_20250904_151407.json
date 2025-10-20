@@ -1,0 +1,53 @@
+{
+  "total_files": 10,
+  "total_size": 8895398,
+  "format_stats": {
+    ".avif": {
+      "count": 3,
+      "total_size": 293527,
+      "avg_size": 97842
+    },
+    ".gif": {
+      "count": 1,
+      "total_size": 0,
+      "avg_size": 0
+    },
+    ".jpg": {
+      "count": 1,
+      "total_size": 17,
+      "avg_size": 17
+    },
+    ".jxl": {
+      "count": 2,
+      "total_size": 185473,
+      "avg_size": 92736
+    },
+    ".mov": {
+      "count": 1,
+      "total_size": 3341657,
+      "avg_size": 3341657
+    },
+    ".png": {
+      "count": 1,
+      "total_size": 17,
+      "avg_size": 17
+    },
+    ".webm": {
+      "count": 1,
+      "total_size": 5074707,
+      "avg_size": 5074707
+    }
+  },
+  "type_stats": {
+    "image": 8,
+    "video": 2
+  },
+  "size_distribution": {
+    "1-5MB": 2,
+    "\u003c 1MB": 8
+  },
+  "largest_files": [],
+  "recommendations": [
+    "发现1个MOV文件，建议转换为MP4以提高兼容性"
+  ]
+}

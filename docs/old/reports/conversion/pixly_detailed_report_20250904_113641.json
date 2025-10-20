@@ -1,0 +1,87 @@
+{
+  "start_time": "2025-09-04T11:36:29.161598375+08:00",
+  "end_time": "2025-09-04T11:36:41.984636+08:00",
+  "duration": 12823037625,
+  "source_directory": "/Users/nameko_1/Downloads/test/test_media",
+  "total_files": 2,
+  "processed_files": 3,
+  "successful_files": 1,
+  "failed_files": 0,
+  "skipped_files": 2,
+  "total_size_before": 68549,
+  "total_size_after": 611,
+  "space_saved": 67938,
+  "compression_ratio": 99.10866679309692,
+  "conversion_mode": "auto+",
+  "file_details": [
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_blue.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_blue.jxl",
+      "original_size": 282,
+      "output_size": 282,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_green.bmp",
+      "output_path": "",
+      "original_size": 67938,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".bmp",
+      "output_format": "",
+      "processing_time": 228321500,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_red.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_red.png",
+      "original_size": 329,
+      "output_size": 329,
+      "compression_ratio": 0,
+      "original_format": ".png",
+      "output_format": ".png",
+      "processing_time": 12716112500,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    }
+  ],
+  "format_summary": {
+    ".bmp": {
+      "count": 1,
+      "total_size_before": 67938,
+      "total_size_after": 0,
+      "average_compression": 100
+    },
+    ".jxl": {
+      "count": 1,
+      "total_size_before": 282,
+      "total_size_after": 282,
+      "average_compression": 0
+    },
+    ".png": {
+      "count": 1,
+      "total_size_before": 329,
+      "total_size_after": 329,
+      "average_compression": 0
+    }
+  },
+  "system_info": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu_cores": 4,
+    "concurrency": 10,
+    "memory_used_mb": 0
+  },
+  "errors": null
+}

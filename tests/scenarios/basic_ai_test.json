@@ -1,0 +1,48 @@
+[  
+  {
+    "name": "basic_functionality_test",
+    "description": "测试Pixly基本功能是否正常工作",
+    "test_dir": "/tmp/pixly_ai_test",
+    "expected_mode": "auto+",
+    "max_duration": 30000000000,
+    "expected_files": 0,
+    "expected_savings": 0,
+    "instructions": [
+      {
+        "type": "input",
+        "value": "auto+\n",
+        "expected": "mode_selected",
+        "timeout": 5000000000
+      },
+      {
+        "type": "input", 
+        "value": "/tmp/pixly_ai_test\n",
+        "expected": "directory_selected",
+        "timeout": 5000000000
+      },
+      {
+        "type": "assert",
+        "value": "scan_completed",
+        "expected": "no_files_found",
+        "timeout": 10000000000
+      }
+    ]
+  },
+  {
+    "name": "help_command_test",
+    "description": "测试帮助命令是否正常显示",
+    "test_dir": "/tmp",
+    "expected_mode": "help",
+    "max_duration": 10000000000, 
+    "expected_files": 0,
+    "expected_savings": 0,
+    "instructions": [
+      {
+        "type": "input",
+        "value": "help\n",
+        "expected": "help_displayed",
+        "timeout": 3000000000
+      }
+    ]
+  }
+]

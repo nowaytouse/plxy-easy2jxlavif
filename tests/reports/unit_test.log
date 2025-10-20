@@ -1,0 +1,55 @@
+# pixly/pkg/engine
+pkg/engine/conversion_engine.go:72:24: e.stateManager.db undefined (cannot refer to unexported field db)
+pkg/engine/conversion_engine.go:88:24: e.stateManager.db undefined (cannot refer to unexported field db)
+pkg/engine/conversion_engine.go:203:93: cannot use engineCfg (variable of type *EngineConfig) as bool value in argument to NewAutoPlusRouter
+pkg/engine/conversion_engine.go:341:43: cannot use files (variable of type []string) as []*types.MediaInfo value in argument to e.stateManager.SaveMediaFiles
+pkg/engine/conversion_engine.go:352:47: too many arguments in call to e.stateManager.SaveResults
+	have ([]ConversionTask, []string, []string)
+	want ([]*types.ProcessingResult)
+pkg/engine/conversion_engine.go:363:9: undefined: corruptedFiles
+pkg/engine/conversion_engine.go:364:41: undefined: corruptedFiles
+pkg/engine/conversion_engine.go:373:27: undefined: corruptedFiles
+pkg/engine/conversion_engine.go:375:44: undefined: corruptedFiles
+pkg/engine/conversion_engine.go:1955:96: undefined: RoutingDecision
+pkg/engine/conversion_engine.go:375:44: too many errors
+=== RUN   TestBasicTypes
+=== RUN   TestBasicTypes/MediaType_String
+=== RUN   TestBasicTypes/QualityLevel_String
+=== RUN   TestBasicTypes/AppMode_String
+--- PASS: TestBasicTypes (0.00s)
+    --- PASS: TestBasicTypes/MediaType_String (0.00s)
+    --- PASS: TestBasicTypes/QualityLevel_String (0.00s)
+    --- PASS: TestBasicTypes/AppMode_String (0.00s)
+=== RUN   TestRoutingDecision
+--- PASS: TestRoutingDecision (0.00s)
+=== RUN   TestConversionTask
+--- PASS: TestConversionTask (0.00s)
+=== RUN   TestREADME_Requirements
+=== RUN   TestREADME_Requirements/StickerMode_VideoSkip
+    core_simple_test.go:82: 媒体类型 静图 在表情包模式下应该: avif_compressed
+    core_simple_test.go:82: 媒体类型 动图 在表情包模式下应该: avif_compressed
+    core_simple_test.go:82: 媒体类型 视频 在表情包模式下应该: skip
+=== RUN   TestREADME_Requirements/AutoPlus_95_5_Rule
+=== RUN   TestREADME_Requirements/Quality_Levels
+--- PASS: TestREADME_Requirements (0.00s)
+    --- PASS: TestREADME_Requirements/StickerMode_VideoSkip (0.00s)
+    --- PASS: TestREADME_Requirements/AutoPlus_95_5_Rule (0.00s)
+    --- PASS: TestREADME_Requirements/Quality_Levels (0.00s)
+PASS
+coverage: [no statements]
+ok  	pixly/tests/unit	0.416s	coverage: [no statements]
+=== RUN   TestDefaultConfig
+--- PASS: TestDefaultConfig (0.00s)
+=== RUN   TestConfigValidation
+=== RUN   TestConfigValidation/valid_config
+=== RUN   TestConfigValidation/invalid_concurrent_jobs_too_low
+--- PASS: TestConfigValidation (0.00s)
+    --- PASS: TestConfigValidation/valid_config (0.00s)
+    --- PASS: TestConfigValidation/invalid_concurrent_jobs_too_low (0.00s)
+=== RUN   TestConfigNormalization
+--- PASS: TestConfigNormalization (0.00s)
+PASS
+coverage: [no statements]
+ok  	pixly/tests/unit/config	0.802s	coverage: [no statements]
+FAIL	pixly/tests/unit/engine [build failed]
+FAIL

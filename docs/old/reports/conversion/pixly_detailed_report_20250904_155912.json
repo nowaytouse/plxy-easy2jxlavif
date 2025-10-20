@@ -1,0 +1,57 @@
+{
+  "start_time": "2025-09-04T15:59:12.225161333+08:00",
+  "end_time": "2025-09-04T15:59:12.761391+08:00",
+  "duration": 536229667,
+  "source_directory": "/Users/nameko_1/Downloads/test/test_normal_conversion",
+  "total_files": 1,
+  "processed_files": 1,
+  "successful_files": 1,
+  "failed_files": 0,
+  "skipped_files": 0,
+  "total_size_before": 321,
+  "total_size_after": 29,
+  "space_saved": 292,
+  "compression_ratio": 90.96573208722741,
+  "conversion_mode": "auto+",
+  "file_details": [
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_normal_conversion/test_red.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_normal_conversion/test_red.jxl",
+      "original_size": 321,
+      "output_size": 29,
+      "compression_ratio": 90.96573208722741,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 426005083,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "full_path": "/Users/nameko_1/Downloads/test/test_normal_conversion/test_red.jxl",
+        "file_size": 29,
+        "mod_time": "2025-09-04T15:59:06.409822363+08:00",
+        "codec": "jpegxl",
+        "width": 100,
+        "height": 100,
+        "frame_rate": 25,
+        "color_space": "gbr"
+      }
+    }
+  ],
+  "format_summary": {
+    ".png": {
+      "count": 1,
+      "total_size_before": 321,
+      "total_size_after": 29,
+      "average_compression": 90.96573208722741
+    }
+  },
+  "system_info": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu_cores": 4,
+    "concurrency": 10,
+    "memory_used_mb": 0
+  },
+  "errors": null
+}

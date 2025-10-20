@@ -1,0 +1,49 @@
+// Package main demonstrates improved clear screen functionality
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"pixly/internal/terminal"
+)
+
+func main() {
+	fmt.Println("Clear Screen Demo")
+	fmt.Println("=================")
+	
+	// Show some content before clearing
+	for i := 1; i <= 10; i++ {
+		fmt.Printf("Line %d: This is sample content that will be cleared\n", i)
+	}
+	
+	fmt.Println("\nClearing screen in 2 seconds...")
+	time.Sleep(2 * time.Second)
+	
+	// Use the improved clear screen function
+	terminal.ClearScreenWithFeedback()
+	
+	// Show content after clearing
+	fmt.Println("Screen cleared successfully!")
+	fmt.Println("This text should appear at the top of the screen.")
+	fmt.Println("")
+	fmt.Println("The improved clear screen function handles:")
+	fmt.Println("1. IDE terminal compatibility")
+	fmt.Println("2. Proper cursor positioning")
+	fmt.Println("3. Buffer clearing")
+	fmt.Println("4. Visual feedback")
+	
+	// Demonstrate cursor positioning
+	fmt.Println("\nDemonstrating cursor positioning:")
+	time.Sleep(1 * time.Second)
+	
+	// Move cursor to a specific position and print text
+	terminal.PositionCursor(10, 5)
+	fmt.Print("This text is positioned at row 10, column 5")
+	
+	// Move back to a normal position
+	terminal.PositionCursor(12, 1)
+	fmt.Println("Back to normal position")
+	
+	fmt.Println("\nDemo completed!")
+}

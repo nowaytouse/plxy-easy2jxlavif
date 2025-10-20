@@ -1,0 +1,113 @@
+{
+  "start_time": "2025-09-04T12:57:09.899267083+08:00",
+  "end_time": "2025-09-04T12:57:13.518165+08:00",
+  "duration": 3618897917,
+  "source_directory": "/Users/nameko_1/Downloads/test/test_media",
+  "total_files": 1,
+  "processed_files": 1,
+  "successful_files": 1,
+  "failed_files": 0,
+  "skipped_files": 0,
+  "total_size_before": 67938,
+  "total_size_after": 111,
+  "space_saved": 67827,
+  "compression_ratio": 99.83661573787866,
+  "conversion_mode": "auto+",
+  "file_details": [
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_blue.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_blue.jxl",
+      "original_size": 282,
+      "output_size": 282,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_green_converted.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_green_converted.jxl",
+      "original_size": 31,
+      "output_size": 31,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_manual.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_manual.jxl",
+      "original_size": 110,
+      "output_size": 110,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_red.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_red.jxl",
+      "original_size": 32,
+      "output_size": 32,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_green.bmp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_green.jxl",
+      "original_size": 67938,
+      "output_size": 111,
+      "compression_ratio": 99.83661573787866,
+      "original_format": ".bmp",
+      "output_format": ".jxl",
+      "processing_time": 3514121625,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "full_path": "/Users/nameko_1/Downloads/test/test_media/test_green.jxl",
+        "file_size": 111,
+        "mod_time": "2025-09-04T11:23:52.449561323+08:00",
+        "codec": "jpegxl",
+        "width": 150,
+        "height": 150,
+        "frame_rate": 25,
+        "color_space": "gbr"
+      }
+    }
+  ],
+  "format_summary": {
+    ".bmp": {
+      "count": 1,
+      "total_size_before": 67938,
+      "total_size_after": 111,
+      "average_compression": 99.83661573787866
+    }
+  },
+  "system_info": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu_cores": 4,
+    "concurrency": 10,
+    "memory_used_mb": 0
+  },
+  "errors": null
+}

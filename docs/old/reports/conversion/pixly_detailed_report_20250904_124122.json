@@ -1,0 +1,69 @@
+{
+  "start_time": "2025-09-04T12:41:03.555323416+08:00",
+  "end_time": "2025-09-04T12:41:22.108679+08:00",
+  "duration": 18553355584,
+  "source_directory": "/Users/nameko_1/Downloads/test/test_media",
+  "total_files": 1,
+  "processed_files": 1,
+  "successful_files": 0,
+  "failed_files": 0,
+  "skipped_files": 1,
+  "total_size_before": 67938,
+  "total_size_after": 67938,
+  "space_saved": 0,
+  "compression_ratio": 0,
+  "conversion_mode": "auto+",
+  "file_details": [
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_blue.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_blue.jxl",
+      "original_size": 282,
+      "output_size": 282,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_red.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_red.jxl",
+      "original_size": 32,
+      "output_size": 32,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_media/test_green.bmp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_media/test_green.bmp",
+      "original_size": 67938,
+      "output_size": 67938,
+      "compression_ratio": 0,
+      "original_format": ".bmp",
+      "output_format": ".bmp",
+      "processing_time": 18441557542,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    }
+  ],
+  "format_summary": {},
+  "system_info": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu_cores": 4,
+    "concurrency": 10,
+    "memory_used_mb": 0
+  },
+  "errors": null
+}

@@ -1,0 +1,610 @@
+{
+  "timestamp": "2025-09-04T13:02:01.545023+08:00",
+  "total_scenarios": 12,
+  "passed_scenarios": 0,
+  "failed_scenarios": 12,
+  "results": [
+    {
+      "scenario_id": "basic_conversion_auto_plus",
+      "success": false,
+      "duration": 59998870625,
+      "files_processed": 3,
+      "files_successful": 2,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 0.7219482109491475,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 3
+      },
+      "format_check": {
+        "conversions_found": [
+          ".png",
+          ".jxl",
+          ".jxl",
+          ".avif",
+          ".avif",
+          ".jxl",
+          ".jxl",
+          ".mov"
+        ],
+        "missing_conversions": [],
+        "unexpected_files": [],
+        "success": true
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 3,
+        "average_cpu_percent": 21.548616635080776,
+        "throughput_files_per_second": 0.05000100394349098,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 1,
+        "performance_issues": [
+          "low throughput detected"
+        ],
+        "disk_read_mbps": 23.013934435124153,
+        "disk_write_mbps": 92.72131344927433,
+        "disk_iops": 3195.837834291087,
+        "network_sent_mbps": 0.11367488011282323,
+        "network_recv_mbps": 0.02812699142217961,
+        "system_load_1": 6.443431109140234,
+        "system_load_5": 4.982046085924457,
+        "system_load_15": 4.855000847767112,
+        "average_gc_pause_ms": 1.4092429065108514,
+        "total_gc_count": 15,
+        "peak_disk_usage_mb": 1228754.78125
+      },
+      "issues": [
+        "吞吐量 0.05 文件/秒 低于期望 0.50 文件/秒",
+        "检测到 1 个Goroutine泄漏",
+        "low throughput detected"
+      ]
+    },
+    {
+      "scenario_id": "basic_conversion_quality",
+      "success": false,
+      "duration": 6541902125,
+      "files_processed": 4,
+      "files_successful": 0,
+      "files_failed": 3,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 4
+      },
+      "format_check": {
+        "conversions_found": [
+          ".jpg",
+          ".png",
+          ".gif",
+          ".avif",
+          ".avif",
+          ".avif",
+          ".jxl",
+          ".jxl",
+          ".webm",
+          ".mov"
+        ],
+        "missing_conversions": [],
+        "unexpected_files": [],
+        "success": true
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 3,
+        "average_cpu_percent": 13.684988185076714,
+        "throughput_files_per_second": 0.6114517772141006,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 0,
+        "performance_issues": null,
+        "disk_read_mbps": 27.567566530143342,
+        "disk_write_mbps": 5.5226679108095444,
+        "disk_iops": 1976.2619029042392,
+        "network_sent_mbps": 0.2331834586455767,
+        "network_recv_mbps": 0.05751964536442199,
+        "system_load_1": 8.823182091346155,
+        "system_load_5": 5.667758413461539,
+        "system_load_15": 5.103966346153846,
+        "average_gc_pause_ms": 0.12254047692307692,
+        "total_gc_count": 3,
+        "peak_disk_usage_mb": 1228753.2421875
+      },
+      "issues": [
+        "成功率 0.00% 低于期望 50.00%"
+      ]
+    },
+    {
+      "scenario_id": "basic_conversion_emoji",
+      "success": false,
+      "duration": 0,
+      "files_processed": 0,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [
+        "conversion failed: 执行转换失败: 处理任务队列失败 failed: 原子性批处理失败 failed: 批处理失败，已回滚 failed: 提交任务失败: 优先级队列已满"
+      ],
+      "quality_analysis": null,
+      "format_check": null,
+      "issues": null
+    },
+    {
+      "scenario_id": "timestamp_preservation_test",
+      "success": false,
+      "duration": 12090480042,
+      "files_processed": 1,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 1,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 1
+      },
+      "format_check": {
+        "conversions_found": [
+          ".png",
+          ".jxl",
+          ".jxl",
+          ".avif",
+          ".avif",
+          ".jxl",
+          ".jxl",
+          ".mov"
+        ],
+        "missing_conversions": [],
+        "unexpected_files": [],
+        "success": true
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 4,
+        "average_cpu_percent": 7.745266886999185,
+        "throughput_files_per_second": 0.08271015368042815,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 0,
+        "performance_issues": [
+          "low throughput detected"
+        ],
+        "disk_read_mbps": 23.303565714545634,
+        "disk_write_mbps": 14.55348611271107,
+        "disk_iops": 1639.3651782181328,
+        "network_sent_mbps": 0.19894210882440247,
+        "network_recv_mbps": 0.07420040491219901,
+        "system_load_1": 7.747216796875,
+        "system_load_5": 5.538899739583333,
+        "system_load_15": 5.064469401041666,
+        "average_gc_pause_ms": 0.19963201666666666,
+        "total_gc_count": 6,
+        "peak_disk_usage_mb": 1228767.4765625
+      },
+      "issues": [
+        "成功率 0.00% 低于期望 50.00%"
+      ]
+    },
+    {
+      "scenario_id": "corrupted_files_handling",
+      "success": false,
+      "duration": 12748641417,
+      "files_processed": 4,
+      "files_successful": 0,
+      "files_failed": 1,
+      "files_skipped": 0,
+      "compression_ratio": 0.9999966500753438,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 4
+      },
+      "format_check": {
+        "conversions_found": [
+          ".jpg",
+          ".png",
+          ".gif",
+          ".avif",
+          ".avif",
+          ".avif",
+          ".jxl",
+          ".jxl",
+          ".webm",
+          ".mov"
+        ],
+        "missing_conversions": [],
+        "unexpected_files": [],
+        "success": true
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 4,
+        "average_cpu_percent": 7.861313919400097,
+        "throughput_files_per_second": 0.31376196040982957,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 0,
+        "performance_issues": null,
+        "disk_read_mbps": 10.618080134151969,
+        "disk_write_mbps": 16.558141255009343,
+        "disk_iops": 1183.843238108467,
+        "network_sent_mbps": 0.20699845715743734,
+        "network_recv_mbps": 0.036798223779795504,
+        "system_load_1": 6.832431102362205,
+        "system_load_5": 5.428599440206693,
+        "system_load_15": 5.031838244340551,
+        "average_gc_pause_ms": 0.18334169291338584,
+        "total_gc_count": 8,
+        "peak_disk_usage_mb": 1228759.046875
+      },
+      "issues": [
+        "成功率 0.00% 低于期望 50.00%"
+      ]
+    },
+    {
+      "scenario_id": "progress_bar_test",
+      "success": false,
+      "duration": 0,
+      "files_processed": 0,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [
+        "conversion failed: 执行转换失败: 处理任务队列失败 failed: 原子性批处理失败 failed: 批处理失败，已回滚 failed: 提交任务失败: 优先级队列已满"
+      ],
+      "quality_analysis": null,
+      "format_check": null,
+      "issues": null
+    },
+    {
+      "scenario_id": "concurrent_processing_test",
+      "success": false,
+      "duration": 0,
+      "files_processed": 0,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [
+        "conversion failed: 执行转换失败: 处理任务队列失败 failed: 原子性批处理失败 failed: 批处理失败，已回滚 failed: 提交任务失败: 优先级队列已满"
+      ],
+      "quality_analysis": null,
+      "format_check": null,
+      "issues": null
+    },
+    {
+      "scenario_id": "large_file_handling_test",
+      "success": false,
+      "duration": 0,
+      "files_processed": 0,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [
+        "conversion failed: 执行转换失败: 处理任务队列失败 failed: 原子性批处理失败 failed: 批处理失败，已回滚 failed: 提交任务失败: 优先级队列已满"
+      ],
+      "quality_analysis": null,
+      "format_check": null,
+      "issues": null
+    },
+    {
+      "scenario_id": "multi_format_compatibility_test",
+      "success": false,
+      "duration": 11970398417,
+      "files_processed": 1,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 1,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 1
+      },
+      "format_check": {
+        "conversions_found": [
+          ".png",
+          ".jxl",
+          ".jxl",
+          ".avif",
+          ".avif",
+          ".jxl",
+          ".jxl",
+          ".mov"
+        ],
+        "missing_conversions": [
+          ".webp"
+        ],
+        "unexpected_files": [],
+        "success": false
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 4,
+        "average_cpu_percent": 2.473850002791995,
+        "throughput_files_per_second": 0.08353987697708867,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 0,
+        "performance_issues": [
+          "low throughput detected"
+        ],
+        "disk_read_mbps": 10.081018352398745,
+        "disk_write_mbps": 20.661536185794688,
+        "disk_iops": 1626.2352565892754,
+        "network_sent_mbps": 0.3911832899482257,
+        "network_recv_mbps": 0.41230770982459636,
+        "system_load_1": 6.15239709164916,
+        "system_load_5": 5.339445739233193,
+        "system_load_15": 5.005387506565126,
+        "average_gc_pause_ms": 0.1118867731092437,
+        "total_gc_count": 16,
+        "peak_disk_usage_mb": 1228761.9296875
+      },
+      "issues": [
+        "成功率 0.00% 低于期望 60.00%",
+        "吞吐量 0.08 文件/秒 低于期望 0.40 文件/秒",
+        "low throughput detected",
+        "缺失预期格式: [.webp]"
+      ]
+    },
+    {
+      "scenario_id": "edge_case_handling_test",
+      "success": false,
+      "duration": 6573892958,
+      "files_processed": 4,
+      "files_successful": 0,
+      "files_failed": 3,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 4
+      },
+      "format_check": {
+        "conversions_found": [
+          ".jpg",
+          ".png",
+          ".gif",
+          ".avif",
+          ".avif",
+          ".avif",
+          ".jxl",
+          ".jxl",
+          ".webm",
+          ".mov"
+        ],
+        "missing_conversions": [],
+        "unexpected_files": [],
+        "success": true
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 3,
+        "average_cpu_percent": 2.7435262070671245,
+        "throughput_files_per_second": 0.608472261252612,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 0,
+        "performance_issues": null,
+        "disk_read_mbps": 9.880823776698719,
+        "disk_write_mbps": 17.055391909078324,
+        "disk_iops": 1425.6022516203209,
+        "network_sent_mbps": 1.6300839843024837,
+        "network_recv_mbps": 3.0775227309677713,
+        "system_load_1": 6.963874699519231,
+        "system_load_5": 5.5304762620192305,
+        "system_load_15": 5.075615985576923,
+        "average_gc_pause_ms": 0.1189108,
+        "total_gc_count": 9,
+        "peak_disk_usage_mb": 1228746.57421875
+      },
+      "issues": [
+        "成功率 0.00% 低于期望 40.00%"
+      ]
+    },
+    {
+      "scenario_id": "stress_test_high_concurrency",
+      "success": false,
+      "duration": 135013000,
+      "files_processed": 52,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 52
+      },
+      "format_check": {
+        "conversions_found": [
+          ".avif",
+          ".avif",
+          ".avif",
+          ".jpg",
+          ".jxl",
+          ".avif",
+          ".jpg",
+          ".jxl",
+          ".avif",
+          ".jpg",
+          ".jxl",
+          ".avif",
+          ".jpg",
+          ".jxl",
+          ".jxl",
+          ".jpg",
+          ".jxl",
+          ".jpg",
+          ".jxl",
+          ".jpg",
+          ".jxl",
+          ".jxl",
+          ".png",
+          ".jxl",
+          ".png",
+          ".jxl",
+          ".png",
+          ".jpg",
+          ".jxl",
+          ".jpg",
+          ".jxl",
+          ".jpg",
+          ".jxl",
+          ".webp",
+          ".webp",
+          ".webp",
+          ".avi",
+          ".mov",
+          ".mov",
+          ".mov",
+          ".mov",
+          ".mp4",
+          ".mov",
+          ".mp4",
+          ".mov",
+          ".mp4",
+          ".mp4",
+          ".mp4",
+          ".mp4",
+          ".mp4",
+          ".mp4",
+          ".webm",
+          ".webm"
+        ],
+        "missing_conversions": [],
+        "unexpected_files": [],
+        "success": true
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 2,
+        "average_cpu_percent": 0,
+        "throughput_files_per_second": 385.30874656486134,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 0,
+        "performance_issues": null,
+        "disk_read_mbps": 0,
+        "disk_write_mbps": 0,
+        "disk_iops": 0,
+        "network_sent_mbps": 0,
+        "network_recv_mbps": 0,
+        "system_load_1": 7.0439453125,
+        "system_load_5": 5.57666015625,
+        "system_load_15": 5.0947265625,
+        "average_gc_pause_ms": 0.090418,
+        "total_gc_count": 68,
+        "peak_disk_usage_mb": 1228740.28515625
+      },
+      "issues": [
+        "成功率 0.00% 低于期望 70.00%"
+      ]
+    },
+    {
+      "scenario_id": "bmp_format_conversion_test",
+      "success": false,
+      "duration": 252857083,
+      "files_processed": 0,
+      "files_successful": 0,
+      "files_failed": 0,
+      "files_skipped": 0,
+      "compression_ratio": 0,
+      "errors": [],
+      "quality_analysis": {
+        "quality_engine_working": true,
+        "issues": [],
+        "detected_qualities": [
+          "timestamp_preservation"
+        ],
+        "corrupted_files": 0,
+        "processed_files": 0
+      },
+      "format_check": {
+        "conversions_found": [
+          ".jxl",
+          ".jxl",
+          ".jxl",
+          ".jxl",
+          ".jxl"
+        ],
+        "missing_conversions": [],
+        "unexpected_files": [],
+        "success": true
+      },
+      "performance_metrics": {
+        "peak_memory_mb": 2,
+        "average_cpu_percent": 0,
+        "throughput_files_per_second": 0,
+        "memory_leak_detected": false,
+        "goroutine_leak_count": 0,
+        "performance_issues": [
+          "low throughput detected"
+        ],
+        "disk_read_mbps": 125.4937855452517,
+        "disk_write_mbps": 28.690958405327063,
+        "disk_iops": 3105.154782859462,
+        "network_sent_mbps": 0.6998364214999846,
+        "network_recv_mbps": 0.01161743266221799,
+        "system_load_1": 7.0439453125,
+        "system_load_5": 5.57666015625,
+        "system_load_15": 5.0947265625,
+        "average_gc_pause_ms": 0.114542,
+        "total_gc_count": 0,
+        "peak_disk_usage_mb": 1228740.2890625
+      },
+      "issues": [
+        "吞吐量 0.00 文件/秒 低于期望 0.80 文件/秒",
+        "low throughput detected"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "passed": 0,
+    "failed": 12,
+    "quality_engine_issues": [],
+    "conversion_issues": [
+      "吞吐量 0.05 文件/秒 低于期望 0.50 文件/秒",
+      "检测到 1 个Goroutine泄漏",
+      "low throughput detected",
+      "成功率 0.00% 低于期望 50.00%",
+      "成功率 0.00% 低于期望 60.00%",
+      "吞吐量 0.08 文件/秒 低于期望 0.40 文件/秒",
+      "缺失预期格式: [.webp]",
+      "成功率 0.00% 低于期望 40.00%",
+      "成功率 0.00% 低于期望 70.00%",
+      "吞吐量 0.00 文件/秒 低于期望 0.80 文件/秒"
+    ]
+  }
+}

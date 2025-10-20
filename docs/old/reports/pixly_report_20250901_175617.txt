@@ -1,0 +1,389 @@
+=== Pixly 媒体转换详细报告 ===
+生成时间: 2025-09-01 17:56:17
+转换模式: auto+
+源目录: /Users/nameko_1/Downloads/test/pkg/converter/test_integration
+处理时长: 24.54122025s
+
+=== 转换统计 ===
+总文件数: 5
+处理文件数: 5
+成功转换: 0
+转换失败: 5
+跳过文件: 0
+总压缩率: 100.00%
+节省空间: 0.00 MB
+
+=== 格式统计 ===
+
+=== 文件转换详情 (前20个) ===
+❌ 失败 - test_2.jpg
+  原始大小: 0.00 MB
+  错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0x8d0c50380] No JPEG data found in image
+[image2 @ 0x8d1038000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_2.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0x8d0c50e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0x8d0c38f00] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0x8d0c38f00] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0x8d0c38f00] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0x8d0c84000] [enc:libjxl @ 0x8d0c481c0] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0x8d0c84000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0x8d0c84000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0x8d102cf00] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+  处理时间: 12.271576833s
+
+❌ 失败 - test_1.jpg
+  原始大小: 0.00 MB
+  错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0x930c64380] No JPEG data found in image
+[image2 @ 0x931010000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_1.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0x930c64e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0x930c4cf00] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0x930c4cf00] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0x930c4cf00] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0x930c90000] [enc:libjxl @ 0x930c5c1c0] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0x930c90000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0x930c90000] Terminating thread with return code -22 (Invalid argument)
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[out#0/image2 @ 0x931014240] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+  处理时间: 12.272241417s
+
+❌ 失败 - test_0.jpg
+  原始大小: 0.00 MB
+  错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0xa1d04c380] No JPEG data found in image
+[image2 @ 0xa1d020000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_0.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0xa1d04ce00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0xa1cc64500] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0xa1cc64500] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0xa1cc64500] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0xa1d07c000] [enc:libjxl @ 0xa1d01c1c0] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0xa1d07c000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0xa1d07c000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0xa1d024240] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+  处理时间: 12.272457666s
+
+❌ 失败 - test_4.jpg
+  原始大小: 0.00 MB
+  错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0x713038380] No JPEG data found in image
+[image2 @ 0x713034000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_4.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0x713038e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0x712c68500] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0x712c68500] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0x712c68500] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0x712c98000] [enc:libjxl @ 0x712c09500] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0x712c98000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0x712c98000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0x712c0c780] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+  处理时间: 12.268859292s
+
+❌ 失败 - test_3.jpg
+  原始大小: 0.00 MB
+  错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0xb4d038380] No JPEG data found in image
+[image2 @ 0xb4d034000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_3.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0xb4d038e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0xb4cc70500] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0xb4cc70500] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0xb4cc70500] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0xb4cca0000] [enc:libjxl @ 0xb4cc09570] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0xb4cca0000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0xb4cca0000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0xb4cc0c780] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+  处理时间: 12.269507916s
+
+=== 错误详情 ===
+文件: /Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_2.jpg
+错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0x8d0c50380] No JPEG data found in image
+[image2 @ 0x8d1038000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_2.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0x8d0c50e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0x8d0c40300] [dec:mjpeg @ 0x8d1034280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0x8d0c38f00] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0x8d0c38f00] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0x8d0c38f00] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0x8d0c84000] [enc:libjxl @ 0x8d0c481c0] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0x8d0c84000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0x8d0c84000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0x8d102cf00] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+
+文件: /Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_1.jpg
+错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0x930c64380] No JPEG data found in image
+[image2 @ 0x931010000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_1.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0x930c64e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0x930c4cf00] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0x930c4cf00] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0x930c4cf00] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0x930c90000] [enc:libjxl @ 0x930c5c1c0] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0x930c90000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0x930c90000] Terminating thread with return code -22 (Invalid argument)
+[vist#0:0/mjpeg @ 0x930c54300] [dec:mjpeg @ 0x93100c280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[out#0/image2 @ 0x931014240] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+
+文件: /Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_0.jpg
+错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0xa1d04c380] No JPEG data found in image
+[image2 @ 0xa1d020000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_0.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0xa1d04ce00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0xa1cc60300] [dec:mjpeg @ 0xa1d018280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0xa1cc64500] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0xa1cc64500] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0xa1cc64500] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0xa1d07c000] [enc:libjxl @ 0xa1d01c1c0] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0xa1d07c000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0xa1d07c000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0xa1d024240] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+
+文件: /Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_4.jpg
+错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0x713038380] No JPEG data found in image
+[image2 @ 0x713034000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_4.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0x713038e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0x71302c300] [dec:mjpeg @ 0x713030280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0x712c68500] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0x712c68500] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0x712c68500] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0x712c98000] [enc:libjxl @ 0x712c09500] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0x712c98000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0x712c98000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0x712c0c780] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+
+文件: /Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_3.jpg
+错误: both cjxl and FFmpeg lossless JXL conversion failed: exit status 69, output: ffmpeg version 8.0 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mjpeg @ 0xb4d038380] No JPEG data found in image
+[image2 @ 0xb4d034000] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+Input #0, image2, from '/Users/nameko_1/Downloads/test/pkg/converter/test_integration/test_3.jpg':
+  Duration: 00:00:00.04, start: 0.000000, bitrate: 5 kb/s
+  Stream #0:0: Video: mjpeg, none(bt470bg/unknown/unknown), 25 fps, 25 tbr, 25 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> jpegxl (libjxl))
+Press [q] to stop, [?] for help
+[mjpeg @ 0xb4d038e00] No JPEG data found in image
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Error submitting packet to decoder: Invalid data found when processing input
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Decode error rate 1 exceeds maximum 0.666667
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Task finished with error code: -1145393733 (Error number -1145393733 occurred)
+[vist#0:0/mjpeg @ 0xb4d02c300] [dec:mjpeg @ 0xb4d030280] Terminating thread with return code -1145393733 (Error number -1145393733 occurred)
+[vf#0:0 @ 0xb4cc70500] Cannot determine format of input 0:0 after EOF
+[vf#0:0 @ 0xb4cc70500] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vf#0:0 @ 0xb4cc70500] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[vost#0:0/libjxl @ 0xb4cca0000] [enc:libjxl @ 0xb4cc09570] Could not open encoder before EOF
+[vost#0:0/libjxl @ 0xb4cca0000] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libjxl @ 0xb4cca0000] Terminating thread with return code -22 (Invalid argument)
+[out#0/image2 @ 0xb4cc0c780] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A elapsed=0:00:00.00    
+Conversion failed!
+
+

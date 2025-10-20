@@ -1,0 +1,167 @@
+{
+  "start_time": "2025-09-04T11:06:34.679180459+08:00",
+  "end_time": "2025-09-04T11:06:36.230377+08:00",
+  "duration": 1551196541,
+  "source_directory": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES",
+  "total_files": 3,
+  "processed_files": 8,
+  "successful_files": 3,
+  "failed_files": 0,
+  "skipped_files": 5,
+  "total_size_before": 14144023,
+  "total_size_after": 3820644,
+  "space_saved": 10323379,
+  "compression_ratio": 72.9875722062952,
+  "conversion_mode": "auto+",
+  "file_details": [
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_avif_1.avif",
+      "output_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_avif_1.avif",
+      "original_size": 280655,
+      "output_size": 280655,
+      "compression_ratio": 0,
+      "original_format": ".avif",
+      "output_format": ".avif",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_avif_2.avif",
+      "output_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_avif_2.avif",
+      "original_size": 12859,
+      "output_size": 12859,
+      "compression_ratio": 0,
+      "original_format": ".avif",
+      "output_format": ".avif",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_jxl_1.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_jxl_1.jxl",
+      "original_size": 108698,
+      "output_size": 108698,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_jxl_2.jxl",
+      "output_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_jxl_2.jxl",
+      "original_size": 76775,
+      "output_size": 76775,
+      "compression_ratio": 0,
+      "original_format": ".jxl",
+      "output_format": ".jxl",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_video_2.mov",
+      "output_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/test_video_2.mov",
+      "original_size": 3341657,
+      "output_size": 3341657,
+      "compression_ratio": 0,
+      "original_format": ".mov",
+      "output_format": ".mov",
+      "processing_time": 0,
+      "method": "skip",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/1584873463565.jpg",
+      "output_path": "",
+      "original_size": 1726016,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": "jxl",
+      "output_format": "",
+      "processing_time": 945495458,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/2022-09-23 22.40.39-1.jpg",
+      "output_path": "",
+      "original_size": 2710119,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": "jxl",
+      "output_format": "",
+      "processing_time": 1290728583,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/TEST_NORMAL_FILES/028.png",
+      "output_path": "",
+      "original_size": 5887244,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": "avif",
+      "output_format": "",
+      "processing_time": 1446831375,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false
+    }
+  ],
+  "format_summary": {
+    ".avif": {
+      "count": 2,
+      "total_size_before": 293514,
+      "total_size_after": 293514,
+      "average_compression": 0
+    },
+    ".jxl": {
+      "count": 2,
+      "total_size_before": 185473,
+      "total_size_after": 185473,
+      "average_compression": 0
+    },
+    ".mov": {
+      "count": 1,
+      "total_size_before": 3341657,
+      "total_size_after": 3341657,
+      "average_compression": 0
+    },
+    "avif": {
+      "count": 1,
+      "total_size_before": 5887244,
+      "total_size_after": 0,
+      "average_compression": 100
+    },
+    "jxl": {
+      "count": 2,
+      "total_size_before": 4436135,
+      "total_size_after": 0,
+      "average_compression": 100
+    }
+  },
+  "system_info": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu_cores": 8,
+    "concurrency": 4,
+    "memory_used_mb": 0
+  },
+  "errors": null
+}

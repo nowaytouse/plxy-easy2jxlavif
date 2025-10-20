@@ -1,0 +1,385 @@
+{
+  "timestamp": "2025-09-04T10:51:48.456092+08:00",
+  "total_duration": 405925958,
+  "conversion_tests": {
+    "timestamp": "2025-09-04T10:51:48.861994+08:00",
+    "total_scenarios": 11,
+    "passed_scenarios": 0,
+    "failed_scenarios": 11,
+    "results": [
+      {
+        "scenario_id": "basic_conversion_auto_plus",
+        "success": false,
+        "duration": 42138084,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [],
+        "quality_analysis": {
+          "quality_engine_working": true,
+          "issues": [],
+          "detected_qualities": [
+            "timestamp_preservation"
+          ],
+          "corrupted_files": 0,
+          "processed_files": 0
+        },
+        "format_check": {
+          "conversions_found": [],
+          "missing_conversions": [
+            ".jxl",
+            ".avif"
+          ],
+          "unexpected_files": [],
+          "success": false
+        },
+        "performance_metrics": {
+          "peak_memory_mb": 1,
+          "average_cpu_percent": 0,
+          "throughput_files_per_second": 0,
+          "memory_leak_detected": false,
+          "goroutine_leak_count": 0,
+          "performance_issues": [
+            "low throughput detected"
+          ],
+          "disk_read_mbps": 0,
+          "disk_write_mbps": 0,
+          "disk_iops": 0,
+          "network_sent_mbps": 0,
+          "network_recv_mbps": 0,
+          "system_load_1": 0,
+          "system_load_5": 0,
+          "system_load_15": 0,
+          "average_gc_pause_ms": 0,
+          "total_gc_count": 0,
+          "peak_disk_usage_mb": 1221156.38671875
+        },
+        "issues": [
+          "吞吐量 0.00 文件/秒 低于期望 0.50 文件/秒",
+          "low throughput detected",
+          "缺失预期格式: [.jxl .avif]"
+        ]
+      },
+      {
+        "scenario_id": "basic_conversion_quality",
+        "success": false,
+        "duration": 0,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [
+          "conversion failed: 执行转换失败: 路径权限检查失败 failed: 路径不存在: /Users/nameko_1/Downloads/test/TEST_SAMPLES"
+        ],
+        "quality_analysis": null,
+        "format_check": null,
+        "issues": null
+      },
+      {
+        "scenario_id": "basic_conversion_emoji",
+        "success": false,
+        "duration": 0,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [
+          "conversion failed: 执行转换失败: 路径权限检查失败 failed: 路径不存在: /Users/nameko_1/Downloads/test/TEST_COMPREHENSIVE/images"
+        ],
+        "quality_analysis": null,
+        "format_check": null,
+        "issues": null
+      },
+      {
+        "scenario_id": "timestamp_preservation_test",
+        "success": false,
+        "duration": 0,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [
+          "conversion failed: 执行转换失败: 路径权限检查失败 failed: 路径不存在: /Users/nameko_1/Downloads/test/TEST_NORMAL_FILES"
+        ],
+        "quality_analysis": null,
+        "format_check": null,
+        "issues": null
+      },
+      {
+        "scenario_id": "corrupted_files_handling",
+        "success": false,
+        "duration": 59306875,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [],
+        "quality_analysis": {
+          "quality_engine_working": true,
+          "issues": [],
+          "detected_qualities": [
+            "timestamp_preservation"
+          ],
+          "corrupted_files": 0,
+          "processed_files": 0
+        },
+        "format_check": {
+          "conversions_found": [],
+          "missing_conversions": [
+            ".jxl",
+            ".avif"
+          ],
+          "unexpected_files": [],
+          "success": false
+        },
+        "performance_metrics": {
+          "peak_memory_mb": 2,
+          "average_cpu_percent": 0,
+          "throughput_files_per_second": 0,
+          "memory_leak_detected": false,
+          "goroutine_leak_count": 0,
+          "performance_issues": [
+            "low throughput detected"
+          ],
+          "disk_read_mbps": 0,
+          "disk_write_mbps": 0,
+          "disk_iops": 0,
+          "network_sent_mbps": 0,
+          "network_recv_mbps": 0,
+          "system_load_1": 0,
+          "system_load_5": 0,
+          "system_load_15": 0,
+          "average_gc_pause_ms": 0,
+          "total_gc_count": 0,
+          "peak_disk_usage_mb": 1221155.96875
+        },
+        "issues": [
+          "缺失预期格式: [.jxl .avif]"
+        ]
+      },
+      {
+        "scenario_id": "progress_bar_test",
+        "success": false,
+        "duration": 43928042,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [],
+        "quality_analysis": {
+          "quality_engine_working": true,
+          "issues": [],
+          "detected_qualities": [
+            "timestamp_preservation"
+          ],
+          "corrupted_files": 0,
+          "processed_files": 0
+        },
+        "format_check": {
+          "conversions_found": [],
+          "missing_conversions": [
+            ".jxl",
+            ".avif"
+          ],
+          "unexpected_files": [],
+          "success": false
+        },
+        "performance_metrics": {
+          "peak_memory_mb": 2,
+          "average_cpu_percent": 0,
+          "throughput_files_per_second": 0,
+          "memory_leak_detected": false,
+          "goroutine_leak_count": 0,
+          "performance_issues": [
+            "low throughput detected"
+          ],
+          "disk_read_mbps": 0,
+          "disk_write_mbps": 0,
+          "disk_iops": 0,
+          "network_sent_mbps": 0,
+          "network_recv_mbps": 0,
+          "system_load_1": 0,
+          "system_load_5": 0,
+          "system_load_15": 0,
+          "average_gc_pause_ms": 0,
+          "total_gc_count": 0,
+          "peak_disk_usage_mb": 1221155.9921875
+        },
+        "issues": [
+          "缺失预期格式: [.jxl .avif]"
+        ]
+      },
+      {
+        "scenario_id": "concurrent_processing_test",
+        "success": false,
+        "duration": 0,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [
+          "conversion failed: 执行转换失败: 路径权限检查失败 failed: 路径不存在: /Users/nameko_1/Downloads/test/TEST_COMPREHENSIVE"
+        ],
+        "quality_analysis": null,
+        "format_check": null,
+        "issues": null
+      },
+      {
+        "scenario_id": "large_file_handling_test",
+        "success": false,
+        "duration": 35647125,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [],
+        "quality_analysis": {
+          "quality_engine_working": true,
+          "issues": [],
+          "detected_qualities": [
+            "timestamp_preservation"
+          ],
+          "corrupted_files": 0,
+          "processed_files": 0
+        },
+        "format_check": {
+          "conversions_found": [],
+          "missing_conversions": [
+            ".jxl",
+            ".avif",
+            ".mov"
+          ],
+          "unexpected_files": [],
+          "success": false
+        },
+        "performance_metrics": {
+          "peak_memory_mb": 3,
+          "average_cpu_percent": 0,
+          "throughput_files_per_second": 0,
+          "memory_leak_detected": false,
+          "goroutine_leak_count": 0,
+          "performance_issues": [
+            "low throughput detected"
+          ],
+          "disk_read_mbps": 0,
+          "disk_write_mbps": 0,
+          "disk_iops": 0,
+          "network_sent_mbps": 0,
+          "network_recv_mbps": 0,
+          "system_load_1": 0,
+          "system_load_5": 0,
+          "system_load_15": 0,
+          "average_gc_pause_ms": 0,
+          "total_gc_count": 0,
+          "peak_disk_usage_mb": 1221155.99609375
+        },
+        "issues": [
+          "吞吐量 0.00 文件/秒 低于期望 0.10 文件/秒",
+          "low throughput detected",
+          "缺失预期格式: [.jxl .avif .mov]"
+        ]
+      },
+      {
+        "scenario_id": "multi_format_compatibility_test",
+        "success": false,
+        "duration": 0,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [
+          "conversion failed: 执行转换失败: 路径权限检查失败 failed: 路径不存在: /Users/nameko_1/Downloads/test/TEST_NORMAL_FILES"
+        ],
+        "quality_analysis": null,
+        "format_check": null,
+        "issues": null
+      },
+      {
+        "scenario_id": "edge_case_handling_test",
+        "success": false,
+        "duration": 0,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [
+          "conversion failed: 执行转换失败: 路径权限检查失败 failed: 路径不存在: /Users/nameko_1/Downloads/test/TEST_SAMPLES"
+        ],
+        "quality_analysis": null,
+        "format_check": null,
+        "issues": null
+      },
+      {
+        "scenario_id": "stress_test_high_concurrency",
+        "success": false,
+        "duration": 0,
+        "files_processed": 0,
+        "files_successful": 0,
+        "files_failed": 0,
+        "files_skipped": 0,
+        "compression_ratio": 0,
+        "errors": [
+          "conversion failed: 执行转换失败: 路径权限检查失败 failed: 路径不存在: /Users/nameko_1/Downloads/test/TEST_COMPREHENSIVE"
+        ],
+        "quality_analysis": null,
+        "format_check": null,
+        "issues": null
+      }
+    ],
+    "summary": {
+      "total": 11,
+      "passed": 0,
+      "failed": 11,
+      "quality_engine_issues": [],
+      "conversion_issues": [
+        "吞吐量 0.00 文件/秒 低于期望 0.50 文件/秒",
+        "low throughput detected",
+        "缺失预期格式: [.jxl .avif]",
+        "吞吐量 0.00 文件/秒 低于期望 0.10 文件/秒",
+        "缺失预期格式: [.jxl .avif .mov]"
+      ]
+    }
+  },
+  "ai_tests": null,
+  "overall_success": false,
+  "summary": {
+    "total_tests": 11,
+    "passed_tests": 0,
+    "failed_tests": 11,
+    "skipped_tests": 0,
+    "conversion_success": false,
+    "ui_success": true,
+    "ai_success": false,
+    "critical_issues": [
+      "转换功能测试存在失败"
+    ],
+    "recommendations": [
+      "检查转换器配置和依赖工具"
+    ]
+  },
+  "environment_info": {
+    "operating_system": "macOS",
+    "go_version": "1.25+",
+    "pixly_version": "v1.65.6.5",
+    "test_framework_version": "v1.0.0",
+    "dependencies": [
+      "ffmpeg",
+      "cjxl",
+      "avifenc",
+      "exiftool"
+    ],
+    "test_start_time": "2025-09-04T10:51:48.456092+08:00",
+    "test_end_time": "0001-01-01T00:00:00Z"
+  }
+}

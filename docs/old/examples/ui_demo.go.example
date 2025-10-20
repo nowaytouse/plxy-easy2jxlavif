@@ -1,0 +1,56 @@
+package main
+
+import (
+	"fmt"
+	"time"
+	"pixly/internal/ui"
+	"pixly/pkg/i18n"
+	"pixly/pkg/theme"
+)
+
+func main() {
+	// 初始化国际化和主题管理器
+	i18n.InitializeGlobalI18n()
+	theme.InitializeGlobalTheme()
+	
+	fmt.Println("=== Pixly UI 增强功能演示 ===")
+	
+	// 1. 演示对称emoji功能
+	fmt.Println("1. 对称emoji功能:")
+	symmetricText := ui.CreateSymmetricEmojiText("🚀", "Pixly 媒体转换器")
+	fmt.Println(symmetricText)
+	
+	dualText := ui.CreateDualEmojiText("🇨🇳", "🇺🇸", "多语言支持")
+	fmt.Println(dualText)
+	
+	// 2. 演示动画效果
+	fmt.Println("\n2. 动画效果演示:")
+	fmt.Print("打字机效果: ")
+	ui.CreateTypewriterText("打字机文本效果", 50*time.Millisecond)
+	
+	// 3. 演示语言切换
+	fmt.Println("\n3. 语言切换功能:")
+	fmt.Println("切换到英文:")
+	ui.SwitchLanguage("en")
+	fmt.Println("切换回中文:")
+	ui.SwitchLanguage("zh")
+	
+	// 4. 演示主题切换
+	fmt.Println("\n4. 主题切换功能:")
+	fmt.Println("切换到明亮模式:")
+	ui.UpdateTheme(theme.ThemeModeLight)
+	fmt.Println("切换到暗色模式:")
+	ui.UpdateTheme(theme.ThemeModeDark)
+	
+	// 5. 演示增强版菜单
+	fmt.Println("\n5. 增强版菜单:")
+	menuOptions := []ui.MenuOption{
+		{Text: "开始转换", Description: "转换媒体文件", Enabled: true},
+		{Text: "分析文件", Description: "分析媒体文件信息", Enabled: true},
+		{Text: "设置", Description: "配置转换参数", Enabled: false},
+	}
+	
+	ui.DisplayEnhancedMenu("主菜单", menuOptions)
+	
+	fmt.Println("\n=== 演示完成 ===")
+}

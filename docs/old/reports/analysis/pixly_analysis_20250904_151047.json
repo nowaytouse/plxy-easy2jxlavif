@@ -1,0 +1,21 @@
+{
+  "total_files": 5,
+  "total_size": 566,
+  "format_stats": {
+    ".jxl": {
+      "count": 5,
+      "total_size": 566,
+      "avg_size": 113
+    }
+  },
+  "type_stats": {
+    "image": 5
+  },
+  "size_distribution": {
+    "\u003c 1MB": 5
+  },
+  "largest_files": [],
+  "recommendations": [
+    "文件结构合理，可以尝试自动模式+进行整体优化"
+  ]
+}

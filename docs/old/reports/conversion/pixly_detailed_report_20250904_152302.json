@@ -1,0 +1,785 @@
+{
+  "start_time": "2025-09-04T15:22:35.106678791+08:00",
+  "end_time": "2025-09-04T15:22:58.047149+08:00",
+  "duration": 22940470209,
+  "source_directory": "/Users/nameko_1/Downloads/test/test_data/quality_variations",
+  "total_files": 47,
+  "processed_files": 47,
+  "successful_files": 28,
+  "failed_files": 5,
+  "skipped_files": 14,
+  "total_size_before": 24273777,
+  "total_size_after": 778306,
+  "space_saved": 23495471,
+  "compression_ratio": 96.79363454644904,
+  "conversion_mode": "quality",
+  "file_details": [
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "original_size": 11938,
+      "output_size": 11938,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638223083,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression9.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression9.jxl",
+      "original_size": 74880,
+      "output_size": 45301,
+      "compression_ratio": 39.50186965811966,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 10233567125,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "output_path": "",
+      "original_size": 9488,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": "",
+      "processing_time": 5062805125,
+      "method": "image_conversion",
+      "success": false,
+      "skipped": false,
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp",
+      "output_path": "",
+      "original_size": 10458,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": "",
+      "processing_time": 5264297083,
+      "method": "image_conversion",
+      "success": false,
+      "skipped": false,
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q85.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q85.jxl",
+      "original_size": 22404,
+      "output_size": 17546,
+      "compression_ratio": 21.683627923585075,
+      "original_format": ".webp",
+      "output_format": ".jxl",
+      "processing_time": 6127172125,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q25.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q25.webp",
+      "original_size": 11582,
+      "output_size": 11582,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638645125,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.jxl",
+      "original_size": 16598191,
+      "output_size": 45301,
+      "compression_ratio": 99.72707266713583,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8762798958,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.jxl",
+      "original_size": 16598191,
+      "output_size": 45301,
+      "compression_ratio": 99.72707266713583,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8762798958,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.jxl",
+      "original_size": 16598191,
+      "output_size": 45301,
+      "compression_ratio": 99.72707266713583,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8762798958,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.jxl",
+      "original_size": 16598191,
+      "output_size": 45301,
+      "compression_ratio": 99.72707266713583,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8762798958,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.jxl",
+      "original_size": 16598191,
+      "output_size": 45301,
+      "compression_ratio": 99.72707266713583,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8762798958,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression6.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression6.jxl",
+      "original_size": 76781,
+      "output_size": 45301,
+      "compression_ratio": 40.99972649483596,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 10125359458,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression9.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression9.jxl",
+      "original_size": 74880,
+      "output_size": 45301,
+      "compression_ratio": 39.50186965811966,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 10233567125,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "original_size": 11938,
+      "output_size": 11938,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638223083,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "original_size": 11938,
+      "output_size": 11938,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638223083,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "original_size": 11938,
+      "output_size": 11938,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638223083,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "output_path": "",
+      "original_size": 9488,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": "",
+      "processing_time": 5062805125,
+      "method": "image_conversion",
+      "success": false,
+      "skipped": false,
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_transparent_png_compression9.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_transparent_png_compression9.jxl",
+      "original_size": 35875,
+      "output_size": 15457,
+      "compression_ratio": 56.91428571428572,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 1156269792,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp",
+      "output_path": "",
+      "original_size": 10458,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": "",
+      "processing_time": 5264297083,
+      "method": "image_conversion",
+      "success": false,
+      "skipped": false,
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q25.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q25.webp",
+      "original_size": 11582,
+      "output_size": 11582,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638645125,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "original_size": 11938,
+      "output_size": 11938,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638223083,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "output_path": "",
+      "original_size": 9488,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": "",
+      "processing_time": 5062805125,
+      "method": "image_conversion",
+      "success": false,
+      "skipped": false,
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_transparent_png_compression9.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_transparent_png_compression9.jxl",
+      "original_size": 35875,
+      "output_size": 15457,
+      "compression_ratio": 56.91428571428572,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 1156269792,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression0.jxl",
+      "original_size": 16598191,
+      "output_size": 45301,
+      "compression_ratio": 99.72707266713583,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8762798958,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression3.jxl",
+      "original_size": 138738,
+      "output_size": 45301,
+      "compression_ratio": 67.34780665715233,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 8539740042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp",
+      "output_path": "",
+      "original_size": 10458,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": "",
+      "processing_time": 5264297083,
+      "method": "image_conversion",
+      "success": false,
+      "skipped": false,
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q25.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q25.webp",
+      "original_size": 11582,
+      "output_size": 11582,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638645125,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q45.webp",
+      "original_size": 13406,
+      "output_size": 13406,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5491168917,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q35.webp",
+      "original_size": 11938,
+      "output_size": 11938,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": ".webp",
+      "processing_time": 5638223083,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": true,
+      "skip_reason": "already target format"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "output_path": "",
+      "original_size": 9488,
+      "output_size": 0,
+      "compression_ratio": 0,
+      "original_format": ".webp",
+      "output_format": "",
+      "processing_time": 5062805125,
+      "method": "image_conversion",
+      "success": false,
+      "skipped": false,
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory"
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression6.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression6.jxl",
+      "original_size": 76781,
+      "output_size": 45301,
+      "compression_ratio": 40.99972649483596,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 10125359458,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "mod_time": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression9.png",
+      "output_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression9.jxl",
+      "original_size": 74880,
+      "output_size": 45301,
+      "compression_ratio": 39.50186965811966,
+      "original_format": ".png",
+      "output_format": ".jxl",
+      "processing_time": 10233567125,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "full_path": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_png_compression9.jxl",
+        "file_size": 45301,
+        "mod_time": "2025-09-04T09:30:52.864322993+08:00",
+        "codec": "jpegxl",
+        "width": 1920,
+        "height": 1080,
+        "frame_rate": 25,
+        "color_space": "gbr"
+      }
+    }
+  ],
+  "format_summary": {
+    ".png": {
+      "count": 21,
+      "total_size_before": 101149002,
+      "total_size_after": 891633,
+      "average_compression": 99.11849550428585
+    },
+    ".webp": {
+      "count": 1,
+      "total_size_before": 22404,
+      "total_size_after": 17546,
+      "average_compression": 21.683627923585075
+    }
+  },
+  "system_info": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu_cores": 4,
+    "concurrency": 10,
+    "memory_used_mb": 0
+  },
+  "errors": [
+    {
+      "file": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory",
+      "time": "2025-09-04T15:23:02.659409+08:00"
+    },
+    {
+      "file": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp",
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory",
+      "time": "2025-09-04T15:23:02.65941+08:00"
+    },
+    {
+      "file": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory",
+      "time": "2025-09-04T15:23:02.65941+08:00"
+    },
+    {
+      "file": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp",
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory",
+      "time": "2025-09-04T15:23:02.659415+08:00"
+    },
+    {
+      "file": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory",
+      "time": "2025-09-04T15:23:02.659415+08:00"
+    },
+    {
+      "file": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.webp",
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q15.jxl: no such file or directory",
+      "time": "2025-09-04T15:23:02.659417+08:00"
+    },
+    {
+      "file": "/Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.webp",
+      "error": "failed to move best result to final path failed: rename  /Users/nameko_1/Downloads/test/test_data/quality_variations/test_webp_q5.jxl: no such file or directory",
+      "time": "2025-09-04T15:23:02.659417+08:00"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "start_time": "2025-09-04T16:57:42.58944975+08:00",
+  "end_time": "2025-09-04T16:57:43.057728+08:00",
+  "duration": 468278250,
+  "source_directory": "/Users/nameko_1/Downloads/test/test_gif",
+  "total_files": 1,
+  "processed_files": 1,
+  "successful_files": 1,
+  "failed_files": 0,
+  "skipped_files": 0,
+  "total_size_before": 16153,
+  "total_size_after": 494,
+  "space_saved": 15659,
+  "compression_ratio": 96.94174456757258,
+  "conversion_mode": "auto+",
+  "file_details": [
+    {
+      "original_path": "/Users/nameko_1/Downloads/test/test_gif/test_animated_128colors.gif",
+      "output_path": "/Users/nameko_1/Downloads/test/test_gif/test_animated_128colors.avif",
+      "original_size": 16153,
+      "output_size": 494,
+      "compression_ratio": 96.94174456757258,
+      "original_format": ".gif",
+      "output_format": ".avif",
+      "processing_time": 366970042,
+      "method": "image_conversion",
+      "success": true,
+      "skipped": false,
+      "media_info": {
+        "full_path": "/Users/nameko_1/Downloads/test/test_gif/test_animated_128colors.avif",
+        "file_size": 494,
+        "mod_time": "2025-09-04T16:56:46.776269608+08:00",
+        "codec": "av1",
+        "width": 400,
+        "height": 400,
+        "frame_rate": 1
+      }
+    }
+  ],
+  "format_summary": {
+    ".gif": {
+      "count": 1,
+      "total_size_before": 16153,
+      "total_size_after": 494,
+      "average_compression": 96.94174456757258
+    }
+  },
+  "system_info": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu_cores": 4,
+    "concurrency": 10,
+    "memory_used_mb": 0
+  },
+  "errors": null
+}
