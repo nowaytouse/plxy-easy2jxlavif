@@ -1,45 +1,57 @@
-# easymode - 简易图像转换工具
+# easymode - 简易图像转换工具集
 
-easymode 目录包含四个专门的命令行工具，用于将图像转换为现代、高效的格式：
+easymode 目录包含专门的命令行工具，用于将图像转换为现代、高效的格式：
 
 1. **all2jxl** - 将各种图像格式转换为 JPEG XL
 2. **all2avif** - 将静态和动态图像转换为 AVIF（统一工具）
-3. **dynamic2avif** - 将动画图像（GIF、WebP、APNG）转换为 AVIF（已合并到all2avif）
-4. **static2avif** - 将静态图像（JPEG、PNG 等）转换为 AVIF（已合并到all2avif）
+3. **static2avif** - 专门处理静态图像转AVIF
+4. **dynamic2avif** - 专门处理动画图像转AVIF
+5. **static2jxl** - 专门处理静态图像转JXL（新增）
+6. **dynamic2jxl** - 专门处理动画图像转JXL（新增）
+7. **deduplicate_media** - 去除重复图片/视频
+8. **merge_xmp** - 合并XMP元数据
+9. **video2mov** - 视频格式转换
 
 ## 概述
 
-这些工具旨在提供简单、高效的图像转换，并具有高质量的结果。每个工具处理特定类型的转换：
+这些工具旨在提供简单、高效的媒体处理，并具有高质量的结果。每个工具处理特定类型的转换：
 
 - `all2jxl`: 专注于无损或数学上无损转换为 JPEG XL 格式
 - `all2avif`: 统一工具，支持静态和动态图像到 AVIF 格式的转换
-- `dynamic2avif` 和 `static2avif`: 已合并到 `all2avif` 中，提供统一的 AVIF 转换体验
+- `static2avif`: 专门处理静态图像转AVIF格式
+- `dynamic2avif`: 专门处理动画图像转AVIF格式
+- `static2jxl`: 专门处理静态图像转JXL格式
+- `dynamic2jxl`: 专门处理动画图像转JXL格式
+- `deduplicate_media`: 用于查找和删除重复的媒体文件
+- `merge_xmp`: 合并和管理 XMP 元数据
+- `video2mov`: 视频格式转换工具
 
 ## 快速开始
 
 ### 前提条件
 
 在使用这些工具之前，请确保您具备：
-- Go 1.19 或更高版本
+- Go 1.21 或更高版本
 - 每个工具的系统依赖项：
-  - 对于 `all2jxl`: `cjxl`, `djxl`, `exiftool`
-  - 对于 `all2avif`: `ffmpeg`, `exiftool`
+  - 对于 `all2jxl`, `static2jxl`, `dynamic2jxl`: `cjxl`, `djxl`, `exiftool`
+  - 对于 `all2avif`, `static2avif`, `dynamic2avif`: `ffmpeg`, `exiftool`
+  - 对于 `deduplicate_media`, `merge_xmp`, `video2mov`: `exiftool`
 
 在 macOS 上安装依赖项：
 ```bash
-# all2jxl 的依赖
+# all2jxl, static2jxl, dynamic2jxl 的依赖
 brew install jpeg-xl exiftool
 
-# all2avif 的依赖
+# all2avif, static2avif, dynamic2avif 的依赖
 brew install ffmpeg exiftool
 ```
 
 在 Ubuntu/Debian 上安装依赖项：
 ```bash
-# all2jxl 的依赖
+# all2jxl, static2jxl, dynamic2jxl 的依赖
 sudo apt install libjxl-tools exiftool
 
-# all2avif 的依赖
+# all2avif, static2avif, dynamic2avif 的依赖
 sudo apt install ffmpeg exiftool
 ```
 
@@ -49,7 +61,7 @@ sudo apt install ffmpeg exiftool
 
 ```bash
 # 进入工具目录
-cd all2jxl  # 或 all2avif
+cd all2jxl  # 或其他工具
 
 # 构建工具
 ./build.sh
@@ -57,6 +69,8 @@ cd all2jxl  # 或 all2avif
 # 运行工具
 ./all2jxl -dir /path/to/images
 ./all2avif -dir /path/to/images
+./static2jxl -input /path/to/images -output /path/to/output
+./dynamic2jxl -input /path/to/images -output /path/to/output
 ```
 
 ## 工具详细说明
@@ -66,13 +80,14 @@ cd all2jxl  # 或 all2avif
 **用途**: 将各种图像格式转换为 JPEG XL (JXL) 格式
 
 **特性**:
-- 支持多种输入格式：JPEG、PNG、GIF、WebP、BMP、TIFF、HEIC、AVIF
-- 智能动画检测和处理
+- 支持多种输入格式：JPEG、PNG、GIF、WebP、BMP、TIFF、HEIC、HEIF、AVIF
+- 智能动画检测（支持HEIF动画）
+- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
+- 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
+- 统一验证流程：支持HEIC/HEIF文件的验证和像素级准确性检查
 - 无损和数学上无损转换
 - 完整的元数据保留
 - 高性能并行处理
-- 智能跳过已存在文件
-- 自动删除原始文件选项
 
 **使用示例**:
 ```bash
@@ -94,14 +109,13 @@ cd all2jxl  # 或 all2avif
 **用途**: 将静态和动态图像转换为 AVIF 格式
 
 **特性**:
-- 支持静态图像：JPEG、PNG、BMP、TIFF、WebP、HEIC、AVIF
-- 支持动画图像：GIF、WebP 动画
-- 智能动画检测
+- 支持静态图像：JPEG、PNG、BMP、TIFF、WebP、HEIC、HEIF、AVIF
+- 支持动画图像：GIF、WebP 动画、HEIF 动画
+- 智能动画检测（支持HEIF动画检测）
+- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
+- 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
 - 可配置的质量和速度设置
 - 完整的元数据保留
-- 高性能并行处理
-- 智能跳过已存在文件
-- 自动删除原始文件选项
 
 **使用示例**:
 ```bash
@@ -119,6 +133,127 @@ cd all2jxl  # 或 all2avif
 
 # 试运行模式
 ./all2avif -dir /path/to/images -dry-run
+```
+
+### static2avif - 静态图像转AVIF工具
+
+**用途**: 专门处理静态图像转AVIF的工具
+
+**特性**:
+- 针对静态图像优化
+- 更快的处理速度
+- 支持JPEG、PNG、BMP、TIFF、WebP、HEIC、HEIF、AVIF等格式
+- 完整的元数据保留
+
+**使用示例**:
+```bash
+# 基本用法
+./static2avif -input /path/to/images -output /path/to/output
+
+# 高质量转换
+./static2avif -input /path/to/images -output /path/to/output -quality 90
+```
+
+### dynamic2avif - 动画图像转AVIF工具
+
+**用途**: 专门处理动画图像转AVIF的工具
+
+**特性**:
+- 支持GIF、WebP动画、HEIF动画
+- 智能动画检测
+- 保持动画质量
+- 完整的元数据保留
+
+**使用示例**:
+```bash
+# 基本用法
+./dynamic2avif -input /path/to/images -output /path/to/output
+
+# 高质量转换
+./dynamic2avif -input /path/to/images -output /path/to/output -quality 90
+```
+
+### static2jxl - 静态图像转JXL工具 (新增)
+
+**用途**: 专门处理静态图像转JXL的工具
+
+**特性**:
+- 针对静态图像优化
+- 无损压缩
+- 保持最高质量
+- 完整的元数据保留
+
+**使用示例**:
+```bash
+# 基本用法
+./static2jxl -input /path/to/images -output /path/to/output
+
+# 高质量转换
+./static2jxl -input /path/to/images -output /path/to/output -quality 95
+```
+
+### dynamic2jxl - 动画图像转JXL工具 (新增)
+
+**用途**: 专门处理动画图像转JXL的工具
+
+**特性**:
+- 支持GIF、WebP动画、HEIF动画
+- 智能动画检测
+- 保持动画质量
+- 完整的元数据保留
+
+**使用示例**:
+```bash
+# 基本用法
+./dynamic2jxl -input /path/to/images -output /path/to/output
+
+# 高质量转换
+./dynamic2jxl -input /path/to/images -output /path/to/output -quality 95
+```
+
+### deduplicate_media - 媒体文件去重工具
+
+**用途**: 检测并移除重复的图片和视频文件
+
+**特性**:
+- 比较文件内容识别重复项
+- 高效的哈希算法
+- 安全删除机制
+
+**使用示例**:
+```bash
+# 基本用法
+./deduplicate_media -dir /path/to/media -workers 4
+```
+
+### merge_xmp - XMP元数据合并工具
+
+**用途**: 合并和管理XMP元数据
+
+**特性**:
+- 保留和合并元数据信息
+- 支持多种图像格式
+- 安全的元数据操作
+
+**使用示例**:
+```bash
+# 基本用法
+./merge_xmp -input /path/to/images -output /path/to/output
+```
+
+### video2mov - 视频格式转换工具
+
+**用途**: 转换各种视频格式
+
+**特性**:
+- 支持多种视频格式转换
+- 保持视频质量
+- 高效处理
+
+**使用示例**:
+```bash
+# 基本用法
+./video2mov -input /path/to/videos -output /path/to/output
 ```
 
 ## 命令行参数
@@ -151,17 +286,32 @@ cd all2jxl  # 或 all2avif
 | `-timeout` | 300 | 单个文件超时时间（秒） |
 | `-retries` | 1 | 重试次数 |
 
+### static2jxl, dynamic2jxl, static2avif, dynamic2avif 参数
+
+这些工具共享类似的参数结构：
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-input` | 必需 | 输入目录路径 |
+| `-output` | 输入目录 | 输出目录路径 |
+| `-workers` | 10 | 工作线程数 |
+| `-quality` | 80 (95 for JXL) | 图像质量 (1-100) |
+| `-speed` | 4 (仅AVIF) | 编码速度 (0-6) |
+| `-skip-exist` | true | 跳过已存在的目标文件 |
+| `-replace` | true | 转换后删除原始文件 |
+| `-dry-run` | false | 试运行模式 |
+
 ## 使用场景
 
 ### 图片优化
-- **个人照片**: 使用 `all2jxl` 进行无损压缩
-- **网页图片**: 使用 `all2avif` 进行现代格式转换
-- **表情包**: 使用 `all2avif` 进行动画优化
+- **个人照片**: 使用 `all2jxl` 或 `static2jxl` 进行无损压缩
+- **网页图片**: 使用 `all2avif` 或 `static2avif` 进行现代格式转换
+- **表情包**: 使用 `all2avif` 或 `dynamic2avif` 进行动画优化
 
 ### 批量处理
 - **大量图片**: 使用高并发设置处理大量文件
 - **格式统一**: 将不同格式统一转换为目标格式
 - **存储优化**: 通过压缩减少存储空间使用
+- **媒体整理**: 使用 `deduplicate_media` 清理重复文件，使用 `merge_xmp` 管理元数据
 
 ## 性能优化
 
@@ -170,6 +320,8 @@ cd all2jxl  # 或 all2avif
 # 使用更多工作线程（适用于多核CPU）
 ./all2jxl -dir /path/to/images -workers 20
 ./all2avif -dir /path/to/images -workers 20
+./static2jxl -input /path/to/images -workers 20
+./dynamic2jxl -input /path/to/images -workers 20
 ```
 
 ### 质量与速度平衡
@@ -203,6 +355,8 @@ A: 减少工作线程数，使用 `-workers 5` 参数。
 # 使用试运行模式检查文件
 ./all2jxl -dir /path/to/images -dry-run
 ./all2avif -dir /path/to/images -dry-run
+./static2jxl -input /path/to/images -dry-run
+./dynamic2jxl -input /path/to/images -dry-run
 
 # 查看详细日志
 tail -f all2jxl.log
@@ -210,6 +364,14 @@ tail -f all2avif.log
 ```
 
 ## 更新日志
+
+### v2.0.2 (2025-01-27)
+- ✅ 修复跳过已存在文件时误删原始文件的问题
+- ✅ 新增模块化验证系统
+- ✅ 新增动静图分离处理工具 (static2jxl, dynamic2jxl)
+- ✅ 新增更多工具 (deduplicate_media, merge_xmp, video2mov)
+- ✅ 改进错误处理和日志记录
+- ✅ 优化性能和内存使用
 
 ### v2.0.0
 - 合并 `dynamic2avif` 和 `static2avif` 为统一的 `all2avif` 工具

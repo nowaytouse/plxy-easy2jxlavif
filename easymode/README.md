@@ -1,70 +1,88 @@
-# EasyMode 工具集
+# EasyMode Toolkit
 
-EasyMode 是一套专门为图像格式转换设计的简化工具集，提供简单易用的命令行界面和高效的批量处理能力。
+EasyMode is a comprehensive toolkit specifically designed for image format conversion, providing a simple command-line interface with efficient batch processing capabilities.
 
-## 🚀 工具概览
+## 🚀 Tool Overview
 
-### 核心工具
-- **all2avif** - 全格式转AVIF工具
-- **all2jxl** - 全格式转JXL工具
-- **static2avif** - 静态图片转AVIF工具
-- **dynamic2avif** - 动态图片转AVIF工具
-- **static2jxl** - 静态图片转JXL工具 (新增)
-- **dynamic2jxl** - 动态图片转JXL工具 (新增)
+### Core Tools
+- **all2avif** - Universal format to AVIF converter
+- **all2jxl** - Universal format to JXL converter
+- **static2avif** - Static image to AVIF converter
+- **dynamic2avif** - Animated image to AVIF converter
+- **static2jxl** - Static image to JXL converter (new)
+- **dynamic2jxl** - Animated image to JXL converter (new)
+- **deduplicate_media** - Remove duplicate images/videos
+- **merge_xmp** - Merge XMP metadata
+- **video2mov** - Video format converter
 
-### 功能特性
-- ✅ **智能格式检测** - 自动识别静态/动态图像
-- ✅ **批量处理** - 高效的并发处理能力
-- ✅ **安全保护** - 修复了跳过已存在文件时误删原始文件的问题
-- ✅ **验证机制** - 完整的处理结果验证和报告生成
-- ✅ **元数据保留** - 使用exiftool保留EXIF信息
-- ✅ **进度显示** - 实时处理进度和统计信息
+### Key Features
+- ✅ **Smart format detection** - Automatically identifies static/animated images
+- ✅ **Batch processing** - Efficient concurrent processing capabilities
+- ✅ **Safety protection** - Fixed issue where original files were deleted when skipping existing files
+- ✅ **Validation system** - Complete processing result validation and report generation
+- ✅ **Metadata preservation** - Uses exiftool to preserve EXIF information
+- ✅ **Progress display** - Real-time processing progress and statistics
 
-## 📁 工具详细说明
+## 📁 Detailed Tool Descriptions
 
-### all2avif - 全格式转AVIF
-**用途**: 将各种图像格式转换为AVIF格式
-**特点**: 支持静态和动态图像，智能参数选择
-**使用**: `./all2avif -dir /path/to/images -quality 80 -workers 4`
+### all2avif - Universal AVIF Converter
+**Purpose**: Convert various image formats to AVIF format  
+**Features**: Supports static and animated images, intelligent parameter selection  
+**Usage**: `./all2avif -dir /path/to/images -quality 80 -workers 4`
 
-### all2jxl - 全格式转JXL
-**用途**: 将各种图像格式转换为JXL格式
-**特点**: 无损压缩，支持动画图像
-**使用**: `./all2jxl -dir /path/to/images -workers 4`
+### all2jxl - Universal JXL Converter
+**Purpose**: Convert various image formats to JPEG XL format  
+**Features**: Lossless compression, supports animated images  
+**Usage**: `./all2jxl -dir /path/to/images -workers 4`
 
-### static2avif - 静态图片转AVIF
-**用途**: 专门处理静态图像转AVIF
-**特点**: 针对静态图像优化，更快的处理速度
-**使用**: `./static2avif -input /path/to/images -output /path/to/output -quality 80`
+### static2avif - Static Image to AVIF
+**Purpose**: Specialized static image to AVIF conversion  
+**Features**: Optimized for static images, faster processing speed  
+**Usage**: `./static2avif -input /path/to/images -output /path/to/output -quality 80`
 
-### dynamic2avif - 动态图片转AVIF
-**用途**: 专门处理动态图像转AVIF
-**特点**: 支持GIF、WebP、APNG等动画格式
-**使用**: `./dynamic2avif -input /path/to/images -output /path/to/output -quality 80`
+### dynamic2avif - Animated Image to AVIF
+**Purpose**: Specialized animated image to AVIF conversion  
+**Features**: Supports GIF, WebP, APNG and other animated formats  
+**Usage**: `./dynamic2avif -input /path/to/images -output /path/to/output -quality 80`
 
-### static2jxl - 静态图片转JXL (新增)
-**用途**: 专门处理静态图像转JXL
-**特点**: 无损压缩，保持最高质量
-**使用**: `go run main.go -input /path/to/images -output /path/to/output -workers 4`
+### static2jxl - Static Image to JXL (New)
+**Purpose**: Specialized static image to JXL conversion  
+**Features**: Lossless compression, preserves highest quality  
+**Usage**: `./static2jxl -input /path/to/images -output /path/to/output -workers 4`
 
-### dynamic2jxl - 动态图片转JXL (新增)
-**用途**: 专门处理动态图像转JXL
-**特点**: 支持动画图像的JXL转换
-**使用**: `go run main.go -input /path/to/images -output /path/to/output -workers 4`
+### dynamic2jxl - Animated Image to JXL (New)
+**Purpose**: Specialized animated image to JXL conversion  
+**Features**: Supports JXL conversion of animated images  
+**Usage**: `./dynamic2jxl -input /path/to/images -output /path/to/output -workers 4`
 
-## 🔧 构建说明
+### deduplicate_media - Media Deduplication
+**Purpose**: Remove duplicate images and videos  
+**Features**: Compares file content to identify duplicates  
+**Usage**: `./deduplicate_media -dir /path/to/media -workers 4`
 
-### 依赖要求
+### merge_xmp - XMP Metadata Merger
+**Purpose**: Merge XMP metadata from multiple files  
+**Features**: Preserves and combines metadata  
+**Usage**: `./merge_xmp -input /path/to/images -output /path/to/output`
+
+### video2mov - Video Format Converter
+**Purpose**: Convert various video formats  
+**Features**: Supports multiple video format conversions  
+**Usage**: `./video2mov -input /path/to/videos -output /path/to/output`
+
+## 🔧 Build Instructions
+
+### Prerequisites
 - Go 1.21+
-- ffmpeg (用于AVIF转换)
-- cjxl (用于JXL转换)
-- exiftool (用于元数据保留)
+- ffmpeg (for AVIF conversion)
+- cjxl (for JXL conversion)
+- exiftool (for metadata preservation)
 
-### 构建步骤
+### Build Steps
 ```bash
-# 构建所有工具
+# Build all tools
 cd easymode
-for dir in all2avif all2jxl static2avif dynamic2avif static2jxl dynamic2jxl; do
+for dir in all2avif all2jxl static2avif dynamic2avif static2jxl dynamic2jxl deduplicate_media merge_xmp video2mov; do
     cd $dir
     chmod +x build.sh
     ./build.sh
@@ -72,78 +90,81 @@ for dir in all2avif all2jxl static2avif dynamic2avif static2jxl dynamic2jxl; do
 done
 ```
 
-## 📊 性能优化
+## 📊 Performance Optimization
 
-### 并发控制
-- 智能工作线程配置
-- 资源限制防止系统过载
-- 文件句柄管理
+### Concurrency Control
+- Intelligent worker thread configuration
+- Resource limiting to prevent system overload
+- File handle management
 
-### 内存管理
-- 减少内存占用
-- 优化文件处理流程
-- 防止内存泄漏
+### Memory Management
+- Reduced memory footprint
+- Optimized file processing flow
+- Memory leak prevention
 
-## 🛡️ 安全特性
+## 🛡️ Safety Features
 
-### 文件安全
-- 修复了跳过已存在文件时误删原始文件的问题
-- 原子性文件操作
-- 备份机制
+### File Safety
+- Fixed issue where original files were deleted when skipping existing files
+- Atomic file operations
+- Backup mechanism
 
-### 错误处理
-- 完善的错误恢复机制
-- 详细的日志记录
-- 自动重试功能
+### Error Handling
+- Comprehensive error recovery mechanism
+- Detailed logging
+- Automatic retry functionality
 
-## 📈 验证系统
+## 📈 Validation System
 
-### 自动验证
-- 文件数量验证
-- 大小压缩验证
-- EXIF数据验证
-- 格式转换验证
+### Automatic Validation
+- File count validation
+- Size compression validation
+- EXIF data validation
+- Format conversion validation
 
-### 报告生成
-- JSON格式详细报告
-- 用户友好的文本报告
-- 失败原因分析
+### Report Generation
+- JSON format detailed reports
+- User-friendly text reports
+- Failure analysis
 
-## 🎯 使用建议
+## 🎯 Usage Recommendations
 
-### 选择工具
-- **全格式处理**: 使用 all2avif 或 all2jxl
-- **静态图像**: 使用 static2avif 或 static2jxl
-- **动态图像**: 使用 dynamic2avif 或 dynamic2jxl
+### Tool Selection
+- **Universal processing**: Use all2avif or all2jxl
+- **Static images**: Use static2avif or static2jxl
+- **Animated images**: Use dynamic2avif or dynamic2jxl
+- **Media cleanup**: Use deduplicate_media
+- **Metadata management**: Use merge_xmp
 
-### 性能调优
-- 根据CPU核心数调整工作线程
-- 大文件处理时增加超时时间
-- 使用试运行模式测试配置
+### Performance Tuning
+- Adjust worker threads based on CPU cores
+- Increase timeout for large files
+- Test configurations with dry-run mode
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### 常见问题
-1. **依赖缺失**: 确保安装了ffmpeg、cjxl、exiftool
-2. **权限问题**: 检查文件读写权限
-3. **空间不足**: 确保有足够的磁盘空间
+### Common Issues
+1. **Missing dependencies**: Ensure ffmpeg, cjxl, and exiftool are installed
+2. **Permission issues**: Check file read/write permissions
+3. **Insufficient space**: Ensure adequate disk space
 
-### 获取帮助
-- 查看日志文件了解详细错误
-- 检查验证报告中的失败分析
-- 使用试运行模式测试配置
+### Getting Help
+- Check log files for detailed errors
+- Review failure analysis in validation reports
+- Test configurations with dry-run mode
 
-## 📝 更新日志
+## 📝 Changelog
 
 ### v2.0.2 (2025-01-27)
-- ✅ 修复跳过已存在文件时误删原始文件的问题
-- ✅ 新增模块化验证系统
-- ✅ 新增动静图分离处理工具
-- ✅ 改进错误处理和日志记录
-- ✅ 优化性能和内存使用
+- ✅ Fixed issue where original files were deleted when skipping existing files
+- ✅ Added modular validation system
+- ✅ Added separate static/animated processing tools
+- ✅ Improved error handling and logging
+- ✅ Optimized performance and memory usage
+- ✅ Added support for new tools: static2jxl, dynamic2jxl, deduplicate_media, merge_xmp, video2mov
 
 ---
 
-**版本**: v2.0.2  
-**维护者**: AI Assistant  
-**许可证**: MIT
+**Version**: v2.0.2  
+**Maintainer**: AI Assistant  
+**License**: MIT

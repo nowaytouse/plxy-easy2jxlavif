@@ -1,24 +1,34 @@
 # easymode 程序使用教程
 
-本教程解释如何使用四个 easymode 程序：`all2jxl`、`all2avif`、`dynamic2avif` 和 `static2avif`。这些是用于将图像转换为现代格式的高质量、高效率的命令行工具。
+本教程解释如何使用 easymode 程序，包括图像格式转换、媒体去重、元数据管理和视频转换工具。这些是用于将媒体文件转换为现代格式的高质量、高效率的命令行工具。
 
 ## 目录
 1. [概述](#概述)
 2. [前提条件](#前提条件)
 3. [all2jxl - 将图像转换为 JPEG XL](#all2jxl---将图像转换为-jpeg-xl)
 4. [all2avif - 统一 AVIF 转换工具](#all2avif---统一-avif-转换工具)
-5. [dynamic2avif - 将动态图像转换为 AVIF（已合并）](#dynamic2avif---将动态图像转换为-avif已合并)
-6. [static2avif - 将静态图像转换为 AVIF（已合并）](#static2avif---将静态图像转换为-avif已合并)
-7. [最佳实践](#最佳实践)
+5. [static2avif - 静态图像转 AVIF](#static2avif---静态图像转-avif)
+6. [dynamic2avif - 动画图像转 AVIF](#dynamic2avif---动画图像转-avif)
+7. [static2jxl - 静态图像转 JXL](#static2jxl---静态图像转-jxl)
+8. [dynamic2jxl - 动画图像转 JXL](#dynamic2jxl---动画图像转-jxl)
+9. [deduplicate_media - 媒体文件去重](#deduplicate_media---媒体文件去重)
+10. [merge_xmp - XMP元数据合并](#merge_xmp---xmp元数据合并)
+11. [video2mov - 视频格式转换](#video2mov---视频格式转换)
+12. [最佳实践](#最佳实践)
 
 ## 概述
 
-easymode 程序提供简单、高质量的图像转换工具：
+easymode 程序提供简单、高质量的媒体处理工具：
 
 - **all2jxl**: 将各种图像格式转换为 JPEG XL（尽可能进行无损转换）
 - **all2avif**: 统一工具，将静态和动态图像转换为 AVIF 格式
-- **dynamic2avif**: 将动画图像（GIF、WebP、APNG）转换为 AVIF 格式（已合并到all2avif）
-- **static2avif**: 将静态图像（JPEG、PNG、BMP、TIFF）转换为 AVIF 格式（已合并到all2avif）
+- **static2avif**: 专门处理静态图像转AVIF格式
+- **dynamic2avif**: 专门处理动画图像转AVIF格式
+- **static2jxl**: 专门处理静态图像转JXL格式
+- **dynamic2jxl**: 专门处理动画图像转JXL格式
+- **deduplicate_media**: 检测和删除重复的媒体文件
+- **merge_xmp**: 合并和管理XMP元数据
+- **video2mov**: 转换各种视频格式
 
 所有程序都支持并发处理并包含健全的错误处理。
 
@@ -291,25 +301,387 @@ cd easymode/all2avif
 🎉 ===== 处理完成 =====
 ```
 
-## dynamic2avif - 将动态图像转换为 AVIF（已合并）
+## static2avif - 静态图像转 AVIF
 
 ### 概述
-`dynamic2avif` 功能已合并到 `all2avif` 中。请使用 `all2avif` 进行动画图像转换。
+`static2avif` 是一个专门针对静态图像的AVIF转换工具，提供了优化的处理流程。
 
-### 迁移指南
-- 使用 `all2avif` 替代 `dynamic2avif`
-- 所有功能都已集成到 `all2avif` 中
-- 命令行参数保持兼容
+### 特性
+- 支持静态图像：JPEG、PNG、BMP、TIFF、WebP、HEIC、HEIF、AVIF
+- 针对静态图像优化，处理速度更快
+- 可配置的质量和速度设置
+- 完整的元数据保留
 
-## static2avif - 将静态图像转换为 AVIF（已合并）
+### 基本用法
+
+```bash
+# 进入工具目录
+cd easymode/static2avif
+
+# 构建工具
+./build.sh
+
+# 基本转换
+./static2avif -input /path/to/images
+
+# 查看帮助
+./static2avif -h
+```
+
+### 命令行参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-input` | 必需 | 输入目录路径 |
+| `-output` | 输入目录 | 输出目录路径 |
+| `-workers` | 10 | 工作线程数 |
+| `-quality` | 80 | 图像质量 (1-100) |
+| `-speed` | 4 | 编码速度 (0-6) |
+| `-skip-exist` | true | 跳过已存在的 AVIF 文件 |
+| `-replace` | true | 转换后删除原始文件 |
+| `-dry-run` | false | 试运行模式 |
+| `-timeout` | 300 | 单个文件超时时间（秒） |
+| `-retries` | 1 | 重试次数 |
+
+### 使用示例
+
+```bash
+# 基本转换
+./static2avif -input ~/Pictures
+
+# 高质量转换
+./static2avif -input ~/Pictures -quality 90
+
+# 快速转换
+./static2avif -input ~/Pictures -speed 6
+
+# 指定输出目录
+./static2avif -input ~/Pictures -output ~/Pictures/avif
+
+# 试运行模式
+./static2avif -input ~/Pictures -dry-run
+```
+
+## dynamic2avif - 动画图像转 AVIF
 
 ### 概述
-`static2avif` 功能已合并到 `all2avif` 中。请使用 `all2avif` 进行静态图像转换。
+`dynamic2avif` 是一个专门针对动画图像的AVIF转换工具，支持多种动画格式。
 
-### 迁移指南
-- 使用 `all2avif` 替代 `static2avif`
-- 所有功能都已集成到 `all2avif` 中
-- 命令行参数保持兼容
+### 特性
+- 支持动画图像：GIF、WebP 动画、HEIF 动画
+- 智能动画检测（支持HEIF动画检测）
+- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
+- 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
+- 可配置的质量设置
+- 完整的元数据保留
+
+### 基本用法
+
+```bash
+# 进入工具目录
+cd easymode/dynamic2avif
+
+# 构建工具
+./build.sh
+
+# 基本转换
+./dynamic2avif -input /path/to/images
+
+# 查看帮助
+./dynamic2avif -h
+```
+
+### 命令行参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-input` | 必需 | 输入目录路径 |
+| `-output` | 输入目录 | 输出目录路径 |
+| `-workers` | 10 | 工作线程数 |
+| `-quality` | 80 | 图像质量 (1-100) |
+| `-skip-exist` | true | 跳过已存在的 AVIF 文件 |
+| `-replace` | true | 转换后删除原始文件 |
+| `-dry-run` | false | 试运行模式 |
+| `-timeout` | 300 | 单个文件超时时间（秒） |
+| `-retries` | 1 | 重试次数 |
+
+### 使用示例
+
+```bash
+# 基本转换
+./dynamic2avif -input ~/Animations
+
+# 高质量转换
+./dynamic2avif -input ~/Animations -quality 90
+
+# 指定输出目录
+./dynamic2avif -input ~/Animations -output ~/Animations/avif
+
+# 试运行模式
+./dynamic2avif -input ~/Animations -dry-run
+```
+
+## static2jxl - 静态图像转 JXL
+
+### 概述
+`static2jxl` 是一个专门针对静态图像的JPEG XL转换工具，提供无损和有损转换选项。
+
+### 特性
+- 支持静态图像：JPEG、PNG、GIF、WebP、BMP、TIFF、HEIC、HEIF、AVIF
+- 针对静态图像优化的处理流程
+- 无损和数学上无损转换
+- 完整的元数据保留
+- 高性能并行处理
+
+### 基本用法
+
+```bash
+# 进入工具目录
+cd easymode/static2jxl
+
+# 构建工具
+./build.sh
+
+# 基本转换
+./static2jxl -input /path/to/images
+
+# 查看帮助
+./static2jxl -h
+```
+
+### 命令行参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-input` | 必需 | 输入目录路径 |
+| `-output` | 输入目录 | 输出目录路径 |
+| `-workers` | 10 | 工作线程数 |
+| `-quality` | 95 | 图像质量 (1-100) |
+| `-skip-exist` | true | 跳过已存在的 JXL 文件 |
+| `-replace` | true | 转换后删除原始文件 |
+| `-dry-run` | false | 试运行模式 |
+| `-timeout` | 300 | 单个文件超时时间（秒） |
+| `-retries` | 1 | 重试次数 |
+
+### 使用示例
+
+```bash
+# 基本转换
+./static2jxl -input ~/Pictures
+
+# 高质量转换
+./static2jxl -input ~/Pictures -quality 98
+
+# 指定输出目录
+./static2jxl -input ~/Pictures -output ~/Pictures/jxl
+
+# 试运行模式
+./static2jxl -input ~/Pictures -dry-run
+```
+
+## dynamic2jxl - 动画图像转 JXL
+
+### 概述
+`dynamic2jxl` 是一个专门针对动画图像的JPEG XL转换工具，支持多种动画格式。
+
+### 特性
+- 支持动画图像：GIF、WebP 动画、HEIF 动画
+- 智能动画检测（支持HEIF动画检测）
+- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
+- 无损和数学上无损转换
+- 完整的元数据保留
+- 高性能并行处理
+
+### 基本用法
+
+```bash
+# 进入工具目录
+cd easymode/dynamic2jxl
+
+# 构建工具
+./build.sh
+
+# 基本转换
+./dynamic2jxl -input /path/to/images
+
+# 查看帮助
+./dynamic2jxl -h
+```
+
+### 命令行参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-input` | 必需 | 输入目录路径 |
+| `-output` | 输入目录 | 输出目录路径 |
+| `-workers` | 10 | 工作线程数 |
+| `-quality` | 95 | 图像质量 (1-100) |
+| `-skip-exist` | true | 跳过已存在的 JXL 文件 |
+| `-replace` | true | 转换后删除原始文件 |
+| `-dry-run` | false | 试运行模式 |
+| `-timeout` | 300 | 单个文件超时时间（秒） |
+| `-retries` | 1 | 重试次数 |
+
+### 使用示例
+
+```bash
+# 基本转换
+./dynamic2jxl -input ~/Animations
+
+# 高质量转换
+./dynamic2jxl -input ~/Animations -quality 98
+
+# 指定输出目录
+./dynamic2jxl -input ~/Animations -output ~/Animations/jxl
+
+# 试运行模式
+./dynamic2jxl -input ~/Animations -dry-run
+```
+
+## deduplicate_media - 媒体文件去重
+
+### 概述
+`deduplicate_media` 是一个用于检测和删除重复媒体文件的工具。
+
+### 特性
+- 比较文件内容识别重复项
+- 高效的哈希算法
+- 安全删除机制
+- 支持图片和视频文件
+
+### 基本用法
+
+```bash
+# 进入工具目录
+cd easymode/deduplicate_media
+
+# 构建工具
+./build.sh
+
+# 基本去重
+./deduplicate_media -dir /path/to/media
+
+# 查看帮助
+./deduplicate_media -h
+```
+
+### 命令行参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-dir` | 必需 | 输入目录路径 |
+| `-workers` | 10 | 工作线程数 |
+| `-dry-run` | false | 试运行模式 |
+| `-timeout` | 300 | 单个文件超时时间（秒） |
+
+### 使用示例
+
+```bash
+# 基本去重
+./deduplicate_media -dir ~/Photos
+
+# 使用更多工作线程
+./deduplicate_media -dir ~/Photos -workers 20
+
+# 试运行模式
+./deduplicate_media -dir ~/Photos -dry-run
+```
+
+## merge_xmp - XMP元数据合并
+
+### 概述
+`merge_xmp` 是一个用于合并和管理XMP元数据的工具。
+
+### 特性
+- 保留和合并元数据信息
+- 支持多种图像格式
+- 安全的元数据操作
+
+### 基本用法
+
+```bash
+# 进入工具目录
+cd easymode/merge_xmp
+
+# 构建工具
+./build.sh
+
+# 基本合并
+./merge_xmp -input /path/to/images
+
+# 查看帮助
+./merge_xmp -h
+```
+
+### 命令行参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-input` | 必需 | 输入目录路径 |
+| `-output` | 输入目录 | 输出目录路径 |
+| `-dry-run` | false | 试运行模式 |
+
+### 使用示例
+
+```bash
+# 基本合并
+./merge_xmp -input ~/Photos
+
+# 指定输出目录
+./merge_xmp -input ~/Photos -output ~/Photos/xmp-merged
+
+# 试运行模式
+./merge_xmp -input ~/Photos -dry-run
+```
+
+## video2mov - 视频格式转换
+
+### 概述
+`video2mov` 是一个用于转换各种视频格式的工具。
+
+### 特性
+- 支持多种视频格式转换
+- 保持视频质量
+- 高效处理
+
+### 基本用法
+
+```bash
+# 进入工具目录
+cd easymode/video2mov
+
+# 构建工具
+./build.sh
+
+# 基本转换
+./video2mov -input /path/to/videos
+
+# 查看帮助
+./video2mov -h
+```
+
+### 命令行参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `-input` | 必需 | 输入目录路径 |
+| `-output` | 输入目录 | 输出目录路径 |
+| `-workers` | 10 | 工作线程数 |
+| `-dry-run` | false | 试运行模式 |
+| `-timeout` | 300 | 单个文件超时时间（秒） |
+
+### 使用示例
+
+```bash
+# 基本转换
+./video2mov -input ~/Videos
+
+# 指定输出目录
+./video2mov -input ~/Videos -output ~/Videos/converted
+
+# 试运行模式
+./video2mov -input ~/Videos -dry-run
+```
 
 ## 最佳实践
 
@@ -496,12 +868,17 @@ done
 
 ## 总结
 
-easymode 程序提供了一套完整的图像转换解决方案：
+easymode 程序提供了一套完整的媒体处理解决方案：
 
 1. **all2jxl**: 适合需要无损压缩的场景
 2. **all2avif**: 适合需要现代格式和良好压缩率的场景
+3. **static2avif/static2jxl**: 适合需要专门处理静态图像的场景
+4. **dynamic2avif/dynamic2jxl**: 适合需要专门处理动画图像的场景
+5. **deduplicate_media**: 适合需要清理重复媒体文件的场景
+6. **merge_xmp**: 适合需要管理XMP元数据的场景
+7. **video2mov**: 适合需要转换视频格式的场景
 
-通过合理使用这些工具和遵循最佳实践，您可以高效地将图像转换为现代格式，同时保持高质量和良好的性能。
+通过合理使用这些工具和遵循最佳实践，您可以高效地处理各种媒体文件，同时保持高质量和良好的性能。
 
 记住：
 - 总是先进行试运行
@@ -511,6 +888,11 @@ easymode 程序提供了一套完整的图像转换解决方案：
 - 根据需求选择合适的质量和速度设置
 
 ## 更新日志
+
+### v2.0.2 (2025-01-27)
+- **新增工具**: 添加了 `static2jxl`, `dynamic2jxl`, `deduplicate_media`, `merge_xmp`, `video2mov` 工具
+- **功能增强**: 改进了所有工具的安全性和性能
+- **文档更新**: 完善了所有工具的文档说明
 
 ### v2.0.1
 - **重要修复**: 添加文件数量验证功能，防止临时文件残留
