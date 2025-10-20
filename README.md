@@ -1,7 +1,7 @@
 # Pixly - 智能化媒体优化解决方案 beta
 
 简单易用版本：
-https://github.com/nowaytouse/easy2jxlavif/tree/main/easymode
+[https://github.com/nowaytouse/easy2jxlavif/tree/main/easymode](https://github.com/nowaytouse/plxy-easy2jxlavif/tree/main/easymode)
 
 ## 🚀 项目简介
 
