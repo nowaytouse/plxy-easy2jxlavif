@@ -187,7 +187,7 @@ cd easymode/all2jxl
 
 ### 特性
 - 支持静态图像：JPEG、PNG、BMP、TIFF、WebP、HEIC、HEIF、AVIF
-- 支持动画图像：GIF、WebP 动画、HEIF 动画
+- 支持动画图像：GIF、WebP 动画、APNG、HEIF 动画
 - 智能动画检测（支持HEIF动画检测）
 - Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
 - 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
@@ -368,7 +368,7 @@ cd easymode/static2avif
 `dynamic2avif` 是一个专门针对动画图像的AVIF转换工具，支持多种动画格式。
 
 ### 特性
-- 支持动画图像：GIF、WebP 动画、HEIF 动画
+- 支持动画图像：GIF、WebP 动画、APNG、HEIF 动画
 - 智能动画检测（支持HEIF动画检测）
 - Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
 - 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
@@ -485,7 +485,7 @@ cd easymode/static2jxl
 `dynamic2jxl` 是一个专门针对动画图像的JPEG XL转换工具，支持多种动画格式。
 
 ### 特性
-- 支持动画图像：GIF、WebP 动画、HEIF 动画
+- 支持动画图像：GIF、WebP 动画、APNG、HEIF 动画
 - 智能动画检测（支持HEIF动画检测）
 - Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
 - 无损和数学上无损转换
@@ -892,6 +892,7 @@ easymode 程序提供了一套完整的媒体处理解决方案：
 ### v2.0.2 (2025-01-27)
 - **新增工具**: 添加了 `static2jxl`, `dynamic2jxl`, `deduplicate_media`, `merge_xmp`, `video2mov` 工具
 - **功能增强**: 改进了所有工具的安全性和性能
+- **HEIC/HEIF 支持**: 增强了 `dynamic2avif` 工具对 HEIC/HEIF 格式的支持，现在具有与 `dynamic2jxl` 相同的健壮处理能力
 - **文档更新**: 完善了所有工具的文档说明
 
 ### v2.0.1

@@ -89,8 +89,8 @@
 ```
 
 **类型识别：**
-- 支持格式：GIF, WebP, APNG
-- 动画检测：GIF, WebP, APNG
+- 支持格式：GIF, WebP, APNG, HEIC, HEIF
+- 动画检测：GIF, WebP, APNG, HEIF
 - 实时动画帧数检测和首帧验证
 
 #### 4.2 转换执行
@@ -106,6 +106,7 @@
 
 **转换策略：**
 - GIF/WebP/APNG: 高质量转换 (`libsvtav1` 编码器)
+- HEIC/HEIF: 多策略处理，先转换为中间格式（PNG）再转为AVIF (`libsvtav1` 编码器)
 - 根据质量参数调整CRF值
 - 根据速度参数调整编码预设
 
@@ -160,6 +161,9 @@
 3. **WebP 动画检测**
    - 查找 RIFF 容器中的 `ANIM` chunk
    - 验证动画标识符
+4. **HEIF 动画检测**
+   - 查找 HEIF 文件中的 `avis`、`anim`、`idat` 标识
+   - 验证动画相关块的存在
 
 ### 性能优化策略
 
@@ -249,6 +253,7 @@ dynamic2avif -input <输入目录> -output <输出目录> [选项]
 - **GIF**: .gif (包括动画)
 - **WebP**: .webp (包括动画)
 - **APNG**: .png (包含动画的PNG)
+- **HEIC/HEIF**: .heic, .heif (包括动画，支持Live Photo检测)
 
 ## 性能基准
 

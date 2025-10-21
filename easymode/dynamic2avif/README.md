@@ -1,6 +1,6 @@
 # dynamic2avif - 动态图片转AVIF转换器
 
-`dynamic2avif` 是一款专为图像收藏者和效率追求者设计的命令行工具，旨在将动态图片（GIF, WebP, APNG等）以高质量、安全可靠的方式转换为下一代图像格式AVIF (.avif)。
+`dynamic2avif` 是一款专为图像收藏者和效率追求者设计的命令行工具，旨在将动态图片（GIF, WebP, APNG, HEIF等）以高质量、安全可靠的方式转换为下一代图像格式AVIF (.avif)。
 
 ## 核心功能
 
@@ -24,6 +24,8 @@
   - **执行高质量转换:** 程序会使用`ffmpeg`的`libsvtav1`编码器进行转换，保留动画信息。
 - **对于 APNG 文件:**
   - **执行高质量转换:** 程序会使用`ffmpeg`的`libsvtav1`编码器进行转换，保留动画信息。
+- **对于 HEIC/HEIF 文件:**
+  - **执行高质量转换:** 程序会使用多种策略（包括ImageMagick、ffmpeg等）尝试将HEIC/HEIF转换为中间格式，再转换为AVIF，支持动画HEIC/HEIF检测和转换。
 
 ### AVIF格式优势
 
@@ -138,6 +140,7 @@ go build -o bin/dynamic2avif main.go
 - **GIF**: .gif (包括动画)
 - **WebP**: .webp (包括动画)
 - **APNG**: .png (包含动画的PNG)
+- **HEIC/HEIF**: .heic, .heif (包括动画，支持Live Photo检测)
 
 ## 许可证
 

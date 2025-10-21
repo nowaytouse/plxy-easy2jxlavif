@@ -159,7 +159,7 @@ cd all2jxl  # 或其他工具
 **用途**: 专门处理动画图像转AVIF的工具
 
 **特性**:
-- 支持GIF、WebP动画、HEIF动画
+- 支持GIF、WebP动画、APNG、HEIF动画
 - 智能动画检测
 - 保持动画质量
 - 完整的元数据保留
@@ -197,7 +197,7 @@ cd all2jxl  # 或其他工具
 **用途**: 专门处理动画图像转JXL的工具
 
 **特性**:
-- 支持GIF、WebP动画、HEIF动画
+- 支持GIF、WebP动画、APNG、HEIF动画
 - 智能动画检测
 - 保持动画质量
 - 完整的元数据保留
@@ -368,6 +368,7 @@ tail -f all2avif.log
 ### v2.0.2 (2025-01-27)
 - ✅ 修复跳过已存在文件时误删原始文件的问题
 - ✅ 新增模块化验证系统
+- ✅ 增强 dynamic2avif 中的 HEIC/HEIF 支持，使其具有与 dynamic2jxl 相同的稳健性
 - ✅ 新增动静图分离处理工具 (static2jxl, dynamic2jxl)
 - ✅ 新增更多工具 (deduplicate_media, merge_xmp, video2mov)
 - ✅ 改进错误处理和日志记录

@@ -42,7 +42,7 @@ EasyMode is a comprehensive toolkit specifically designed for image format conve
 
 ### dynamic2avif - Animated Image to AVIF
 **Purpose**: Specialized animated image to AVIF conversion  
-**Features**: Supports GIF, WebP, APNG and other animated formats  
+**Features**: Supports GIF, WebP, APNG, HEIF animated formats and other animated formats  
 **Usage**: `./dynamic2avif -input /path/to/images -output /path/to/output -quality 80`
 
 ### static2jxl - Static Image to JXL (New)
@@ -161,6 +161,7 @@ done
 - ✅ Added separate static/animated processing tools
 - ✅ Improved error handling and logging
 - ✅ Optimized performance and memory usage
+- ✅ Enhanced HEIC/HEIF support in dynamic2avif to match dynamic2jxl robustness
 - ✅ Added support for new tools: static2jxl, dynamic2jxl, deduplicate_media, merge_xmp, video2mov
 
 ---
