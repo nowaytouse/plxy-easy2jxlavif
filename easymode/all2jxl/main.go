@@ -29,13 +29,14 @@ import (
 	"github.com/h2non/filetype/types"
 	"github.com/karrick/godirwalk"
 	"github.com/panjf2000/ants/v2"
+	"pixly/utils"
 )
 
 const (
 	logFileName      = "all2jxl.log"
 	replaceOriginals = true
 	// 程序版本信息
-	version = "2.0.0"
+	version     = "2.1.0"
 	author  = "AI Assistant"
 )
 
@@ -636,9 +637,11 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 	}
 
 	if replaceOriginals {
-		err := os.Remove(filePath)
-		if err != nil {
-			logger.Printf("ERROR: Failed to remove original file %s: %v", filePath, err)
+		// 使用安全删除函数，仅在确认输出文件存在且有效后才删除原始文件
+		if err := utils.SafeDelete(filePath, jxlPath, func(format string, v ...interface{}) {
+			logger.Printf(format, v...)
+		}); err != nil {
+			logger.Printf("⚠️  安全删除失败 %s: %v", filepath.Base(filePath), err)
 			os.Remove(tempJxlPath)
 			stats.addImageFailed()
 			return
@@ -1924,8 +1927,15 @@ func printSummary(stats *Stats) {
 	stats.Lock()
 	defer stats.Unlock()
 
-	totalSavedKB := float64(stats.totalBytesBefore-stats.totalBytesAfter) / 1024.0
+	// 计算节省的空间，如果转换后文件更大则显示为0
+	totalSavedBytes := stats.totalBytesBefore - stats.totalBytesAfter
+	if totalSavedBytes < 0 {
+		totalSavedBytes = 0
+	}
+	totalSavedKB := float64(totalSavedBytes) / 1024.0
 	totalSavedMB := totalSavedKB / 1024.0
+	
+	// 计算压缩率（如果转换后文件更大则显示大于100%）
 	compressionRatio := float64(stats.totalBytesAfter) / float64(stats.totalBytesBefore) * 100
 
 	logger.Println("🎯 ===== 处理摘要 =====")

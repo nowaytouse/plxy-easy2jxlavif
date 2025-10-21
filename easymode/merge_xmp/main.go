@@ -9,11 +9,12 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"pixly/utils"
 )
 
 const (
 	toolName = "merge_xmp"
-	version  = "1.0.0"
+	version     = "2.1.0"
 )
 
 var (
@@ -100,11 +101,11 @@ func processFile(mediaPath string) {
 	// Verify merge
 	if verifyMerge(mediaPath, xmpPath) {
 		logger.Printf("Verification successful for %s", filepath.Base(mediaPath))
-		// Delete XMP file
-		if err := os.Remove(xmpPath); err != nil {
-			logger.Printf("Failed to delete XMP file %s: %v", xmpPath, err)
-		} else {
-			logger.Printf("Successfully deleted XMP file %s", filepath.Base(xmpPath))
+		// 安全删除 XMP 文件，仅在确认元数据已成功合并后才删除
+		if err := utils.SafeDelete(xmpPath, mediaPath, func(format string, v ...interface{}) {
+			logger.Printf(format, v...)
+		}); err != nil {
+			logger.Printf("⚠️  安全删除 XMP 文件失败 %s: %v", filepath.Base(xmpPath), err)
 		}
 	} else {
 		logger.Printf("Verification failed for %s. The XMP file will be kept.", filepath.Base(mediaPath))

@@ -34,3 +34,4 @@ go run main.go -dir /path/to/your/images
 | `-cjxl-threads`| Number of threads for each `cjxl` conversion task. | 1 |
 | `-timeout` | Timeout in seconds for each conversion task. | 0 (no limit) |
 | `-retries` | Number of times to retry a failed conversion. | 0 |
+| `-replace` | If `true`, deletes original files after successful conversion. **⚠️ Safety Note**: Only deletes original files after verifying that the target file exists and is valid. | `false` |

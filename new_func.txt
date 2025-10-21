@@ -1,0 +1,96 @@
+func convertHEICToJXL(inputPath, outputPath string, config Config) error {
+	// First convert HEIC to PNG using ImageMagick with enhanced options to handle complex HEIC files
+	tempPNGPath := inputPath + ".temp.png"
+	
+	// Approach 1: Use ImageMagick with increased limits to convert to png first
+	// Try to override ImageMagick security limits for complex HEIC files
+	convertCmd := exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", "-define", "heic:use-embedded-profile=false", inputPath, tempPNGPath)
+	if err := convertCmd.Run(); err != nil {
+		if config.Verbose {
+			fmt.Printf("WARN: ImageMagick failed for %s: %v. Trying alternative method.\n", filepath.Base(inputPath), err)
+		}
+		
+		// Approach 2: Use ffmpeg as fallback to convert HEIC to PNG with multiple options
+		// First, get the actual dimensions of the HEIC file to ensure we extract the full resolution
+		dimCmd := exec.Command("exiftool", "-s", "-S", "-ImageWidth", "-ImageHeight", inputPath)
+		dimOutput, dimErr := dimCmd.CombinedOutput()
+		
+		if dimErr != nil {
+			if config.Verbose {
+				fmt.Printf("WARN: Exiftool dimension detection failed for %s: %v. Falling back to default method.\n", filepath.Base(inputPath), dimErr)
+			}
+			// Use ffmpeg with default parameters
+			ffmpegCmd := exec.Command("ffmpeg", "-hwaccel", "none", "-i", inputPath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPNGPath)
+			ffmpegOutput, ffmpegErr := ffmpegCmd.CombinedOutput()
+			if ffmpegErr != nil {
+				return fmt.Errorf("all HEIC conversion methods failed: ImageMagick error: %v, ffmpeg error: %v, output: %s", err, ffmpegErr, string(ffmpegOutput))
+			}
+		} else {
+			// Parse the dimensions from exiftool output
+			lines := strings.Split(strings.TrimSpace(string(dimOutput)), "\n")
+			var width, height int
+			
+			// Handle both key-value format and simple numeric format from exiftool
+			for _, line := range lines {
+				line = strings.TrimSpace(line)
+				if line == "" {
+					continue
+				}
+				
+				// Try simple numeric format (just the numbers)
+				if intValue, err := strconv.Atoi(line); err == nil {
+					// Assume first number is width, second is height
+					if width == 0 {
+						width = intValue
+					} else if height == 0 {
+						height = intValue
+					}
+				}
+			}
+			
+			// If we have valid dimensions, use them for proper scaling
+			if width > 0 && height > 0 {
+				ffmpegCmd := exec.Command("ffmpeg", "-hwaccel", "none", "-i", inputPath, "-vf", fmt.Sprintf("scale=%d:%d", width, height), "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPNGPath)
+				ffmpegOutput, ffmpegErr := ffmpegCmd.CombinedOutput()
+				if ffmpegErr != nil {
+					if config.Verbose {
+						fmt.Printf("WARN: Scaled ffmpeg method failed for %s: %v. Output: %s. Trying unscaled approach.\n", filepath.Base(inputPath), ffmpegErr, string(ffmpegOutput))
+					}
+					// Try without scaling if that fails
+					ffmpegCmd := exec.Command("ffmpeg", "-hwaccel", "none", "-i", inputPath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPNGPath)
+					ffmpegOutput, ffmpegErr := ffmpegCmd.CombinedOutput()
+					if ffmpegErr != nil {
+						return fmt.Errorf("all HEIC conversion methods failed: ImageMagick error: %v, ffmpeg error: %v, output: %s", err, ffmpegErr, string(ffmpegOutput))
+					}
+				}
+			} else {
+				// Fall back to default approach if dimensions are invalid
+				ffmpegCmd := exec.Command("ffmpeg", "-hwaccel", "none", "-i", inputPath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPNGPath)
+				ffmpegOutput, ffmpegErr := ffmpegCmd.CombinedOutput()
+				if ffmpegErr != nil {
+					return fmt.Errorf("all HEIC conversion methods failed: ImageMagick error: %v, ffmpeg error: %v, output: %s", err, ffmpegErr, string(ffmpegOutput))
+				}
+			}
+		}
+	}
+
+	// Now convert the temporary PNG to JXL using existing function
+	if err := convertLosslessToJXL(tempPNGPath, outputPath, config); err != nil {
+		// Clean up temp file even if conversion fails
+		os.Remove(tempPNGPath)
+		return fmt.Errorf("failed to convert intermediate PNG to JXL: %v", err)
+	}
+
+	// Clean up temp file after successful conversion
+	if err := os.Remove(tempPNGPath); err != nil {
+		if config.Verbose {
+			fmt.Printf("Warning: Failed to remove temporary file %s: %v\n", tempPNGPath, err)
+		}
+	}
+
+	if config.Verbose {
+		fmt.Printf("Successfully converted HEIC: %s -> %s\n", inputPath, outputPath)
+	}
+
+	return nil
+}

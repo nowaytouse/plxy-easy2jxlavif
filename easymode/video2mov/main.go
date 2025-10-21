@@ -19,11 +19,12 @@ import (
 	"time"
 
 	"github.com/karrick/godirwalk"
+	"pixly/utils"
 )
 
 const (
 	logFileName      = "video2mov.log"
-	version          = "1.0.0"
+	version     = "2.1.0"
 	author           = "AI Assistant"
 )
 
@@ -146,8 +147,15 @@ func printSummary(stats *Stats) {
 	stats.Lock()
 	defer stats.Unlock()
 
-	totalSavedKB := float64(stats.totalBytesBefore-stats.totalBytesAfter) / 1024.0
+	// 计算节省的空间，如果转换后文件更大则显示为0
+	totalSavedBytes := stats.totalBytesBefore - stats.totalBytesAfter
+	if totalSavedBytes < 0 {
+		totalSavedBytes = 0
+	}
+	totalSavedKB := float64(totalSavedBytes) / 1024.0
 	totalSavedMB := totalSavedKB / 1024.0
+	
+	// 计算压缩率（如果转换后文件更大则显示大于100%）
 	compressionRatio := float64(stats.totalBytesAfter) / float64(stats.totalBytesBefore) * 100
 
 	logger.Println("🎯 ===== 处理摘要 =====")
@@ -270,8 +278,13 @@ var supportedVideoExtensions = map[string]bool{
 	".mp4": true, ".avi": true, ".mov": true, ".mkv": true, ".wmv": true, ".flv": true, ".webm": true, ".m4v": true, ".3gp": true,
 }
 
+// Only source formats (not including .mov since we're converting TO mov)
+var sourceVideoExtensions = map[string]bool{
+	".mp4": true, ".avi": true, ".mkv": true, ".wmv": true, ".flv": true, ".webm": true, ".m4v": true, ".3gp": true,
+}
+
 func isSupportedVideoType(ext string) bool {
-	return supportedVideoExtensions[ext]
+	return sourceVideoExtensions[ext]
 }
 
 func processDirectory(ctx context.Context, opts *Options, stats *Stats) ([]string, error) {
@@ -287,6 +300,10 @@ func processDirectory(ctx context.Context, opts *Options, stats *Stats) ([]strin
 			}
 
 			if de.IsDir() {
+				if osPathname == opts.OutputDir {
+					// Skip the output directory if it's a subdirectory of input directory
+					return filepath.SkipDir
+				}
 				return nil
 			}
 
@@ -459,10 +476,11 @@ func processFileWithOpts(filePath string, opts *Options, stats *Stats) {
 	stats.addDetailedLog(processInfo)
 
 	if opts.ReplaceOriginals {
-		if err := os.Remove(filePath); err != nil {
-			logger.Printf("⚠️  删除原始文件失败 %s: %v", filepath.Base(filePath), err)
-		} else {
-			logger.Printf("🗑️  已删除原始文件: %s", filepath.Base(filePath))
+		// 安全删除：使用安全删除函数，仅在确认输出文件存在且有效后才删除原始文件
+		if err := utils.SafeDelete(filePath, outputPath, func(format string, v ...interface{}) {
+			logger.Printf(format, v...)
+		}); err != nil {
+			logger.Printf("⚠️  安全删除失败 %s: %v", filepath.Base(filePath), err)
 		}
 	}
 }
@@ -530,14 +548,17 @@ func validateFileCount(inputDir string, outputDir string, originalVideoCount int
 		return
 	}
 
-	// Scan inputDir for remaining original video files
+	// Scan inputDir for remaining original video files, excluding output directory if it's within input
 	err = godirwalk.Walk(inputDir, &godirwalk.Options{
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
 			if !de.IsDir() {
 				ext := strings.ToLower(filepath.Ext(osPathname))
-				if supportedVideoExtensions[ext] {
+				if sourceVideoExtensions[ext] {
 					currentRemainingVideoCount++
 				}
+			} else if osPathname == outputDir {
+				// Skip the output directory if it's a subdirectory of input directory
+				return filepath.SkipDir
 			}
 			return nil
 		},

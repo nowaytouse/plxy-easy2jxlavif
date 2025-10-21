@@ -33,6 +33,7 @@ go run main.go -input /path/to/images -output /path/to/output -workers 4
 - `-retries`: 失败重试次数 (默认: 2)
 - `-timeout`: 单个文件处理超时秒数 (默认: 300)
 - `-cjxl-threads`: 每个转换任务的线程数 (默认: 1)
+- `-replace`: 转换后删除原始文件 **⚠️ 安全提醒**: 仅在确认目标文件存在且有效后才删除原始文件
 
 ### 高级用法
 ```bash

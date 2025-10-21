@@ -24,7 +24,7 @@ import (
 
 const (
 	logFileName = "dynamic2jxl.log"
-	version     = "2.0.1"
+	version     = "2.1.0"
 	author      = "AI Assistant"
 )
 

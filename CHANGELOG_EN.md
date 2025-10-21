@@ -2,6 +2,23 @@
 
 This document records all important changes to the project.
 
+## [2.1.0] - 2025-10-22
+
+### Added
+
+- **Safe Delete Mechanism**: Implemented strict safe delete checks to ensure original files are only deleted after confirming that target files exist and are valid
+  - Tools with `-replace` parameter now perform multiple validations before deleting original files
+  - Only tools explicitly with `-replace` parameter will delete original files
+  - Other tools (such as `static2avif`, `dynamic2avif`, `static2jxl`, `dynamic2jxl`, etc.) will not delete original files by default, only generating converted files
+- **Statistics Accuracy**: Fixed savings space calculation errors
+  - When converted files are larger than original files, savings space is displayed as 0 instead of negative values
+  - Compression ratio now correctly displays conversion efficiency (>100% indicates file size increase)
+
+### Documentation
+
+- **Script README Updates**: The `README.md` files for all conversion scripts within the `easymode` folder have been updated to reflect the latest features, improvements, and usage instructions.
+- **Main README Update**: Updated main README to include information about safe delete mechanism and statistics accuracy fixes
+
 ## [2.0.7] - 2025-10-20
 
 ### Improved

@@ -26,7 +26,7 @@ import (
 
 const (
 	logFileName = "dynamic2avif.log"
-	version     = "1.0.0"
+	version     = "2.1.0"
 	author      = "AI Assistant"
 )
 

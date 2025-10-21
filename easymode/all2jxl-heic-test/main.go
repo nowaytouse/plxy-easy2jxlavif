@@ -35,7 +35,7 @@ const (
 	logFileName      = "all2jxl.log"
 	replaceOriginals = true
 	// 程序版本信息
-	version = "2.0.0"
+	version     = "2.1.0"
 	author  = "AI Assistant"
 )
 

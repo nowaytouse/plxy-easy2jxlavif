@@ -97,6 +97,7 @@ go build -o bin/static2avif main.go
 | `-dry-run` | 布尔 | false | 试运行模式 |
 | `-timeout` | 整数 | 120 | 单个文件处理超时秒数 |
 | `-retries` | 整数 | 2 | 失败重试次数 |
+| `-replace` | 布尔 | false | 转换后删除原始文件 **⚠️ 安全提醒**: 仅在确认目标文件存在且有效后才删除原始文件 |
 
 ## 日志解读
 

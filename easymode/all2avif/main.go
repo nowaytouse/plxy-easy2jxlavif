@@ -23,11 +23,12 @@ import (
 	"github.com/h2non/filetype/types"
 	"github.com/karrick/godirwalk"
 	"github.com/panjf2000/ants/v2"
+	"pixly/utils"
 )
 
 const (
 	logFileName = "all2avif.log"
-	version     = "2.0.0"
+	version     = "2.1.0"
 	author      = "AI Assistant"
 )
 
@@ -310,7 +311,14 @@ func main() {
 	// 大小统计
 	originalSize := atomic.LoadInt64(&stats.totalOriginalSize)
 	convertedSize := atomic.LoadInt64(&stats.totalConvertedSize)
+	
+	// 计算节省的空间，如果转换后文件更大则显示为0
 	savedSize := originalSize - convertedSize
+	if savedSize < 0 {
+		savedSize = 0
+	}
+	
+	// 计算压缩率（如果转换后文件更大则显示大于100%）
 	compressionRate := float64(convertedSize) / float64(originalSize) * 100
 
 	logger.Println("📊 ===== 大小统计 =====")
@@ -382,7 +390,7 @@ var supportedExtensions = map[string]bool{
 	".jpg":  true, ".jpeg": true, ".png":  true, ".gif":  true, ".apng": true, ".webp": true,
 	".avif": true, ".heic": true, ".heif": true, ".jfif": true, ".jpe":  true, ".bmp":  true,
 	".tiff": true, ".tif":  true, ".ico":  true, ".cur":  true, ".psd":  true, ".xcf":  true,
-	".ora":  true, ".kra":  true, ".svg":  true, ".eps":  true, ".ai":   true,
+	".ora":  true, ".kra":  true, ".svg":  true, ".eps":  true, ".ai":   true, ".jxl":  true,
 }
 
 func scanCandidateFiles(inputDir string) ([]string, error) {
@@ -634,12 +642,13 @@ func processFileWithOpts(filePath string, opts Options, stats *Stats) {
 		}
 	}
 
-	// 删除原始文件
+	// 安全删除原始文件
 	if opts.ReplaceOriginals {
-		if err := os.Remove(filePath); err != nil {
-			logger.Printf("⚠️  删除原始文件失败 %s: %v", filepath.Base(filePath), err)
-		} else {
-			logger.Printf("🗑️  已删除原始文件: %s", filepath.Base(filePath))
+		avifPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".avif"
+		if err := utils.SafeDelete(filePath, avifPath, func(format string, v ...interface{}) {
+			logger.Printf(format, v...)
+		}); err != nil {
+			logger.Printf("⚠️  安全删除失败 %s: %v", filepath.Base(filePath), err)
 		}
 	}
 }
