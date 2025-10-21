@@ -1,109 +1,109 @@
-# dynamic2jxl - 动态图片转JXL工具
+# dynamic2jxl - Dynamic Image to JXL Converter
 
-## 📖 简介
+## 📖 Introduction
 
-dynamic2jxl 是一个专门用于动态图像转JXL格式的工具。支持GIF、WebP、APNG、HEIC/HEIF等动画格式，提供无损压缩和批量处理能力。
+`dynamic2jxl` is a tool specifically designed for converting dynamic images to the JXL format. It supports animated formats such as GIF, WebP, APNG, and HEIC/HEIF, providing lossless compression and batch processing capabilities.
 
-## 🚀 功能特性
+## 🚀 Features
 
-- ✅ **动态图像支持** - 支持GIF、WebP、APNG、HEIC/HEIF等动画格式
-- ✅ **无损压缩** - 使用JXL格式实现无损压缩
-- ✅ **智能检测** - 自动识别动态图像类型
-- ✅ **批量处理** - 高效的并发处理能力
-- ✅ **安全保护** - 修复了跳过已存在文件时误删原始文件的问题
-- ✅ **元数据保留** - 使用exiftool保留EXIF信息
-- ✅ **进度显示** - 实时处理进度和统计信息
-- ✅ **精确的文件数量验证** - 转换完成后，提供详细的文件数量验证报告，确保处理过程的准确性和可靠性。
-- ✅ **优化HEIC/HEIF处理** - 采用更稳定的中间格式转换策略，提高HEIC/HEIF文件的转换成功率。
-- ✅ **修复JPEG参数错误** - 修正了 `--lossless_jpeg=1` 参数被错误应用于非JPEG文件的Bug。
+- ✅ **Dynamic Image Support** - Supports animated formats such as GIF, WebP, APNG, and HEIC/HEIF.
+- ✅ **Lossless Compression** - Achieves lossless compression using the JXL format.
+- ✅ **Intelligent Detection** - Automatically identifies dynamic image types.
+- ✅ **Batch Processing** - Efficient concurrent processing capabilities.
+- ✅ **Safety Protection** - Fixed an issue where original files were mistakenly deleted when skipping existing files.
+- ✅ **Metadata Preservation** - Retains EXIF information using exiftool.
+- ✅ **Progress Display** - Real-time processing progress and statistics.
+- ✅ **Accurate File Count Verification** - After conversion, a detailed file count verification report is provided to ensure the accuracy and reliability of the processing.
+- ✅ **Optimized HEIC/HEIF Handling** - Adopts a more stable intermediate format conversion strategy to improve the success rate of HEIC/HEIF file conversion.
+- ✅ **Fixed JPEG Parameter Error** - Corrected a bug where the `--lossless_jpeg=1` parameter was incorrectly applied to non-JPEG files.
 
-## 🔧 使用方法
+## 🔧 Usage
 
-### 基本用法
+### Basic Usage
 ```bash
 go run main.go -input /path/to/images -output /path/to/output -workers 4
 ```
 
-### 参数说明
-- `-input`: 输入目录路径 (必需)
-- `-output`: 输出目录路径 (必需)
-- `-workers`: 并发工作线程数 (默认: CPU核心数)
-- `-skip-exist`: 跳过已存在的文件 (默认: true)
-- `-dry-run`: 试运行模式，只显示将要处理的文件
-- `-retries`: 失败重试次数 (默认: 2)
-- `-timeout`: 单个文件处理超时秒数 (默认: 300)
-- `-cjxl-threads`: 每个转换任务的线程数 (默认: 1)
-- `-replace`: 转换后删除原始文件 **⚠️ 安全提醒**: 仅在确认目标文件存在且有效后才删除原始文件
+### Argument Description
+- `-input`: Input directory path (required).
+- `-output`: Output directory path (required).
+- `-workers`: Number of concurrent worker threads (default: number of CPU cores).
+- `-skip-exist`: Skip existing files (default: true).
+- `-dry-run`: Dry run mode, only prints the files to be processed.
+- `-retries`: Number of retries on failure (default: 2).
+- `-timeout`: Timeout in seconds for a single file (default: 300).
+- `-cjxl-threads`: Number of threads for each conversion task (default: 1).
+- `-replace`: Delete original files after conversion. **⚠️ Safety Note**: Only deletes original files after verifying that the target file exists and is valid.
 
-### 高级用法
+### Advanced Usage
 ```bash
-# 高并发处理
+# High-concurrency processing
 go run main.go -input /path/to/images -output /path/to/output -workers 8
 
-# 试运行模式
+# Dry run mode
 go run main.go -input /path/to/images -output /path/to/output -dry-run
 
-# 跳过已存在文件
+# Skip existing files
 go run main.go -input /path/to/images -output /path/to/output -skip-exist
 
-# 自定义重试次数
+# Custom number of retries
 go run main.go -input /path/to/images -output /path/to/output -retries 3 -timeout 600
 ```
 
-## 📊 性能优化
+## 📊 Performance Optimization
 
-### 并发控制
-- 智能工作线程配置
-- 资源限制防止系统过载
-- 文件句柄管理
+### Concurrency Control
+- Intelligent worker thread configuration.
+- Resource limits to prevent system overload.
+- File handle management.
 
-### 内存管理
-- 减少内存占用
-- 优化文件处理流程
-- 防止内存泄漏
+### Memory Management
+- Reduced memory footprint.
+- Optimized file processing flow.
+- Prevention of memory leaks.
 
-## 🛡️ 安全特性
+## 🛡️ Safety Features
 
-### 文件安全
-- 修复了跳过已存在文件时误删原始文件的问题
-- 原子性文件操作
-- 备份机制
+### File Safety
+- Fixed an issue where original files were mistakenly deleted when skipping existing files.
+- Atomic file operations.
+- Backup mechanism.
 
-### 错误处理
-- 完善的错误恢复机制
-- 详细的日志记录
-- 自动重试功能
+### Error Handling
+- Comprehensive error recovery mechanism.
+- Detailed logging.
+- Automatic retry function.
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### 常见问题
-1. **依赖缺失**: 确保安装了cjxl和exiftool
-2. **权限问题**: 检查文件读写权限
-3. **空间不足**: 确保有足够的磁盘空间
+### Common Problems
+1. **Missing dependencies**: Make sure `cjxl` and `exiftool` are installed.
+2. **Permission issues**: Check file read/write permissions.
+3. **Insufficient space**: Make sure there is enough disk space.
 
-### 获取帮助
-- 查看日志文件了解详细错误
-- 使用试运行模式测试配置
-- 检查文件权限和磁盘空间
+### Getting Help
+- Check the log file for detailed errors.
+- Use the dry run mode to test the configuration.
+- Check file permissions and disk space.
 
-### 支持的文件格式
+### Supported File Formats
 
-- **GIF**: .gif (包括动画)
-- **WebP**: .webp (包括动画)
-- **APNG**: .png (包含动画的PNG)
-- **HEIC/HEIF**: .heic, .heif (包括动画)
+- **GIF**: .gif (including animation)
+- **WebP**: .webp (including animation)
+- **APNG**: .png (PNG with animation)
+- **HEIC/HEIF**: .heic, .heif (including animation)
 
-## 📝 更新日志
+## 📝 Update Log
 
 ### v2.0.1 (2025-01-27)
-- ✅ 新增动态图片转JXL工具
-- ✅ 修复跳过已存在文件时误删原始文件的问题
-- ✅ 改进错误处理和日志记录
-- ✅ 优化性能和内存使用
-- ✅ 增强安全保护机制
+- ✅ Added dynamic image to JXL conversion tool.
+- ✅ Fixed an issue where original files were mistakenly deleted when skipping existing files.
+- ✅ Improved error handling and logging.
+- ✅ Optimized performance and memory usage.
+- ✅ Enhanced security protection mechanisms.
 
 ---
 
-**版本**: v2.0.1  
-**维护者**: AI Assistant  
-**许可证**: MIT
+**Version**: v2.0.1  
+**Maintainer**: AI Assistant  
+**License**: MIT

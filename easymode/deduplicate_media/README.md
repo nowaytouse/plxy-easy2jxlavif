@@ -1,42 +1,42 @@
-# `deduplicate_media` - 媒体文件去重工具
+# `deduplicate_media` - Media Deduplication Tool
 
-## 📖 简介
+## 📖 Introduction
 
-`deduplicate_media` 是一个辅助工具，用于扫描指定目录中的媒体文件，识别内容重复的文件，并将重复项移动到指定的“垃圾”文件夹中。它还可以规范化不一致的文件扩展名（例如，将 `.jpeg` 重命名为 `.jpg`）。
+`deduplicate_media` is a utility script that scans a specified directory for media files, identifies content-based duplicates, and moves them to a designated "trash" folder. It also standardizes inconsistent file extensions (e.g., renaming `.jpeg` to `.jpg`).
 
-## 🚀 功能特性
+## 🚀 Features
 
-- ✅ **广泛的格式支持** - 支持常见的图片格式 (如 `.jpg`, `.png`, `.gif`, `.bmp`, `.tif`, `.webp`) 和视频格式 (如 `.mp4`, `.mov`, `.mkv`, `.avi`, `.webm`)。
-- ✅ **规范扩展名** - 自动将 `.jpeg`, `.tiff` 等扩展名重命名为统一的 `.jpg`, `.tif` 格式。
-- ✅ **精确去重** - 通过 SHA-256 哈希值快速识别潜在的重复文件，并通过逐字节比较进行最终确认。
-- ✅ **安全移动** - 重复文件将被移动到指定的文件夹，而不是永久删除，以便用户进行最终检查和恢复。
-- ✅ **垃圾文件夹注释** - 在垃圾文件夹中自动创建一个 `_readme_about_this_folder.txt` 文件，说明其用途。
-- ✅ **清晰日志** - 记录所有操作，包括扩展名重命名、发现的重复项以及移动的文件。
+- ✅ **Broad Format Support** - Supports common image formats (like `.jpg`, `.png`, `.gif`, `.bmp`, `.tif`, `.webp`) and video formats (like `.mp4`, `.mov`, `.mkv`, `.avi`, `.webm`).
+- ✅ **Standardize Extensions** - Automatically renames extensions like `.jpeg` and `.tiff` to a consistent `.jpg` and `.tif` format.
+- ✅ **Accurate Deduplication** - Quickly identifies potential duplicates using SHA-256 hashes and confirms them with a byte-by-byte comparison.
+- ✅ **Safe Moving** - Duplicates are moved to a specified folder instead of being permanently deleted, allowing for final review and recovery.
+- ✅ **Trash Folder Readme** - Automatically creates a `_readme_about_this_folder.txt` file in the trash folder to explain its purpose.
+- ✅ **Clear Logging** - Logs all operations, including extension renaming, discovered duplicates, and moved files.
 
-## 🔧 使用方法
+## 🔧 Usage
 
-### 编译脚本
+### Build the Script
 
 ```bash
-# 进入脚本目录
+# Navigate to the script directory
 cd /Users/nyamiiko/Documents/git/easy2jxlavif-beta/easymode/deduplicate_media
 
-# 运行构建脚本
+# Run the build script
 ./build.sh
 ```
 
-### 运行脚本
+### Run the Script
 
 ```bash
 ./deduplicate_media -dir /path/to/your/media -trash-dir /path/to/trash
 ```
 
-### 参数说明
+### Argument Description
 
-- `-dir`: 要扫描的媒体文件所在目录的路径 (必需)。
-- `-trash-dir`: 用于存放重复文件的目录路径 (必需)。如果该目录不存在，脚本将自动创建。
+- `-dir`: The path to the directory containing media files to scan (required).
+- `-trash-dir`: The path to the directory where duplicate files will be moved (required). If the directory does not exist, the script will create it automatically.
 
-## 📈 输出示例
+## 📈 Example Output
 
 ```
 INFO: 2025/10/19 21:25:00 main.go:25: deduplicate_media v1.1.0 starting...
@@ -50,6 +50,6 @@ INFO: 2025/10/19 21:25:01 main.go:50: Deduplication process complete.
 
 ---
 
-**版本**: v1.1.0  
-**维护者**: AI Assistant  
-**许可证**: MIT
+**Version**: v1.1.0  
+**Maintainer**: AI Assistant  
+**License**: MIT

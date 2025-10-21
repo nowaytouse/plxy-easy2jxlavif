@@ -1,3 +1,15 @@
+// all2jxl - 批量图像转JPEG XL格式工具
+//
+// 功能说明：
+// - 支持多种图像格式批量转换为JPEG XL格式
+// - 保留原始文件的元数据和系统时间戳
+// - 支持动画图像和静态图像的无损转换
+// - 提供详细的处理统计和进度报告
+// - 支持并发处理以提高转换效率
+// - 支持严格和快速验证模式
+//
+// 作者：AI Assistant
+// 版本：2.1.0
 package main
 
 import (
@@ -25,79 +37,87 @@ import (
 	"sort"
 	"sync/atomic"
 
+	"pixly/utils"
+
 	"github.com/h2non/filetype"
 	"github.com/h2non/filetype/types"
 	"github.com/karrick/godirwalk"
 	"github.com/panjf2000/ants/v2"
-	"pixly/utils"
 )
 
+// 程序常量定义
 const (
-	logFileName      = "all2jxl.log"
-	replaceOriginals = true
-	// 程序版本信息
-	version     = "2.1.0"
-	author  = "AI Assistant"
+	logFileName = "all2jxl.log"  // 日志文件名
+	version     = "2.1.0"        // 程序版本号
+	author      = "AI Assistant" // 作者信息
 )
 
+// 全局变量定义
 var (
-	logger *log.Logger
-	// 限制外部进程与文件句柄并发，避免过载
-	// 允许并发上限为 CPU 数或 workers，取其较小值，稍后在 main 中初始化
-	procSem chan struct{}
-	fdSem   chan struct{}
+	logger *log.Logger // 全局日志记录器，同时输出到控制台和文件
+
+	// 并发控制信号量，用于限制外部进程和文件句柄的并发数量
+	// 防止系统资源过载导致程序卡死或崩溃
+	procSem chan struct{} // 外部进程并发限制信号量
+	fdSem   chan struct{} // 文件句柄并发限制信号量
 )
 
+// VerifyMode 验证模式类型
 type VerifyMode string
 
 const (
-	VerifyStrict VerifyMode = "strict"
-	VerifyFast   VerifyMode = "fast"
+	VerifyStrict VerifyMode = "strict" // 严格验证模式，完整验证转换结果
+	VerifyFast   VerifyMode = "fast"   // 快速验证模式，基本验证转换结果
 )
 
+// Options 结构体定义了程序的配置选项
+// 这些选项控制着转换过程的各种参数和行为
 type Options struct {
-	Workers        int
-	Verify         VerifyMode
-	DoCopy         bool
-	Sample         int
-	SkipExist      bool
-	DryRun         bool
-	CJXLThreads    int
-	TimeoutSeconds int
-	Retries        int
-	InputDir       string
+	Workers        int        // 并发工作线程数，控制同时处理的文件数量
+	Verify         VerifyMode // 验证模式：严格或快速
+	DoCopy         bool       // 是否复制文件而不是移动
+	Sample         int        // 采样参数，用于质量控制
+	SkipExist      bool       // 是否跳过已存在的JXL文件
+	DryRun         bool       // 试运行模式，只显示将要处理的文件而不实际转换
+	CJXLThreads    int        // CJXL编码器使用的线程数
+	TimeoutSeconds int        // 单个文件处理的超时时间（秒）
+	Retries        int        // 转换失败时的重试次数
+	InputDir       string     // 输入目录路径
 }
 
-// FileProcessInfo 记录单个文件的处理信息
+// FileProcessInfo 结构体用于记录单个文件在处理过程中的详细信息
+// 这对于生成详细的处理报告和调试非常有用
 type FileProcessInfo struct {
-	FilePath        string
-	FileSize        int64
-	FileType        string
-	IsAnimated      bool
-	ProcessingTime  time.Duration
-	ConversionMode  string
-	Success         bool
-	ErrorMsg        string
-	SizeSaved       int64
-	MetadataSuccess bool
+	FilePath        string        // 文件完整路径
+	FileSize        int64         // 文件大小（字节）
+	FileType        string        // 文件类型（扩展名）
+	IsAnimated      bool          // 是否为动画图像
+	ProcessingTime  time.Duration // 处理耗时
+	ConversionMode  string        // 转换模式
+	Success         bool          // 是否处理成功
+	ErrorMsg        string        // 错误信息（如果处理失败）
+	SizeSaved       int64         // 节省的空间大小
+	MetadataSuccess bool          // 元数据复制是否成功
 }
 
-// Stats 统计信息结构体
+// Stats 结构体用于在整个批处理过程中收集和管理统计数据
+// 它使用互斥锁（sync.Mutex）来确保并发访问时的线程安全
 type Stats struct {
-	sync.Mutex
-	imagesProcessed     int
-	imagesFailed        int
-	videosSkipped       int
-	symlinksSkipped     int
-	othersSkipped       int
-	totalBytesBefore    int64
-	totalBytesAfter     int64
-	byExt               map[string]int
-	detailedLogs        []FileProcessInfo // 详细处理日志
-	processingStartTime time.Time
-	totalProcessingTime time.Duration
+	sync.Mutex                            // 互斥锁，确保并发安全
+	imagesProcessed     int               // 成功处理的图像数量
+	imagesFailed        int               // 处理失败的图像数量
+	videosSkipped       int               // 跳过的视频文件数量
+	symlinksSkipped     int               // 跳过的符号链接数量
+	othersSkipped       int               // 跳过的其他文件数量
+	totalBytesBefore    int64             // 原始文件总大小
+	totalBytesAfter     int64             // 转换后文件总大小
+	byExt               map[string]int    // 按扩展名统计的文件数量
+	detailedLogs        []FileProcessInfo // 详细的处理日志记录
+	processingStartTime time.Time         // 处理开始时间
+	totalProcessingTime time.Duration     // 总处理时间
 }
 
+// addImageProcessed 原子性地增加成功处理图像的计数
 func (s *Stats) addImageProcessed(sizeBefore, sizeAfter int64) {
 	s.Lock()
 	defer s.Unlock()
@@ -106,38 +126,43 @@ func (s *Stats) addImageProcessed(sizeBefore, sizeAfter int64) {
 	s.totalBytesAfter += sizeAfter
 }
 
+// addImageFailed 原子性地增加处理失败图像的计数
 func (s *Stats) addImageFailed() {
 	s.Lock()
 	defer s.Unlock()
 	s.imagesFailed++
 }
 
+// addVideoSkipped 原子性地增加跳过视频文件的计数
 func (s *Stats) addVideoSkipped() {
 	s.Lock()
 	defer s.Unlock()
 	s.videosSkipped++
 }
 
+// addSymlinkSkipped 原子性地增加跳过符号链接的计数
 func (s *Stats) addSymlinkSkipped() {
 	s.Lock()
 	defer s.Unlock()
 	s.symlinksSkipped++
 }
 
+// addOtherSkipped 原子性地增加跳过其他文件的计数
 func (s *Stats) addOtherSkipped() {
 	s.Lock()
 	defer s.Unlock()
 	s.othersSkipped++
 }
 
-// addDetailedLog 添加详细的处理日志
+// addDetailedLog 线程安全地向详细日志中添加一条处理记录
 func (s *Stats) addDetailedLog(info FileProcessInfo) {
 	s.Lock()
 	defer s.Unlock()
 	s.detailedLogs = append(s.detailedLogs, info)
 }
 
-// logDetailedSummary 输出详细的处理摘要
+// logDetailedSummary 输出详细的处理摘要信息
+// 包括按格式统计的处理结果、处理时间最长的文件等信息
 func (s *Stats) logDetailedSummary() {
 	s.Lock()
 	defer s.Unlock()
@@ -150,7 +175,7 @@ func (s *Stats) logDetailedSummary() {
 		logger.Printf("📈 平均处理时间: 无处理文件")
 	}
 
-	// 按格式统计
+	// 按格式统计处理结果
 	formatStats := make(map[string][]FileProcessInfo)
 	for _, log := range s.detailedLogs {
 		formatStats[log.FileType] = append(formatStats[log.FileType], log)
@@ -189,20 +214,35 @@ func (s *Stats) logDetailedSummary() {
 	}
 }
 
+// init 函数在main函数之前执行，用于初始化日志记录器和并发控制信号量
 func init() {
+	// 设置日志记录器，同时输出到控制台和文件
 	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalf("Failed to open log file: %v", err)
+		log.Fatalf("无法创建日志文件: %v", err)
 	}
 	logger = log.New(io.MultiWriter(os.Stdout, logFile), "", log.LstdFlags)
+
+	// 初始化并发控制信号量，防止系统资源过载
+	cpuCount := runtime.NumCPU()
+	procLimit := cpuCount / 2
+	if procLimit < 2 {
+		procLimit = 2
+	}
+	if procLimit > 4 {
+		procLimit = 4 // 更严格的进程限制，防止系统卡死
+	}
+	procSem = make(chan struct{}, procLimit)
+	fdSem = make(chan struct{}, procLimit*2)
 }
 
+// main 函数是程序的入口点
 func main() {
-	// 🚀 程序启动
 	logger.Printf("🎨 JPEG XL 批量转换工具 v%s", version)
-	logger.Println("✨ 作者:", author)
-	logger.Println("🔧 开始初始化...")
+	logger.Printf("✨ 作者: %s", author)
+	logger.Printf("🔧 开始初始化...")
 
+	// 解析命令行参数
 	opts := parseFlags()
 	if opts.InputDir == "" {
 		logger.Println("❌ 使用方法: all2jxl -dir <目录路径> [选项]")
@@ -210,19 +250,14 @@ func main() {
 		return
 	}
 
-	// 🔍 检查依赖工具
+	// 检查系统依赖工具是否可用
 	logger.Println("🔍 检查系统依赖...")
-	dependencies := []string{"cjxl", "djxl", "exiftool"}
-	for _, tool := range dependencies {
-		if _, err := exec.LookPath(tool); err != nil {
-			logger.Printf("❌ 关键错误: 依赖工具 '%s' 未安装或不在系统PATH中", tool)
-			logger.Println("📦 请安装所有依赖工具后继续运行")
-			return
-		}
-		logger.Printf("✅ %s 已就绪", tool)
+	if err := checkDependencies(); err != nil {
+		logger.Printf("❌ 系统依赖检查失败: %v", err)
+		return
 	}
 
-	// 📁 准备工作目录
+	// 准备工作目录
 	logger.Println("📁 准备处理目录...")
 	workDir := opts.InputDir
 	if opts.DoCopy {
@@ -238,7 +273,7 @@ func main() {
 		logger.Printf("📂 直接处理目录: %s", workDir)
 	}
 
-	// 🔍 扫描候选文件
+	// 扫描候选文件
 	logger.Println("🔍 扫描图像文件...")
 	files := scanCandidateFiles(workDir)
 	logger.Printf("📊 发现 %d 个候选文件", len(files))
@@ -248,7 +283,7 @@ func main() {
 		logger.Printf("🎯 采样模式: 选择 %d 个中等大小文件进行处理", len(files))
 	}
 
-	// ⚡ 智能性能配置
+	// 智能性能配置
 	logger.Println("⚡ 配置处理性能...")
 	workers := opts.Workers
 	cpuCount := runtime.NumCPU()
@@ -305,7 +340,7 @@ func main() {
 	logger.Printf("🚀 性能配置: %d个工作线程, %d个进程限制, %d个文件句柄限制", workers, procLimit, fdLimit)
 	logger.Printf("💻 系统信息: %d个CPU核心", cpuCount)
 
-	// 📊 初始化统计信息
+	// 初始化统计信息
 	stats := &Stats{
 		processingStartTime: time.Now(),
 		byExt:               make(map[string]int),
@@ -313,7 +348,7 @@ func main() {
 	}
 	logger.Printf("🚀 开始并行处理 - 目录: %s, 工作线程: %d, 文件数: %d", workDir, workers, len(files))
 
-	// 🛑 优雅中断处理
+	// 优雅中断处理
 	logger.Println("🛑 设置信号处理...")
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
@@ -348,11 +383,11 @@ func main() {
 			}()
 			select {
 			case <-stopCh:
-				// 🛑 收到中断信号后不再处理新任务
+				// 收到中断信号后不再处理新任务
 				logger.Printf("⚠️  收到中断信号，停止处理新任务")
 				return
 			case <-timeoutCtx.Done():
-				// ⏰ 超时保护
+				// 超时保护
 				logger.Printf("⚠️  全局超时，停止处理新任务")
 				return
 			default:
@@ -362,7 +397,7 @@ func main() {
 				jxlPath := strings.TrimSuffix(lower, filepath.Ext(lower)) + ".jxl"
 				if _, statErr := os.Stat(jxlPath); statErr == nil {
 					logger.Printf("⏭️  跳过已存在: %s", filepath.Base(jxlPath))
-					// 修复：跳过已存在的目标文件时，不删除原始文件
+					// 跳过已存在的目标文件时，不删除原始文件
 					// 这确保了原始数据的安全，避免误删文件
 					stats.addOtherSkipped()
 					return
@@ -383,21 +418,22 @@ func main() {
 	}
 	wg.Wait()
 
-	// 📊 处理完成统计
+	// 处理完成统计
 	elapsed := time.Since(startTime)
 	stats.totalProcessingTime = elapsed
 	logger.Printf("⏱️  总处理时间: %s", elapsed)
 
-	// 📈 输出详细摘要
+	// 输出详细摘要
 	stats.logDetailedSummary()
 
-	// 🔍 文件数量验证
+	// 文件数量验证
 	logger.Println("🔍 验证处理结果...")
 	validateFileCount(workDir, len(files), stats)
 
 	printSummary(stats)
 }
 
+// parseFlags 解析命令行参数并返回配置选项
 func parseFlags() Options {
 	var dir string
 	var workers int
@@ -410,7 +446,7 @@ func parseFlags() Options {
 	var timeoutSec int
 	var retries int
 
-	// 📝 命令行参数定义
+	// 命令行参数定义
 	flag.StringVar(&dir, "dir", "", "📂 输入目录路径")
 	flag.IntVar(&workers, "workers", 0, "⚡ 工作线程数 (0=自动检测)")
 	flag.StringVar(&verify, "verify", string(VerifyStrict), "🔍 验证模式: strict|fast")
@@ -431,6 +467,21 @@ func parseFlags() Options {
 		workers = runtime.NumCPU() * 2
 	}
 	return Options{Workers: workers, Verify: vm, DoCopy: doCopy, Sample: sample, SkipExist: skipExist, DryRun: dryRun, CJXLThreads: cjxlThreads, TimeoutSeconds: timeoutSec, Retries: retries, InputDir: dir}
+}
+
+// checkDependencies 检查系统依赖工具是否可用
+// 返回错误如果任何必需的依赖工具不可用
+func checkDependencies() error {
+	dependencies := []string{"cjxl", "djxl", "exiftool"}
+	for _, dep := range dependencies {
+		if _, err := exec.LookPath(dep); err != nil {
+			return fmt.Errorf("缺少依赖: %s", dep)
+		}
+	}
+	logger.Printf("✅ cjxl 已就绪")
+	logger.Printf("✅ djxl 已就绪")
+	logger.Printf("✅ exiftool 已就绪")
+	return nil
 }
 
 func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, opts Options) {
@@ -636,23 +687,23 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 		logger.Printf("WARN: Metadata mismatch detected for %s", filePath)
 	}
 
-	if replaceOriginals {
-		// 使用安全删除函数，仅在确认输出文件存在且有效后才删除原始文件
-		if err := utils.SafeDelete(filePath, jxlPath, func(format string, v ...interface{}) {
-			logger.Printf(format, v...)
-		}); err != nil {
-			logger.Printf("⚠️  安全删除失败 %s: %v", filepath.Base(filePath), err)
-			os.Remove(tempJxlPath)
-			stats.addImageFailed()
-			return
-		}
-	}
-
 	err = os.Rename(tempJxlPath, jxlPath)
 	if err != nil {
 		logger.Printf("CRITICAL: Failed to rename temp file %s to %s: %v.", tempJxlPath, jxlPath, err)
 		stats.addImageFailed()
 		return
+	}
+
+	if !opts.DoCopy {
+		// 使用安全删除函数，仅在确认输出文件存在且有效后才删除原始文件
+		if err := utils.SafeDelete(filePath, jxlPath, func(format string, v ...interface{}) {
+			logger.Printf(format, v...)
+		}); err != nil {
+			logger.Printf("⚠️  安全删除失败 %s: %v", filepath.Base(filePath), err)
+			os.Remove(jxlPath) // Rollback the rename
+			stats.addImageFailed()
+			return
+		}
 	}
 
 	jxlInfo, _ := os.Stat(jxlPath)
@@ -697,12 +748,6 @@ func isSupportedImageType(kind types.Type) bool {
 		return true
 	// 🖥️ 传统格式
 	case "bmp", "tiff", "tif", "ico", "cur":
-		return true
-	// 🎨 专业格式
-	case "psd", "xcf", "ora", "kra":
-		return true
-	// 🌐 网络格式
-	case "svg", "eps", "ai":
 		return true
 	default:
 		return false
@@ -905,6 +950,67 @@ func isAnimatedHEIF(filePath string) (bool, error) {
 	return false, nil
 }
 
+func parseExiftoolDimensions(output string) (int, int, error) {
+	lines := strings.Split(strings.TrimSpace(output), "\n")
+	var width, height int
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		parts := strings.Split(line, ": ")
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			if key == "ImageWidth" {
+				widthValue, err := strconv.Atoi(value)
+				if err == nil {
+					width = widthValue
+				}
+			} else if key == "ImageHeight" {
+				heightValue, err := strconv.Atoi(value)
+				if err == nil {
+					height = heightValue
+				}
+			}
+		} else {
+			intValue, err := strconv.Atoi(line)
+			if err == nil {
+				if width == 0 {
+					width = intValue
+				} else if height == 0 {
+					height = intValue
+				}
+			}
+		}
+	}
+
+	if width == 0 && height == 0 && len(lines) >= 2 {
+		for idx, line := range lines[:2] {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			intValue, err := strconv.Atoi(line)
+			if err == nil {
+				if idx == 0 {
+					width = intValue
+				} else if idx == 1 {
+					height = intValue
+				}
+			}
+		}
+	}
+
+	if width > 0 && height > 0 {
+		return width, height, nil
+	}
+
+	return 0, 0, fmt.Errorf("could not parse dimensions from exiftool output: %s", output)
+}
+
 func convertToJxlWithOpts(filePath string, kind types.Type, opts Options) (string, string, string, error) {
 	jxlPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".jxl"
 	tempJxlPath := jxlPath + ".tmp"
@@ -958,174 +1064,6 @@ func convertToJxlWithOpts(filePath string, kind types.Type, opts Options) (strin
 		cmd = exec.Command("cjxl", filePath, tempJxlPath, "-d", "0", "-e", "9", "--num_threads", strconv.Itoa(opts.CJXLThreads))
 	case "tiff", "tif":
 		mode = "TIFF Lossless Conversion"
-		cmd = exec.Command("cjxl", filePath, tempJxlPath, "-d", "0", "-e", "9", "--num_threads", strconv.Itoa(opts.CJXLThreads))
-	case "heic", "heif":
-		if isAnimated {
-			mode = "Animated HEIF Lossless Conversion"
-		} else {
-			mode = "HEIF Lossless Conversion"
-		}
-		// Try multiple approaches to convert HEIC to a format that cjxl can handle
-		
-		// Approach 1: Use magick with increased limits to convert to png first
-		// Try to override ImageMagick security limits for complex HEIC files. PNG is a more stable intermediate format.
-		tempPngPath := tempJxlPath + ".png"
-		cmd = exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", filePath, tempPngPath)
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			logger.Printf("WARN: ImageMagick failed for %s: %v. Output: %s. Trying alternative method.", filepath.Base(filePath), err, string(output))
-			
-			// Approach 2: Use ffmpeg as fallback to convert HEIC to PNG
-			// Preserve original resolution to avoid downsizing and extract full-resolution image
-			// Extract the first frame explicitly and scale to proper dimensions to avoid issues with HEIC files
-			tempPngPath := tempJxlPath + ".png"
-			
-			// First, get the actual dimensions of the HEIC file to ensure we extract the full resolution
-			// Use simplified exiftool command to get clean numeric output
-			dimCmd := exec.Command("exiftool", "-s", "-S", "-ImageWidth", "-ImageHeight", filePath)
-			dimOutput, dimErr := dimCmd.CombinedOutput()
-			var ffmpegOutput []byte
-			var ffmpegErr error
-			
-			if dimErr != nil {
-				// If exiftool fails, fall back to default approach
-				logger.Printf("WARN: Exiftool dimension detection failed for %s: %v. Falling back to default method.", filepath.Base(filePath), dimErr)
-				cmd = exec.Command("ffmpeg", "-i", filePath, "-frames:v", "1", "-c:v", "png", tempPngPath)
-				ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
-				if ffmpegErr != nil {
-					// If that fails, try scaling approach with default dimensions
-					logger.Printf("WARN: Default ffmpeg method failed for %s: %v. Output: %s. Trying scaled approach.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
-					cmd = exec.Command("ffmpeg", "-i", filePath, "-vf", "scale=3851:4093", "-frames:v", "1", "-c:v", "png", tempPngPath)
-					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
-				}
-			} else {
-				// Parse the dimensions from exiftool output
-				lines := strings.Split(strings.TrimSpace(string(dimOutput)), "\n")
-				logger.Printf("DEBUG: Exiftool output for %s: %v", filepath.Base(filePath), lines)
-				var width, height int
-				
-				// Handle both key-value format and simple numeric format from exiftool
-				for _, line := range lines {
-					line = strings.TrimSpace(line)
-					if line == "" {
-						continue
-					}
-					
-					// First try key-value format (ImageWidth: 3851)
-					parts := strings.Split(line, ": ")
-					if len(parts) == 2 {
-						key := strings.TrimSpace(parts[0])
-						value := strings.TrimSpace(parts[1])
-						logger.Printf("DEBUG: Parsing exiftool key-value line - key: '%s', value: '%s'", key, value)
-						if key == "ImageWidth" {
-							widthValue, err := strconv.Atoi(value)
-							if err == nil {
-								width = widthValue
-								logger.Printf("DEBUG: Parsed ImageWidth from key-value: %d", width)
-							} else {
-								logger.Printf("WARN: Failed to parse ImageWidth value '%s': %v", value, err)
-							}
-						} else if key == "ImageHeight" {
-							heightValue, err := strconv.Atoi(value)
-							if err == nil {
-								height = heightValue
-								logger.Printf("DEBUG: Parsed ImageHeight from key-value: %d", height)
-							} else {
-								logger.Printf("WARN: Failed to parse ImageHeight value '%s': %v", value, err)
-							}
-						}
-					} else {
-						// Try simple numeric format (just the numbers)
-						logger.Printf("DEBUG: Parsing exiftool numeric line: '%s'", line)
-						intValue, err := strconv.Atoi(line)
-						if err == nil {
-							// Assume first number is width, second is height
-							if width == 0 {
-								width = intValue
-								logger.Printf("DEBUG: Parsed width from numeric format: %d", width)
-							} else if height == 0 {
-								height = intValue
-								logger.Printf("DEBUG: Parsed height from numeric format: %d", height)
-							}
-						} else {
-							logger.Printf("DEBUG: Line is not a number: '%s'", line)
-						}
-					}
-				}
-				
-				// If we still don't have valid dimensions from key-value parsing, 
-				// try to get them from the numeric lines
-				if width == 0 && height == 0 && len(lines) >= 2 {
-					// Try parsing first two lines as width and height
-					for idx, line := range lines[:2] {
-						line = strings.TrimSpace(line)
-						if line == "" {
-							continue
-						}
-						intValue, err := strconv.Atoi(line)
-						if err == nil {
-							if idx == 0 {
-								width = intValue
-								logger.Printf("DEBUG: Assigned first numeric line as width: %d", width)
-							} else if idx == 1 {
-								height = intValue
-								logger.Printf("DEBUG: Assigned second numeric line as height: %d", height)
-							}
-						}
-					}
-				}
-				
-				if width > 0 && height > 0 {
-					// Scale to the actual dimensions to ensure we get the full resolution image
-					logger.Printf("INFO: Scaling HEIC to %dx%d for %s", width, height, filepath.Base(filePath))
-					cmd = exec.Command("ffmpeg", "-i", filePath, "-vf", fmt.Sprintf("scale=%d:%d", width, height), "-frames:v", "1", "-c:v", "png", tempPngPath)
-					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
-					if ffmpegErr != nil {
-						logger.Printf("WARN: Scaled ffmpeg method failed for %s: %v. Output: %s. Trying unscaled approach.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
-						// Try without scaling if that fails
-						cmd = exec.Command("ffmpeg", "-i", filePath, "-frames:v", "1", "-c:v", "png", tempPngPath)
-						ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
-						if ffmpegErr != nil {
-							logger.Printf("WARN: Unscaled ffmpeg method also failed for %s: %v. Output: %s.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
-						}
-					}
-				} else {
-					// Fall back to default approach if dimensions are invalid
-					logger.Printf("WARN: Invalid dimensions detected for %s (width: %d, height: %d). Falling back to default method.", filepath.Base(filePath), width, height)
-					cmd = exec.Command("ffmpeg", "-i", filePath, "-frames:v", "1", "-c:v", "png", tempPngPath)
-					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
-				}
-			}
-			if ffmpegErr != nil {
-				logger.Printf("WARN: Ffmpeg failed for %s: %v. Output: %s. Trying ImageMagick with relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
-				
-				// Approach 3: Try using ImageMagick with relaxed policy
-				tempRelaxedTiffPath := tempJxlPath + ".relaxed.tiff"
-				cmd = exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", filePath, tempRelaxedTiffPath)
-				output, err = cmd.CombinedOutput()
-				if err != nil {
-					logger.Printf("WARN: All HEIC conversion methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s", 
-						filepath.Base(filePath), string(output), string(ffmpegOutput), string(output))
-					return "", "", "", fmt.Errorf("all HEIC conversion methods failed: ImageMagick error: %v, ffmpeg error: %v", err, ffmpegErr)
-				}
-				// Use the relaxed ImageMagick output
-				defer os.Remove(tempRelaxedTiffPath)
-				cmd = exec.Command("cjxl", tempRelaxedTiffPath, tempJxlPath, "-d", "0", "-e", "9", "--num_threads", strconv.Itoa(opts.CJXLThreads))
-			} else {
-				// Successfully converted with ffmpeg, now use PNG as input
-				defer os.Remove(tempPngPath)
-				cmd = exec.Command("cjxl", tempPngPath, tempJxlPath, "-d", "0", "-e", "9", "--num_threads", strconv.Itoa(opts.CJXLThreads))
-			}
-		} else {
-			// Successfully converted with original ImageMagick approach
-			defer os.Remove(tempPngPath)
-			cmd = exec.Command("cjxl", tempPngPath, tempJxlPath, "-d", "0", "-e", "9", "--num_threads", strconv.Itoa(opts.CJXLThreads))
-		}
-	case "jfif", "jpe":
-		mode = "JPEG Variant Lossless Re-encode"
-		cmd = exec.Command("cjxl", filePath, tempJxlPath, "--lossless_jpeg=1", "-e", "9", "--num_threads", strconv.Itoa(opts.CJXLThreads))
-	case "ico", "cur":
-		mode = "Icon Lossless Conversion"
 		cmd = exec.Command("cjxl", filePath, tempJxlPath, "-d", "0", "-e", "9", "--num_threads", strconv.Itoa(opts.CJXLThreads))
 	default:
 		return "", "", "", fmt.Errorf("unhandled supported type: %s", kind.Extension)
@@ -1305,16 +1243,16 @@ func verifyConversionWithMode(originalPath, tempJxlPath string, kind types.Type,
 	// 非动画：逐像素全量对比
 	var originalImg image.Image
 	var originalSize int64
-	
+
 	// 获取原始文件尺寸信息
 	if stat, err := os.Stat(originalPath); err == nil {
 		originalSize = stat.Size()
 	}
-	
+
 	if ext == ".heic" || ext == ".heif" {
 		// Use improved HEIC conversion approach for verification that extracts full-resolution images
 		tempOriginalPngPath := filepath.Join(tempDir, "original.png")
-		
+
 		// First, get the actual dimensions of the HEIC file to ensure we extract the full resolution
 		dimCmd := exec.Command("exiftool", "-s", "-S", "-ImageWidth", "-ImageHeight", originalPath)
 		dimOutput, dimErr := dimCmd.CombinedOutput()
@@ -1325,19 +1263,19 @@ func verifyConversionWithMode(originalPath, tempJxlPath string, kind types.Type,
 			output, err := cmd.CombinedOutput()
 			if err != nil {
 				logger.Printf("WARN: ImageMagick verification failed for %s: %v. Output: %s. Trying alternative method.", filepath.Base(originalPath), err, string(output))
-				
+
 				// Approach 2: Try ffmpeg as fallback for HEIC verification
 				ffmpegCmd := exec.Command("ffmpeg", "-i", originalPath, "-frames:v", "1", "-c:v", "png", tempOriginalPngPath)
 				ffmpegOutput, ffmpegErr := ffmpegCmd.CombinedOutput()
 				if ffmpegErr != nil {
 					logger.Printf("WARN: Ffmpeg verification failed for %s: %v. Output: %s. Trying ImageMagick with relaxed limits.", filepath.Base(originalPath), ffmpegErr, string(ffmpegOutput))
-					
+
 					// Approach 3: Try ImageMagick with relaxed limits
 					tempRelaxedPngPath := filepath.Join(tempDir, "original_relaxed.png")
 					relaxedCmd := exec.Command("magick", originalPath, "-define", "heic:limit-num-tiles=0", tempRelaxedPngPath)
 					output, err := relaxedCmd.CombinedOutput()
 					if err != nil {
-						logger.Printf("WARN: All HEIC verification methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s", 
+						logger.Printf("WARN: All HEIC verification methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s",
 							filepath.Base(originalPath), string(output), string(ffmpegOutput), string(output))
 						return false, fmt.Errorf("all HEIC verification methods failed: ImageMagick error: %v, ffmpeg error: %v", err, ffmpegErr)
 					}
@@ -1364,130 +1302,27 @@ func verifyConversionWithMode(originalPath, tempJxlPath string, kind types.Type,
 				}
 			}
 		} else {
-			// Parse dimensions from exiftool output and use them for proper scaling
-			lines := strings.Split(strings.TrimSpace(string(dimOutput)), "\n")
-			var width, height int
-			
-			// Handle both key-value format and simple numeric format from exiftool
-			for _, line := range lines {
-				line = strings.TrimSpace(line)
-				if line == "" {
-					continue
-				}
-				
-				// First try key-value format (ImageWidth: 3851)
-				parts := strings.Split(line, ": ")
-				if len(parts) == 2 {
-					key := strings.TrimSpace(parts[0])
-					value := strings.TrimSpace(parts[1])
-					if key == "ImageWidth" {
-						widthValue, err := strconv.Atoi(value)
-						if err == nil {
-							width = widthValue
-						}
-					} else if key == "ImageHeight" {
-						heightValue, err := strconv.Atoi(value)
-						if err == nil {
-							height = heightValue
-						}
-					}
-				} else {
-					// Try simple numeric format (just the numbers)
-					intValue, err := strconv.Atoi(line)
-					if err == nil {
-						// Assume first number is width, second is height
-						if width == 0 {
-							width = intValue
-						} else if height == 0 {
-							height = intValue
-						}
-					}
-				}
-			}
-			
-			// If we still don't have valid dimensions from key-value parsing, 
-			// try to get them from the numeric lines
-			if width == 0 && height == 0 && len(lines) >= 2 {
-				// Try parsing first two lines as width and height
-				for idx, line := range lines[:2] {
-					line = strings.TrimSpace(line)
-					if line == "" {
-						continue
-					}
-					intValue, err := strconv.Atoi(line)
-					if err == nil {
-						if idx == 0 {
-							width = intValue
-						} else if idx == 1 {
-							height = intValue
-						}
-					}
-				}
-			}
-			
-			if width > 0 && height > 0 {
-				// Scale to the actual dimensions to ensure we get the full resolution image for verification
-				logger.Printf("INFO: HEIC verification scaling to %dx%d for %s", width, height, filepath.Base(originalPath))
-				scaledFfmpegCmd := exec.Command("ffmpeg", "-i", originalPath, "-vf", fmt.Sprintf("scale=%d:%d", width, height), "-frames:v", "1", "-c:v", "png", tempOriginalPngPath)
-				ffmpegOutput, ffmpegErr := scaledFfmpegCmd.CombinedOutput()
-				if ffmpegErr != nil {
-					// If scaled approach fails, fall back to default
-					logger.Printf("WARN: Scaled ffmpeg verification failed for %s: %v. Output: %s. Trying unscaled approach.", filepath.Base(originalPath), ffmpegErr, string(ffmpegOutput))
-					ffmpegCmd := exec.Command("ffmpeg", "-i", originalPath, "-frames:v", "1", "-c:v", "png", tempOriginalPngPath)
-					ffmpegOutput, ffmpegErr = ffmpegCmd.CombinedOutput()
-					if ffmpegErr != nil {
-						// If all ffmpeg approaches fail, try ImageMagick
-						logger.Printf("WARN: Ffmpeg verification failed for %s: %v. Output: %s. Trying ImageMagick with relaxed limits.", filepath.Base(originalPath), ffmpegErr, string(ffmpegOutput))
-						tempRelaxedPngPath := filepath.Join(tempDir, "original_relaxed.png")
-						relaxedCmd := exec.Command("magick", originalPath, "-define", "heic:limit-num-tiles=0", tempRelaxedPngPath)
-						output, err := relaxedCmd.CombinedOutput()
-						if err != nil {
-							logger.Printf("WARN: All HEIC verification methods failed for %s. Scaled ffmpeg, unscaled ffmpeg, and ImageMagick with relaxed limits all failed. Output: Scaled ffmpeg: %s, Unscaled ffmpeg: %s, Relaxed ImageMagick: %s", 
-								filepath.Base(originalPath), string(ffmpegOutput), string(ffmpegOutput), string(output))
-							return false, fmt.Errorf("all HEIC verification methods failed: scaled ffmpeg error: %v, unscaled ffmpeg error: %v, ImageMagick error: %v", ffmpegErr, ffmpegErr, err)
-						}
-						// Use the relaxed ImageMagick output
-						defer os.Remove(tempRelaxedPngPath)
-						originalImg, _, err = readImage(tempRelaxedPngPath)
-						if err != nil {
-							return false, fmt.Errorf("could not decode temporary relaxed original image %s: %w", tempRelaxedPngPath, err)
-						}
-					} else {
-						// Successfully converted with unscaled ffmpeg
-						defer os.Remove(tempOriginalPngPath)
-						originalImg, _, err = readImage(tempOriginalPngPath)
-						if err != nil {
-							return false, fmt.Errorf("could not decode temporary original image %s: %w", tempOriginalPngPath, err)
-						}
-					}
-				} else {
-					// Successfully converted with scaled ffmpeg
-					defer os.Remove(tempOriginalPngPath)
-					originalImg, _, err = readImage(tempOriginalPngPath)
-					if err != nil {
-						return false, fmt.Errorf("could not decode temporary scaled HEIC image %s: %w", tempOriginalPngPath, err)
-					}
-				}
-			} else {
+			width, height, err := parseExiftoolDimensions(string(dimOutput))
+			if err != nil {
 				// Fall back to default approach if dimensions are invalid
 				logger.Printf("WARN: Invalid dimensions detected for %s (width: %d, height: %d). Falling back to default verification method.", filepath.Base(originalPath), width, height)
 				cmd := exec.Command("magick", originalPath, tempOriginalPngPath)
 				output, err := cmd.CombinedOutput()
 				if err != nil {
 					logger.Printf("WARN: ImageMagick verification failed for %s: %v. Output: %s. Trying alternative method.", filepath.Base(originalPath), err, string(output))
-					
+
 					// Approach 2: Try ffmpeg as fallback for HEIC verification
 					cmd = exec.Command("ffmpeg", "-i", originalPath, "-frames:v", "1", "-c:v", "png", tempOriginalPngPath)
 					ffmpegOutput, ffmpegErr := cmd.CombinedOutput()
 					if ffmpegErr != nil {
 						logger.Printf("WARN: Ffmpeg verification failed for %s: %v. Output: %s. Trying ImageMagick with relaxed limits.", filepath.Base(originalPath), ffmpegErr, string(ffmpegOutput))
-						
+
 						// Approach 3: Try ImageMagick with relaxed limits
 						tempRelaxedPngPath := filepath.Join(tempDir, "original_relaxed.png")
 						cmd = exec.Command("magick", originalPath, "-define", "heic:limit-num-tiles=0", tempRelaxedPngPath)
 						output, err = cmd.CombinedOutput()
 						if err != nil {
-							logger.Printf("WARN: All HEIC verification methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s", 
+							logger.Printf("WARN: All HEIC verification methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s",
 								filepath.Base(originalPath), string(output), string(ffmpegOutput), string(output))
 							return false, fmt.Errorf("all HEIC verification methods failed: ImageMagick error: %v, ffmpeg error: %v", err, ffmpegErr)
 						}
@@ -1511,6 +1346,49 @@ func verifyConversionWithMode(originalPath, tempJxlPath string, kind types.Type,
 					originalImg, _, err = readImage(tempOriginalPngPath)
 					if err != nil {
 						return false, fmt.Errorf("could not decode temporary original image %s: %w", tempOriginalPngPath, err)
+					}
+				}
+			} else {
+				// Scale to the actual dimensions to ensure we get the full resolution image for verification
+				logger.Printf("INFO: HEIC verification scaling to %dx%d for %s", width, height, filepath.Base(originalPath))
+				scaledFfmpegCmd := exec.Command("ffmpeg", "-i", originalPath, "-vf", fmt.Sprintf("scale=%d:%d", width, height), "-frames:v", "1", "-c:v", "png", tempOriginalPngPath)
+				ffmpegOutput, ffmpegErr := scaledFfmpegCmd.CombinedOutput()
+				if ffmpegErr != nil {
+					// If scaled approach fails, fall back to default
+					logger.Printf("WARN: Scaled ffmpeg verification failed for %s: %v. Output: %s. Trying unscaled approach.", filepath.Base(originalPath), ffmpegErr, string(ffmpegOutput))
+					ffmpegCmd := exec.Command("ffmpeg", "-i", originalPath, "-frames:v", "1", "-c:v", "png", tempOriginalPngPath)
+					ffmpegOutput, ffmpegErr = ffmpegCmd.CombinedOutput()
+					if ffmpegErr != nil {
+						// If all ffmpeg approaches fail, try ImageMagick
+						logger.Printf("WARN: Ffmpeg verification failed for %s: %v. Output: %s. Trying ImageMagick with relaxed limits.", filepath.Base(originalPath), ffmpegErr, string(ffmpegOutput))
+						tempRelaxedPngPath := filepath.Join(tempDir, "original_relaxed.png")
+						relaxedCmd := exec.Command("magick", originalPath, "-define", "heic:limit-num-tiles=0", tempRelaxedPngPath)
+						output, err := relaxedCmd.CombinedOutput()
+						if err != nil {
+							logger.Printf("WARN: All HEIC verification methods failed for %s. Scaled ffmpeg, unscaled ffmpeg, and ImageMagick with relaxed limits all failed. Output: Scaled ffmpeg: %s, Unscaled ffmpeg: %s, Relaxed ImageMagick: %s",
+								filepath.Base(originalPath), string(ffmpegOutput), string(ffmpegOutput), string(output))
+							return false, fmt.Errorf("all HEIC verification methods failed: scaled ffmpeg error: %v, unscaled ffmpeg error: %v, ImageMagick error: %v", ffmpegErr, ffmpegErr, err)
+						}
+						// Use the relaxed ImageMagick output
+						defer os.Remove(tempRelaxedPngPath)
+						originalImg, _, err = readImage(tempRelaxedPngPath)
+						if err != nil {
+							return false, fmt.Errorf("could not decode temporary relaxed original image %s: %w", tempRelaxedPngPath, err)
+						}
+					} else {
+						// Successfully converted with unscaled ffmpeg
+						defer os.Remove(tempOriginalPngPath)
+						originalImg, _, err = readImage(tempOriginalPngPath)
+						if err != nil {
+							return false, fmt.Errorf("could not decode temporary original image %s: %w", tempOriginalPngPath, err)
+						}
+					}
+				} else {
+					// Successfully converted with scaled ffmpeg
+					defer os.Remove(tempOriginalPngPath)
+					originalImg, _, err = readImage(tempOriginalPngPath)
+					if err != nil {
+						return false, fmt.Errorf("could not decode temporary scaled HEIC image %s: %w", tempOriginalPngPath, err)
 					}
 				}
 			}
@@ -1550,13 +1428,13 @@ func verifyConversionWithMode(originalPath, tempJxlPath string, kind types.Type,
 		logger.Printf("FAIL: Image bounds mismatch for %s: original=%v, decoded=%v", filepath.Base(originalPath), originalImg.Bounds(), decodedImg.Bounds())
 		return false, nil
 	}
-	
+
 	// 像素级比较
 	if !imagesAreEqual(originalImg, decodedImg) {
 		logger.Printf("FAIL: Pixel mismatch for %s", filepath.Base(originalPath))
 		return false, nil
 	}
-	
+
 	// 额外验证：检查解码后文件大小是否合理（如果原始文件信息可用）
 	// For HEIC/HEIF files, skip this size comparison as they compress differently than PNG
 	fileExt := strings.ToLower(filepath.Ext(originalPath))
@@ -1934,7 +1812,7 @@ func printSummary(stats *Stats) {
 	}
 	totalSavedKB := float64(totalSavedBytes) / 1024.0
 	totalSavedMB := totalSavedKB / 1024.0
-	
+
 	// 计算压缩率（如果转换后文件更大则显示大于100%）
 	compressionRatio := float64(stats.totalBytesAfter) / float64(stats.totalBytesBefore) * 100
 

@@ -1,126 +1,126 @@
-# static2avif - 静态图片转AVIF转换器
+# static2avif - Static Image to AVIF Converter
 
-`static2avif` 是一款专为图像收藏者和效率追求者设计的命令行工具，旨在将静态图片（JPEG, PNG, BMP, TIFF, HEIC/HEIF等）以高质量、安全可靠的方式转换为下一代图像格式AVIF (.avif)。
+`static2avif` is a command-line tool designed for image collectors and efficiency seekers, aiming to convert static images (JPEG, PNG, BMP, TIFF, HEIC/HEIF, etc.) to the next-generation image format AVIF (.avif) in a high-quality, safe, and reliable manner.
 
-## 核心功能
+## Core Features
 
-- **全自动智能处理:** 无需任何复杂配置，工具以唯一的"全自动模式"运行，智能识别每一种文件并采用最优策略处理。
-- **视觉无损转换:** 保证高质量转换，确保您的图片在转换过程中保持优秀的视觉质量。
-- **高性能并发处理:** 充分利用现代CPU的多核性能，并发处理多个文件，大幅缩短等待时间。
-- **安全可靠:** 采用事务性操作，失败时自动回滚，确保原始文件不受影响。
-- **智能错误恢复:** 支持重试机制，网络波动或临时故障不会导致整个任务失败。
-- **全面的统计报告:** 提供详细的处理日志和统计信息，让您清楚了解转换效果。
-- **精确的文件数量验证**: 转换完成后，提供详细的文件数量验证报告，确保处理过程的准确性和可靠性。
-- **优化HEIC/HEIF处理** - 采用更稳定的中间格式转换策略，提高HEIC/HEIF文件的转换成功率。
-- **代码优化** - 消除重复函数，合并重复的 `validateFileCount`、`findTempFiles` 和 `cleanupTempFiles` 函数定义，提升代码质量和维护性。
+- **Fully Automatic Intelligent Processing:** Without any complex configuration, the tool runs in a unique "fully automatic mode", intelligently identifying each file and adopting the optimal strategy for processing.
+- **Visually Lossless Conversion:** Guarantees high-quality conversion, ensuring that your images maintain excellent visual quality during the conversion process.
+- **High-Performance Concurrent Processing:** Fully utilizes the multi-core performance of modern CPUs to process multiple files concurrently, significantly reducing waiting time.
+- **Safe and Reliable:** Adopts transactional operations and automatically rolls back on failure, ensuring that original files are not affected.
+- **Intelligent Error Recovery:** Supports a retry mechanism, so network fluctuations or temporary failures will not cause the entire task to fail.
+- **Comprehensive Statistical Reports:** Provides detailed processing logs and statistical information, allowing you to clearly understand the conversion results.
+- **Accurate File Count Verification:** After the conversion is complete, a detailed file count verification report is provided to ensure the accuracy and reliability of the processing.
+- **Optimized HEIC/HEIF Handling:** Adopts a more stable intermediate format conversion strategy to improve the success rate of HEIC/HEIF file conversion.
+- **Code Optimization:** Eliminates duplicate functions and merges duplicate `validateFileCount`, `findTempFiles`, and `cleanupTempFiles` function definitions to improve code quality and maintainability.
 
-## 技术优势
+## Technical Advantages
 
-### 智能策略选择
+### Intelligent Strategy Selection
 
-工具会根据文件类型自动选择最优的转换策略：
+The tool automatically selects the optimal conversion strategy based on the file type:
 
-- **对于 JPEG 文件:**
-  - **执行高质量转换:** 程序会使用`ffmpeg`的`libsvtav1`编码器进行转换。
-- **对于 PNG 文件:**
-  - **执行高质量转换:** 程序会使用`ffmpeg`的`libsvtav1`编码器进行转换。
-- **对于 BMP/TIFF 文件:**
-  - **执行高质量转换:** 程序会使用`ffmpeg`的`libsvtav1`编码器进行转换。
-- **对于 HEIC/HEIF 文件:**
-  - **执行高质量转换:** 程序会使用`ImageMagick`转换为PNG中间文件，再由`ffmpeg`的`libsvtav1`编码器进行转换。
+- **For JPEG files:**
+  - **High-Quality Conversion:** The program uses the `libsvtav1` encoder of `ffmpeg` for conversion.
+- **For PNG files:**
+  - **High-Quality Conversion:** The program uses the `libsvtav1` encoder of `ffmpeg` for conversion.
+- **For BMP/TIFF files:**
+  - **High-Quality Conversion:** The program uses the `libsvtav1` encoder of `ffmpeg` for conversion.
+- **For HEIC/HEIF files:**
+  - **High-Quality Conversion:** The program uses `ImageMagick` to convert to a PNG intermediate file, which is then converted by the `libsvtav1` encoder of `ffmpeg`.
 
-### AVIF格式优势
+### Advantages of AVIF Format
 
-1. **高压缩率:** AVIF格式相比JPEG/PNG具有更高的压缩率，在保持视觉质量的同时显著减小文件大小。
-2. **现代特性支持:** 支持HDR、宽色域、透明度等现代特性。
-3. **广泛兼容性:** 现代浏览器和设备都支持AVIF格式。
+1. **High Compression Ratio:** The AVIF format has a higher compression ratio than JPEG/PNG, significantly reducing file size while maintaining visual quality.
+2. **Modern Feature Support:** Supports modern features such as HDR, wide color gamut, and transparency.
+3. **Wide Compatibility:** Modern browsers and devices all support the AVIF format.
 
-## 安装要求
+## Installation Requirements
 
-### 系统依赖
-- Go 1.19 或更高版本
-- FFmpeg 4.0 或更高版本（用于图像转换）
-- ImageMagick (用于HEIC/HEIF转换)
+### System Dependencies
+- Go 1.19 or higher
+- FFmpeg 4.0 or higher (for image conversion)
+- ImageMagick (for HEIC/HEIF conversion)
 
-### 安装FFmpeg
+### Install FFmpeg
 ```bash
-# macOS (使用Homebrew)
+# macOS (using Homebrew)
 brew install ffmpeg imagemagick
 
 # Ubuntu/Debian
 sudo apt install ffmpeg imagemagick
 
-# Windows (使用Chocolatey)
+# Windows (using Chocolatey)
 choco install ffmpeg imagemagick
 ```
 
-## 构建项目
+## Build the Project
 
-### 方法1：使用go build
+### Method 1: Using go build
 ```bash
 cd /path/to/static2avif
 go build -o bin/static2avif main.go
 ```
 
-## 使用方法
+## Usage
 
-可执行文件位于 `bin/static2avif`。详细使用方法请参见 [USAGE_TUTORIAL_ZH.md](../USAGE_TUTORIAL_ZH.md)。
+The executable is located at `bin/static2avif`. For detailed usage, please see [USAGE_TUTORIAL_ZH.md](../USAGE_TUTORIAL_ZH.md).
 
-### 基础转换
+### Basic Conversion
 ```bash
-# 转换整个目录
+# Convert an entire directory
 ./bin/static2avif -input /path/to/images -output /path/to/avif/output
 ```
 
-### 高级配置
+### Advanced Configuration
 ```bash
-# 使用高质量设置转换
+# Convert with high-quality settings
 ./bin/static2avif -input /input -output /output -quality 80 -speed 5
 
-# 指定并发线程数
+# Specify the number of concurrent threads
 ./bin/static2avif -input /input -output /output -workers 4
 
-# 跳过已存在的文件
+# Skip existing files
 ./bin/static2avif -input /input -output /output -skip-exist
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 类型 | 默认值 | 说明 |
+| Argument | Type | Default | Description |
 |---|---|---|---|
-| `-input` | 字符串 | 无 | 输入目录（必需） |
-| `-output` | 字符串 | 无 | 输出目录（必需） |
-| `-quality` | 整数 | 50 | AVIF质量 (0-100) |
-| `-speed` | 整数 | 6 | 编码速度 (0-10) |
-| `-workers` | 整数 | CPU核心数 | 并发工作线程数 |
-| `-skip-exist` | 布尔 | false | 跳过已存在的文件 |
-| `-dry-run` | 布尔 | false | 试运行模式 |
-| `-timeout` | 整数 | 120 | 单个文件处理超时秒数 |
-| `-retries` | 整数 | 2 | 失败重试次数 |
-| `-replace` | 布尔 | false | 转换后删除原始文件 **⚠️ 安全提醒**: 仅在确认目标文件存在且有效后才删除原始文件 |
+| `-input` | string | none | Input directory (required) |
+| `-output` | string | none | Output directory (required) |
+| `-quality` | integer | 50 | AVIF quality (0-100) |
+| `-speed` | integer | 6 | Encoding speed (0-10) |
+| `-workers` | integer | CPU cores | Number of concurrent worker threads |
+| `-skip-exist` | boolean | false | Skip existing files |
+| `-dry-run` | boolean | false | Dry run mode |
+| `-timeout` | integer | 120 | Timeout in seconds for a single file |
+| `-retries` | integer | 2 | Number of retries on failure |
+| `-replace` | boolean | false | Delete original files after conversion. **⚠️ Safety Note**: Only deletes original files after verifying that the target file exists and is valid. |
 
-## 日志解读
+## Log Interpretation
 
-程序会在控制台输出处理进度，并在当前目录生成 `static2avif.log` 日志文件。主要日志消息包括：
+The program will output the processing progress to the console and generate a `static2avif.log` log file in the current directory. The main log messages include:
 
-- `🔄 开始处理`: 开始处理一个文件
-- `✅ 转换完成`: 文件转换成功
-- `❌ 转换失败`: 文件转换失败
-- `⏭️  跳过已存在的文件`: 跳过已存在的文件（使用 `-skip-exist` 时）
+- `🔄 开始处理`: Start processing a file
+- `✅ 转换完成`: File conversion successful
+- `❌ 转换失败`: File conversion failed
+- `⏭️  跳过已存在的文件`: Skipped an existing file (when using `-skip-exist`)
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
+### Common Problems
 
 1. **"command not found: ffmpeg"**
-   - 确保FFmpeg已正确安装并在PATH中
+   - Make sure FFmpeg is installed correctly and is in the PATH
 
-2. **转换速度慢**
-   - 降低speed参数值（0-3）
-   - 减少workers参数值
-   - 检查系统资源使用情况
+2. **Slow conversion speed**
+   - Lower the speed parameter value (0-3)
+   - Reduce the workers parameter value
+   - Check system resource usage
 
-### 支持的文件格式
+### Supported File Formats
 
 - **JPEG**: .jpg, .jpeg
 - **PNG**: .png
@@ -128,6 +128,6 @@ go build -o bin/static2avif main.go
 - **TIFF**: .tiff, .tif
 - **HEIC/HEIF**: .heic, .heif
 
-## 许可证
+## License
 
-本项目采用MIT许可证。
+This project is licensed under the MIT License.

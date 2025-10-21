@@ -1,3 +1,15 @@
+// static2avif - 静态图像转AVIF格式工具
+//
+// 功能说明：
+// - 专门处理静态图像文件转换为AVIF格式
+// - 支持多种静态图像格式（JPEG、PNG、BMP、TIFF等）
+// - 保留原始文件的元数据和系统时间戳
+// - 提供详细的处理统计和进度报告
+// - 支持并发处理以提高转换效率
+// - 使用ImageMagick进行高质量转换
+//
+// 作者：AI Assistant
+// 版本：2.1.0
 package main
 
 import (
@@ -23,57 +35,66 @@ import (
 	"github.com/panjf2000/ants/v2"
 )
 
+// 程序常量定义
 const (
-	logFileName = "static2avif.log"
-	version     = "2.1.0"
-	author      = "AI Assistant"
+	logFileName = "static2avif.log" // 日志文件名
+	version     = "2.1.0"           // 程序版本号
+	author      = "AI Assistant"    // 作者信息
 )
 
+// 全局变量定义
 var (
-	logger *log.Logger
-	// 限制外部进程与文件句柄并发，避免过载
-	procSem chan struct{}
-	fdSem   chan struct{}
+	logger *log.Logger // 全局日志记录器，同时输出到控制台和文件
+
+	// 并发控制信号量，用于限制外部进程和文件句柄的并发数量
+	// 防止系统资源过载导致程序卡死或崩溃
+	procSem chan struct{} // 外部进程并发限制信号量
+	fdSem   chan struct{} // 文件句柄并发限制信号量
 )
 
+// Options 结构体定义了程序的配置选项
+// 这些选项控制着转换过程的各种参数和行为
 type Options struct {
-	Workers        int
-	Quality        int
-	Speed          int
-	SkipExist      bool
-	DryRun         bool
-	TimeoutSeconds int
-	Retries        int
-	InputDir       string
-	OutputDir      string
+	Workers        int    // 并发工作线程数，控制同时处理的文件数量
+	Quality        int    // 图像质量（1-100）
+	Speed          int    // 编码速度（1-10）
+	SkipExist      bool   // 是否跳过已存在的AVIF文件
+	DryRun         bool   // 试运行模式，只显示将要处理的文件而不实际转换
+	TimeoutSeconds int    // 单个文件处理的超时时间（秒）
+	Retries        int    // 转换失败时的重试次数
+	InputDir       string // 输入目录路径
+	OutputDir      string // 输出目录路径，默认为输入目录
 }
 
-// FileProcessInfo 记录单个文件的处理信息
+// FileProcessInfo 结构体用于记录单个文件在处理过程中的详细信息
+// 这对于生成详细的处理报告和调试非常有用
 type FileProcessInfo struct {
-	FilePath       string
-	FileSize       int64
-	FileType       string
-	ProcessingTime time.Duration
-	ConversionMode string
-	Success        bool
-	ErrorMsg       string
-	SizeSaved      int64
+	FilePath       string        // 文件完整路径
+	FileSize       int64         // 文件大小（字节）
+	FileType       string        // 文件类型（扩展名）
+	ProcessingTime time.Duration // 处理耗时
+	ConversionMode string        // 转换模式
+	Success        bool          // 是否处理成功
+	ErrorMsg       string        // 错误信息（如果处理失败）
+	SizeSaved      int64         // 节省的空间大小
 }
 
-// Stats 统计信息结构体
+// Stats 结构体用于在整个批处理过程中收集和管理统计数据
+// 它使用互斥锁（sync.Mutex）来确保并发访问时的线程安全
 type Stats struct {
-	sync.Mutex
-	imagesProcessed  int
-	imagesFailed     int
-	videosSkipped    int
-	symlinksSkipped  int
-	othersSkipped    int
-	totalBytesBefore int64
-	totalBytesAfter  int64
-	byExt            map[string]int
-	detailedLogs     []FileProcessInfo // 详细处理日志
+	sync.Mutex                         // 互斥锁，确保并发安全
+	imagesProcessed  int               // 成功处理的图像数量
+	imagesFailed     int               // 处理失败的图像数量
+	videosSkipped    int               // 跳过的视频文件数量
+	symlinksSkipped  int               // 跳过的符号链接数量
+	othersSkipped    int               // 跳过的其他文件数量
+	totalBytesBefore int64             // 原始文件总大小
+	totalBytesAfter  int64             // 转换后文件总大小
+	byExt            map[string]int    // 按扩展名统计的文件数量
+	detailedLogs     []FileProcessInfo // 详细的处理日志记录
 }
 
+// addImageProcessed 原子性地增加成功处理图像的计数
 func (s *Stats) addImageProcessed(sizeBefore, sizeAfter int64) {
 	s.Lock()
 	defer s.Unlock()
@@ -82,78 +103,96 @@ func (s *Stats) addImageProcessed(sizeBefore, sizeAfter int64) {
 	s.totalBytesAfter += sizeAfter
 }
 
+// addImageFailed 原子性地增加处理失败图像的计数
 func (s *Stats) addImageFailed() {
 	s.Lock()
 	defer s.Unlock()
 	s.imagesFailed++
 }
 
+// addVideoSkipped 原子性地增加跳过视频文件的计数
 func (s *Stats) addVideoSkipped() {
 	s.Lock()
 	defer s.Unlock()
 	s.videosSkipped++
 }
 
+// addSymlinkSkipped 原子性地增加跳过符号链接的计数
 func (s *Stats) addSymlinkSkipped() {
 	s.Lock()
 	defer s.Unlock()
 	s.symlinksSkipped++
 }
 
+// addOtherSkipped 原子性地增加跳过其他文件的计数
 func (s *Stats) addOtherSkipped() {
 	s.Lock()
 	defer s.Unlock()
 	s.othersSkipped++
 }
 
-// addDetailedLog 添加详细的处理日志
+// addDetailedLog 线程安全地向详细日志中添加一条处理记录
 func (s *Stats) addDetailedLog(info FileProcessInfo) {
 	s.Lock()
 	defer s.Unlock()
 	s.detailedLogs = append(s.detailedLogs, info)
 }
 
+// init 函数在main函数之前执行，用于初始化日志记录器和并发控制信号量
 func init() {
+	// 设置日志记录器，同时输出到控制台和文件
 	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalf("Failed to open log file: %v", err)
+		log.Fatalf("无法创建日志文件: %v", err)
 	}
 	logger = log.New(io.MultiWriter(os.Stdout, logFile), "", log.LstdFlags)
+
+	// 初始化并发控制信号量，防止系统资源过载
+	cpuCount := runtime.NumCPU()
+	procLimit := cpuCount / 2
+	if procLimit < 2 {
+		procLimit = 2
+	}
+	if procLimit > 4 {
+		procLimit = 4 // 更严格的进程限制，防止系统卡死
+	}
+	procSem = make(chan struct{}, procLimit)
+	fdSem = make(chan struct{}, procLimit*2)
 }
 
+// main 函数是程序的入口点
 func main() {
-	// 🚀 程序启动
 	logger.Printf("🎨 静态图片转AVIF工具 v%s", version)
-	logger.Println("✨ 作者:", author)
-	logger.Println("🔧 开始初始化...")
+	logger.Printf("✨ 作者: %s", author)
+	logger.Printf("🔧 开始初始化...")
 
 	// 解析命令行参数
 	opts := parseFlags()
 
-	// 检查输入目录
+	// 验证输入和输出目录
 	if opts.InputDir == "" {
 		logger.Fatal("❌ 错误: 必须指定输入目录")
 	}
-
-	// 检查输出目录
 	if opts.OutputDir == "" {
 		logger.Fatal("❌ 错误: 必须指定输出目录")
 	}
-
-	// 确保输出目录存在
 	if err := os.MkdirAll(opts.OutputDir, 0755); err != nil {
 		logger.Fatalf("❌ 错误: 无法创建输出目录 %s: %v", opts.OutputDir, err)
 	}
-
-	// 检查输入目录是否存在
 	if _, err := os.Stat(opts.InputDir); os.IsNotExist(err) {
 		logger.Fatalf("❌ 错误: 输入目录不存在: %s", opts.InputDir)
 	}
 
-	// 注册信号处理函数以实现优雅退出
+	// 检查系统依赖工具是否可用
+	logger.Println("🔍 检查系统依赖...")
+	if err := checkDependencies(); err != nil {
+		logger.Printf("❌ 系统依赖检查失败: %v", err)
+		return
+	}
+
+	// 设置信号处理，以实现优雅的程序中断
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
@@ -162,7 +201,7 @@ func main() {
 		cancel()
 	}()
 
-	// 执行转换
+	// 初始化统计数据结构体
 	stats := &Stats{
 		byExt: make(map[string]int),
 	}
@@ -175,6 +214,20 @@ func main() {
 	// 输出统计信息
 	printSummary(stats)
 	validateFileCount(opts.InputDir, len(files), stats)
+}
+
+// checkDependencies 检查系统依赖工具是否可用
+// 返回错误如果任何必需的依赖工具不可用
+func checkDependencies() error {
+	dependencies := []string{"magick", "exiftool"}
+	for _, dep := range dependencies {
+		if _, err := exec.LookPath(dep); err != nil {
+			return fmt.Errorf("缺少依赖: %s", dep)
+		}
+	}
+	logger.Printf("✅ magick 已就绪")
+	logger.Printf("✅ exiftool 已就绪")
+	return nil
 }
 
 func parseFlags() *Options {
@@ -380,9 +433,15 @@ func processFile(ctx context.Context, filePath string, opts *Options) FileProces
 		FileType: filepath.Ext(filePath),
 	}
 
-	// 获取文件大小
+	// Get original file info for modification time and creation time
+	var originalModTime time.Time
+	var originalCreateTime time.Time
 	if stat, err := os.Stat(filePath); err == nil {
 		info.FileSize = stat.Size()
+		originalModTime = stat.ModTime()
+		if ctime, _, ok := getFileTimesDarwin(filePath); ok {
+			originalCreateTime = ctime
+		}
 	}
 
 	logger.Printf("🔄 开始处理: %s", fileName)
@@ -463,6 +522,18 @@ func processFile(ctx context.Context, filePath string, opts *Options) FileProces
 		info.SizeSaved = info.FileSize - stat.Size()
 	}
 
+	// Set modification time for the new file
+	err = os.Chtimes(outputPath, originalModTime, originalModTime)
+	if err != nil {
+		logger.Printf("WARN: Failed to set modification time for %s: %v", outputPath, err)
+	}
+	// On macOS, try to sync Finder visible creation/modification dates
+	if runtime.GOOS == "darwin" && !originalCreateTime.IsZero() {
+		if e := setFinderDates(outputPath, originalCreateTime, originalModTime); e != nil {
+			logger.Printf("WARN: Failed to set Finder dates for %s: %v", outputPath, e)
+		}
+	}
+
 	info.ProcessingTime = time.Since(startTime)
 	return info
 }
@@ -470,25 +541,27 @@ func processFile(ctx context.Context, filePath string, opts *Options) FileProces
 func convertToAvifWithOpts(filePath, outputPath string, opts *Options) error {
 	originalFilePath := filePath // Preserve original file path for metadata copy
 	ext := strings.ToLower(filepath.Ext(filePath))
+	var tempPngPath string
+	var tempRelaxedPngPath string
 
 	// For HEIC/HEIF, convert to a stable intermediate format (PNG) first using enhanced methods.
 	if ext == ".heic" || ext == ".heif" {
-		tempPngPath := outputPath + ".png"
+		tempPngPath = outputPath + ".png"
 		logger.Printf("INFO: [HEIC] Converting to PNG intermediate: %s", filepath.Base(tempPngPath))
-		
+
 		// Approach 1: Use ImageMagick with increased limits to convert to png first
 		cmd := exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", "-define", "heic:use-embedded-profile=false", filePath, tempPngPath)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			logger.Printf("WARN: ImageMagick failed for %s: %v. Output: %s. Trying alternative method.", filepath.Base(filePath), err, string(output))
-			
+
 			// Approach 2: Use ffmpeg as fallback to convert HEIC to PNG with multiple options
 			// First, get the actual dimensions of the HEIC file to ensure we extract the full resolution
 			var ffmpegOutput []byte
 			var ffmpegErr error
 			dimCmd := exec.Command("exiftool", "-s", "-S", "-ImageWidth", "-ImageHeight", filePath)
 			dimOutput, dimErr := dimCmd.CombinedOutput()
-			
+
 			if dimErr != nil {
 				// If exiftool fails, fall back to default approach
 				logger.Printf("WARN: Exiftool dimension detection failed for %s: %v. Falling back to default method.", filepath.Base(filePath), dimErr)
@@ -507,14 +580,14 @@ func convertToAvifWithOpts(filePath, outputPath string, opts *Options) error {
 				// Parse the dimensions from exiftool output
 				lines := strings.Split(strings.TrimSpace(string(dimOutput)), "\n")
 				var width, height int
-				
+
 				// Handle numeric format from exiftool
 				for _, line := range lines {
 					line = strings.TrimSpace(line)
 					if line == "" {
 						continue
 					}
-					
+
 					// Try simple numeric format (just the numbers)
 					if intValue, err := strconv.Atoi(line); err == nil {
 						// Assume first number is width, second is height
@@ -525,7 +598,7 @@ func convertToAvifWithOpts(filePath, outputPath string, opts *Options) error {
 						}
 					}
 				}
-				
+
 				// If we have valid dimensions, use them for proper scaling
 				if width > 0 && height > 0 {
 					cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-vf", fmt.Sprintf("scale=%d:%d", width, height), "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
@@ -546,31 +619,28 @@ func convertToAvifWithOpts(filePath, outputPath string, opts *Options) error {
 					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
 				}
 			}
-			
+
 			// Only if both ffmpeg and ImageMagick approaches fail, try ImageMagick with more relaxed limits
 			if ffmpegErr != nil {
 				logger.Printf("WARN: Ffmpeg failed for %s: %v. Output: %s. Trying ImageMagick with more relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
-				
+
 				// Approach 3: Try using ImageMagick with even more relaxed policy
-				tempRelaxedPngPath := outputPath + ".relaxed.png"
+				tempRelaxedPngPath = outputPath + ".relaxed.png"
 				cmd = exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", "-define", "heic:use-embedded-profile=false", "-define", "heic:decode-effort=0", "-depth", "16", filePath, tempRelaxedPngPath)
 				output, err = cmd.CombinedOutput()
 				if err != nil {
-					logger.Printf("WARN: All HEIC conversion methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s", 
+					logger.Printf("WARN: All HEIC conversion methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s",
 						filepath.Base(filePath), string(output), string(ffmpegOutput), string(output))
 					return fmt.Errorf("all HEIC conversion methods failed: ImageMagick error: %v, ffmpeg error: %v", err, ffmpegErr)
 				}
 				// Use the relaxed ImageMagick output
-				defer os.Remove(tempRelaxedPngPath)
 				filePath = tempRelaxedPngPath
 			} else {
 				// Successfully converted with ffmpeg, now use PNG as input
-				defer os.Remove(tempPngPath)
 				filePath = tempPngPath
 			}
 		} else {
 			// Successfully converted with original ImageMagick approach
-			defer os.Remove(tempPngPath)
 			filePath = tempPngPath
 		}
 	}
@@ -598,6 +668,12 @@ func convertToAvifWithOpts(filePath, outputPath string, opts *Options) error {
 	// 执行ffmpeg命令
 	cmd := exec.CommandContext(ctx, "ffmpeg", args...)
 	output, err := cmd.CombinedOutput()
+	if tempPngPath != "" {
+		os.Remove(tempPngPath)
+	}
+	if tempRelaxedPngPath != "" {
+		os.Remove(tempRelaxedPngPath)
+	}
 	if err != nil {
 		return fmt.Errorf("ffmpeg执行失败: %w\n输出: %s", err, string(output))
 	}
@@ -622,13 +698,56 @@ func copyMetadata(sourcePath, targetPath string) error {
 }
 
 var supportedStaticExtensions = map[string]bool{
-	".jpg":  true, ".jpeg": true, ".png":  true, ".bmp":  true,
-	".tiff": true, ".tif":  true, ".heic": true, ".heif": true,
+	".jpg": true, ".jpeg": true, ".png": true, ".bmp": true,
+	".tiff": true, ".tif": true, ".heic": true, ".heif": true,
 	".jfif": true, ".jpe": true,
 }
 
 func isSupportedStaticType(kind types.Type) bool {
 	return supportedStaticExtensions[kind.Extension]
+}
+
+// getFileTimesDarwin 尝试获取文件的创建/修改时间（macOS）
+func getFileTimesDarwin(p string) (ctime, mtime time.Time, ok bool) {
+	if runtime.GOOS != "darwin" {
+		return time.Time{}, time.Time{}, false
+	}
+	fi, err := os.Stat(p)
+	if err != nil {
+		return time.Time{}, time.Time{}, false
+	}
+	// 修改时间直接取
+	mtime = fi.ModTime()
+	// 创建时间通过 mdls 提取 kMDItemFSCreationDate
+	out, err := exec.Command("mdls", "-raw", "-name", "kMDItemFSCreationDate", p).CombinedOutput()
+	if err != nil {
+		return time.Time{}, time.Time{}, false
+	}
+	ss := strings.TrimSpace(string(out))
+	// 示例: 2024-10-02 22:33:44 +0000
+	t, perr := time.Parse("2006-01-02 15:04:05 -0700", ss)
+	if perr != nil {
+		return time.Time{}, time.Time{}, false
+	}
+	return t, mtime, true
+}
+
+// setFinderDates 通过 exiftool 设置文件的文件系统日期（Finder 可见）
+func setFinderDates(p string, ctime, mtime time.Time) error {
+	// exiftool -overwrite_original -P -FileCreateDate=... -FileModifyDate=...
+	layout := "2006:01:02 15:04:05"
+	args := []string{
+		"-overwrite_original",
+		"-P",
+		"-FileCreateDate=" + ctime.Local().Format(layout),
+		"-FileModifyDate=" + mtime.Local().Format(layout),
+		p,
+	}
+	out, err := exec.Command("exiftool", args...).CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("exiftool set Finder dates failed: %v, out=%s", err, string(out))
+	}
+	return nil
 }
 
 func printSummary(stats *Stats) {
@@ -639,27 +758,26 @@ func printSummary(stats *Stats) {
 	totalSavedMB := totalSavedKB / 1024.0
 	compressionRatio := float64(stats.totalBytesAfter) / float64(stats.totalBytesBefore) * 100
 
-	logger.Println("🎯 ===== 处理摘要 =====")
+	logger.Println("🎯 ===== 处理摘要 ====")
 	logger.Printf("✅ 成功处理图像: %d", stats.imagesProcessed)
 	logger.Printf("❌ 转换失败图像: %d", stats.imagesFailed)
 	logger.Printf("🎬 跳过视频文件: %d", stats.videosSkipped)
 	logger.Printf("🔗 跳过符号链接: %d", stats.symlinksSkipped)
 	logger.Printf("📄 跳过其他文件: %d", stats.othersSkipped)
-	logger.Println("📊 ===== 大小统计 =====")
+	logger.Println("📊 ===== 大小统计 ====")
 	logger.Printf("📥 原始总大小: %.2f MB", float64(stats.totalBytesBefore)/(1024*1024))
 	logger.Printf("📤 转换后大小: %.2f MB", float64(stats.totalBytesAfter)/(1024*1024))
 	logger.Printf("💾 节省空间: %.2f MB (压缩率: %.1f%%)", totalSavedMB, compressionRatio)
 
 	if len(stats.byExt) > 0 {
-		logger.Println("📋 ===== 格式统计 =====")
+		logger.Println("📋 ===== 格式统计 ====")
 		for k, v := range stats.byExt {
 			logger.Printf("  🖼️  %s: %d个文件", k, v)
 		}
 	}
-	logger.Println("🎉 ===== 处理完成 =====")
+	logger.Println("🎉 ===== 处理完成 ====")
 }
 
-// validateFileCount 验证处理前后的文件数量
 func validateFileCount(workDir string, originalMediaCount int, stats *Stats) {
 	currentMediaCount := 0
 	currentAvifCount := 0
@@ -700,27 +818,26 @@ func validateFileCount(workDir string, originalMediaCount int, stats *Stats) {
 	logger.Printf("   实际剩余媒体文件数: %d", currentMediaCount)
 
 	if currentAvifCount == expectedAvifCount && currentMediaCount == expectedMediaCount {
-		logger.Printf("✅ 文件数量验证通过。")
+		logger.Printf("✅ 文件数量验证通过。\n")
 	} else {
-		logger.Printf("❌ 文件数量验证失败。")
+		logger.Printf("❌ 文件数量验证失败。\n")
 		if currentAvifCount != expectedAvifCount {
-			logger.Printf("   AVIF文件数不匹配 (实际: %d, 期望: %d)", currentAvifCount, expectedAvifCount)
+			logger.Printf("   AVIF文件数不匹配 (实际: %d, 期望: %d)\n", currentAvifCount, expectedAvifCount)
 		}
 		if currentMediaCount != expectedMediaCount {
-			logger.Printf("   剩余媒体文件数不匹配 (实际: %d, 期望: %d)", currentMediaCount, expectedMediaCount)
+			logger.Printf("   剩余媒体文件数不匹配 (实际: %d, 期望: %d)\n", currentMediaCount, expectedMediaCount)
 		}
 
 		// 查找可能的临时文件
 		tempFiles := findTempFiles(workDir)
 		if len(tempFiles) > 0 {
-			logger.Printf("🗑️  发现 %d 个临时文件，正在清理...", len(tempFiles))
+			logger.Printf("🗑️  发现 %d 个临时文件，正在清理...\n", len(tempFiles))
 			cleanupTempFiles(tempFiles)
-			logger.Printf("✅ 临时文件清理完成")
+			logger.Printf("✅ 临时文件清理完成\n")
 		}
 	}
 }
 
-// findTempFiles 查找临时文件
 func findTempFiles(workDir string) []string {
 	var tempFiles []string
 	err := godirwalk.Walk(workDir, &godirwalk.Options{
@@ -747,7 +864,6 @@ func findTempFiles(workDir string) []string {
 	return tempFiles
 }
 
-// cleanupTempFiles 清理临时文件
 func cleanupTempFiles(tempFiles []string) {
 	for _, file := range tempFiles {
 		if err := os.Remove(file); err != nil {
@@ -757,4 +873,3 @@ func cleanupTempFiles(tempFiles []string) {
 		}
 	}
 }
-

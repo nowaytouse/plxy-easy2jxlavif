@@ -1,722 +1,722 @@
-# easymode 程序使用教程
+# easymode Program Usage Tutorial
 
-本教程解释如何使用 easymode 程序，包括图像格式转换、媒体去重、元数据管理和视频转换工具。这些是用于将媒体文件转换为现代格式的高质量、高效率的命令行工具。
+This tutorial explains how to use the easymode programs, including tools for image format conversion, media deduplication, metadata management, and video conversion. These are high-quality, high-efficiency command-line tools for converting media files to modern formats.
 
-## 目录
-1. [概述](#概述)
-2. [前提条件](#前提条件)
-3. [all2jxl - 将图像转换为 JPEG XL](#all2jxl---将图像转换为-jpeg-xl)
-4. [all2avif - 统一 AVIF 转换工具](#all2avif---统一-avif-转换工具)
-5. [static2avif - 静态图像转 AVIF](#static2avif---静态图像转-avif)
-6. [dynamic2avif - 动画图像转 AVIF](#dynamic2avif---动画图像转-avif)
-7. [static2jxl - 静态图像转 JXL](#static2jxl---静态图像转-jxl)
-8. [dynamic2jxl - 动画图像转 JXL](#dynamic2jxl---动画图像转-jxl)
-9. [deduplicate_media - 媒体文件去重](#deduplicate_media---媒体文件去重)
-10. [merge_xmp - XMP元数据合并](#merge_xmp---xmp元数据合并)
-11. [video2mov - 视频格式转换](#video2mov---视频格式转换)
-12. [最佳实践](#最佳实践)
+## Table of Contents
+1. [Overview](#overview)
+2. [Prerequisites](#prerequisites)
+3. [all2jxl - Convert Images to JPEG XL](#all2jxl---convert-images-to-jpeg-xl)
+4. [all2avif - Unified AVIF Conversion Tool](#all2avif---unified-avif-conversion-tool)
+5. [static2avif - Static Images to AVIF](#static2avif---static-images-to-avif)
+6. [dynamic2avif - Animated Images to AVIF](#dynamic2avif---animated-images-to-avif)
+7. [static2jxl - Static Images to JXL](#static2jxl---static-images-to-jxl)
+8. [dynamic2jxl - Animated Images to JXL](#dynamic2jxl---animated-images-to-jxl)
+9. [deduplicate_media - Deduplicate Media Files](#deduplicate_media---deduplicate-media-files)
+10. [merge_xmp - Merge XMP Metadata](#merge_xmp---merge-xmp-metadata)
+11. [video2mov - Video Format Conversion](#video2mov---video-format-conversion)
+12. [Best Practices](#best-practices)
 
-## 概述
+## Overview
 
-easymode 程序提供简单、高质量的媒体处理工具：
+The easymode programs provide a simple, high-quality set of media processing tools:
 
-- **all2jxl**: 将各种图像格式转换为 JPEG XL（尽可能进行无损转换）
-- **all2avif**: 统一工具，将静态和动态图像转换为 AVIF 格式
-- **static2avif**: 专门处理静态图像转AVIF格式
-- **dynamic2avif**: 专门处理动画图像转AVIF格式
-- **static2jxl**: 专门处理静态图像转JXL格式
-- **dynamic2jxl**: 专门处理动画图像转JXL格式
-- **deduplicate_media**: 检测和删除重复的媒体文件
-- **merge_xmp**: 合并和管理XMP元数据
-- **video2mov**: 转换各种视频格式
+- **all2jxl**: Converts various image formats to JPEG XL (with lossless conversion where possible).
+- **all2avif**: A unified tool for converting static and dynamic images to the AVIF format.
+- **static2avif**: Specialized tool for converting static images to AVIF format.
+- **dynamic2avif**: Specialized tool for converting animated images to AVIF format.
+- **static2jxl**: Specialized tool for converting static images to JXL format.
+- **dynamic2jxl**: Specialized tool for converting animated images to JXL format.
+- **deduplicate_media**: Detects and deletes duplicate media files.
+- **merge_xmp**: Merges and manages XMP metadata.
+- **video2mov**: Converts various video formats.
 
-所有程序都支持并发处理并包含健全的错误处理。
+All programs support concurrent processing and include robust error handling.
 
-## 前提条件
+## Prerequisites
 
-在使用这些工具之前，请确保您已安装所需的依赖项：
+Before using these tools, please ensure you have the required dependencies installed:
 
-### 系统要求
-- Go 1.19 或更高版本
-- macOS、Linux 或 Windows
+### System Requirements
+- Go 1.19 or higher
+- macOS, Linux, or Windows
 
-### 依赖工具
+### Dependency Tools
 
-#### all2jxl 依赖
-- `cjxl` - JPEG XL 编码器
-- `djxl` - JPEG XL 解码器
-- `exiftool` - 元数据处理工具
+#### all2jxl Dependencies
+- `cjxl` - JPEG XL encoder
+- `djxl` - JPEG XL decoder
+- `exiftool` - Metadata processing tool
 
-#### all2avif 依赖
-- `ffmpeg` - 视频和图像处理工具
-- `exiftool` - 元数据处理工具
+#### all2avif Dependencies
+- `ffmpeg` - Video and image processing tool
+- `exiftool` - Metadata processing tool
 
-### 安装依赖
+### Installing Dependencies
 
-#### macOS (使用 Homebrew)
+#### macOS (using Homebrew)
 ```bash
-# all2jxl 的依赖
+# Dependencies for all2jxl
 brew install jpeg-xl exiftool
 
-# all2avif 的依赖
+# Dependencies for all2avif
 brew install ffmpeg exiftool
 ```
 
 #### Ubuntu/Debian
 ```bash
-# all2jxl 的依赖
+# Dependencies for all2jxl
 sudo apt install libjxl-tools exiftool
 
-# all2avif 的依赖
+# Dependencies for all2avif
 sudo apt install ffmpeg exiftool
 ```
 
 #### CentOS/RHEL
 ```bash
-# all2jxl 的依赖
+# Dependencies for all2jxl
 sudo yum install libjxl-tools perl-Image-ExifTool
 
-# all2avif 的依赖
+# Dependencies for all2avif
 sudo yum install ffmpeg perl-Image-ExifTool
 ```
 
-## all2jxl - 将图像转换为 JPEG XL
+## all2jxl - Convert Images to JPEG XL
 
-### 概述
-`all2jxl` 是一个高性能的 JPEG XL 转换器，支持多种图像格式的无损转换。
+### Overview
+`all2jxl` is a high-performance JPEG XL converter that supports lossless conversion for a variety of image formats.
 
-### 特性
-- 支持格式：JPEG、PNG、GIF、WebP、BMP、TIFF、HEIC、HEIF、AVIF
-- 智能动画检测（支持HEIF动画）
-- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
-- 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
-- 统一验证流程：支持HEIC/HEIF文件的验证和像素级准确性检查
-- 无损和数学上无损转换
-- 完整的元数据保留
-- 高性能并行处理
+### Features
+- Supported formats: JPEG, PNG, GIF, WebP, BMP, TIFF, HEIC, HEIF, AVIF
+- Intelligent animation detection (supports HEIF animation)
+- Live Photo protection: Automatically detects and skips Apple Live Photos (.mov sidecar files)
+- Multiple conversion strategies: Automatically switches between ImageMagick, FFmpeg, and a relaxed mode to handle HEIC/HEIF files
+- Unified verification process: Supports verification of HEIC/HEIF files and pixel-perfect accuracy checks
+- Lossless and mathematically lossless conversion
+- Complete metadata preservation
+- High-performance parallel processing
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/all2jxl
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本转换
+# Basic conversion
 ./all2jxl -dir /path/to/images
 
-# 查看帮助
+# View help
 ./all2jxl -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-dir` | 必需 | 输入目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-quality` | 80 | 图像质量 (1-100) |
-| `-skip-exist` | true | 跳过已存在的 JXL 文件 |
-| `-replace` | true | 转换后删除原始文件 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
-| `-retries` | 1 | 重试次数 |
+| Argument | Default | Description |
+|---|---|---|
+| `-dir` | Required | Input directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-quality` | 80 | Image quality (1-100) |
+| `-skip-exist` | true | Skip existing JXL files |
+| `-replace` | true | Delete original files after conversion |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
+| `-retries` | 1 | Number of retries |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本转换
+# Basic conversion
 ./all2jxl -dir ~/Pictures
 
-# 高质量转换
+# High-quality conversion
 ./all2jxl -dir ~/Pictures -quality 95
 
-# 使用更多工作线程
+# Use more worker threads
 ./all2jxl -dir ~/Pictures -workers 20
 
-# 试运行模式
+# Dry run mode
 ./all2jxl -dir ~/Pictures -dry-run
 
-# 转换后保留原始文件
+# Keep original files after conversion
 ./all2jxl -dir ~/Pictures -replace=false
 ```
 
-### 输出示例
+### Example Output
 
 ```
-🎨 JPEG XL 批量转换工具 v2.0.0
-✨ 作者: AI Assistant
-🔧 开始初始化...
-✅ cjxl 已就绪
-✅ djxl 已就绪
-✅ exiftool 已就绪
-📁 准备处理目录...
-📂 直接处理目录: /path/to/images
-🔍 扫描图像文件...
-📊 发现 150 个候选文件
-⚡ 配置处理性能...
-🚀 开始并行处理 - 工作线程: 10, 文件数: 150
+🎨 JPEG XL Batch Conversion Tool v2.0.0
+✨ Author: AI Assistant
+🔧 Initializing...
+✅ cjxl is ready
+✅ djxl is ready
+✅ exiftool is ready
+📁 Preparing processing directory...
+📂 Processing directory directly: /path/to/images
+🔍 Scanning image files...
+📊 Found 150 candidate files
+⚡ Configuring processing performance...
+🚀 Starting parallel processing - Workers: 10, Files: 150
 
-🔄 开始处理: image1.jpg (2.5 MB)
-✅ 识别为图像格式: image1.jpg (jpg)
-🖼️  静态图像: image1.jpg
-✅ 转换完成: image1.jpg (JPEG Lossless Re-encode)
-✅ 验证通过: image1.jpg 无损转换正确
-🎉 处理成功: image1.jpg
-📊 大小变化: 2.50 MB -> 2.00 MB (节省: 0.50 MB, 压缩率: 80.0%)
+🔄 Starting to process: image1.jpg (2.5 MB)
+✅ Identified as image format: image1.jpg (jpg)
+🖼️  Static image: image1.jpg
+✅ Conversion complete: image1.jpg (JPEG Lossless Re-encode)
+✅ Verification successful: image1.jpg lossless conversion correct
+🎉 Processing successful: image1.jpg
+📊 Size change: 2.50 MB -> 2.00 MB (Saved: 0.50 MB, Compression ratio: 80.0%)
 
 ...
 
-⏱️  总处理时间: 2m30.5s
-🎯 ===== 处理摘要 =====
-✅ 成功处理图像: 150
-❌ 转换失败图像: 0
-📊 ===== 大小统计 =====
-📥 原始总大小: 500.00 MB
-📤 转换后大小: 350.00 MB
-💾 节省空间: 150.00 MB (压缩率: 70.0%)
-🎉 ===== 处理完成 =====
+⏱️  Total processing time: 2m30.5s
+🎯 ===== Processing Summary =====
+✅ Successfully processed images: 150
+❌ Failed to convert images: 0
+📊 ===== Size Statistics =====
+📥 Original total size: 500.00 MB
+📤 Converted size: 350.00 MB
+💾 Space saved: 150.00 MB (Compression ratio: 70.0%)
+🎉 ===== Processing Complete =====
 ```
 
-## all2avif - 统一 AVIF 转换工具
+## all2avif - Unified AVIF Conversion Tool
 
-### 概述
-`all2avif` 是一个统一的 AVIF 转换工具，支持静态和动态图像的转换。
+### Overview
+`all2avif` is a unified AVIF conversion tool that supports the conversion of both static and dynamic images.
 
-### 特性
-- 支持静态图像：JPEG、PNG、BMP、TIFF、WebP、HEIC、HEIF、AVIF
-- 支持动画图像：GIF、WebP 动画、APNG、HEIF 动画
-- 智能动画检测（支持HEIF动画检测）
-- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
-- 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
-- 可配置的质量和速度设置
-- 完整的元数据保留
+### Features
+- Supports static images: JPEG, PNG, BMP, TIFF, WebP, HEIC, HEIF, AVIF
+- Supports animated images: GIF, animated WebP, APNG, animated HEIF
+- Intelligent animation detection (supports HEIF animation detection)
+- Live Photo protection: Automatically detects and skips Apple Live Photos (.mov sidecar files)
+- Multiple conversion strategies: Automatically switches between ImageMagick, FFmpeg, and a relaxed mode to handle HEIC/HEIF files
+- Configurable quality and speed settings
+- Complete metadata preservation
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/all2avif
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本转换
+# Basic conversion
 ./all2avif -dir /path/to/images
 
-# 查看帮助
+# View help
 ./all2avif -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-dir` | 必需 | 输入目录路径 |
-| `-output` | 输入目录 | 输出目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-quality` | 80 | 图像质量 (1-100) |
-| `-speed` | 4 | 编码速度 (0-6) |
-| `-skip-exist` | true | 跳过已存在的 AVIF 文件 |
-| `-replace` | true | 转换后删除原始文件 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
-| `-retries` | 1 | 重试次数 |
+| Argument | Default | Description |
+|---|---|---|
+| `-dir` | Required | Input directory path |
+| `-output` | Input directory | Output directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-quality` | 80 | Image quality (1-100) |
+| `-speed` | 4 | Encoding speed (0-6) |
+| `-skip-exist` | true | Skip existing AVIF files |
+| `-replace` | true | Delete original files after conversion |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
+| `-retries` | 1 | Number of retries |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本转换
+# Basic conversion
 ./all2avif -dir ~/Pictures
 
-# 高质量转换
+# High-quality conversion
 ./all2avif -dir ~/Pictures -quality 90
 
-# 快速转换
+# Fast conversion
 ./all2avif -dir ~/Pictures -speed 6
 
-# 指定输出目录
+# Specify output directory
 ./all2avif -dir ~/Pictures -output ~/Pictures/avif
 
-# 试运行模式
+# Dry run mode
 ./all2avif -dir ~/Pictures -dry-run
 ```
 
-### 质量与速度设置
+### Quality and Speed Settings
 
-#### 质量设置 (1-100)
-- **90-100**: 最高质量，文件较大
-- **80-89**: 高质量，平衡质量和大小
-- **70-79**: 中等质量，较小文件
-- **60-69**: 低质量，小文件
-- **1-59**: 最低质量，最小文件
+#### Quality Settings (1-100)
+- **90-100**: Highest quality, larger file size
+- **80-89**: High quality, balanced quality and size
+- **70-79**: Medium quality, smaller file size
+- **60-69**: Low quality, small file size
+- **1-59**: Lowest quality, smallest file size
 
-#### 速度设置 (0-6)
-- **0-1**: 最慢，质量最好
-- **2-3**: 较慢，质量较好
-- **4**: 默认设置，平衡速度和质量
-- **5-6**: 最快，质量一般
+#### Speed Settings (0-6)
+- **0-1**: Slowest, best quality
+- **2-3**: Slower, better quality
+- **4**: Default setting, balanced speed and quality
+- **5-6**: Fastest, average quality
 
-### 输出示例
+### Example Output
 
 ```
-🎨 AVIF 批量转换工具 v2.0.0
-✨ 作者: AI Assistant
-🔧 开始初始化...
-✅ ffmpeg 已就绪
-✅ exiftool 已就绪
-📁 准备处理目录...
-📂 直接处理目录: /path/to/images
-🔍 扫描图像文件...
-📊 发现 150 个候选文件
-⚡ 配置处理性能...
-🚀 开始并行处理 - 工作线程: 10, 文件数: 150
+🎨 AVIF Batch Conversion Tool v2.0.0
+✨ Author: AI Assistant
+🔧 Initializing...
+✅ ffmpeg is ready
+✅ exiftool is ready
+📁 Preparing processing directory...
+📂 Processing directory directly: /path/to/images
+🔍 Scanning image files...
+📊 Found 150 candidate files
+⚡ Configuring processing performance...
+🚀 Starting parallel processing - Workers: 10, Files: 150
 
-🔄 开始处理: image1.jpg (2.5 MB)
-🖼️  静态图像: image1.jpg
-✅ 转换完成: image1.jpg (Static Image Conversion)
-📋 元数据复制成功: image1.jpg
-🎉 处理成功: image1.jpg
-📊 大小变化: 2.50 MB -> 1.20 MB (节省: 1.30 MB, 压缩率: 48.0%)
+🔄 Starting to process: image1.jpg (2.5 MB)
+🖼️  Static image: image1.jpg
+✅ Conversion complete: image1.jpg (Static Image Conversion)
+📋 Metadata copied successfully: image1.jpg
+🎉 Processing successful: image1.jpg
+📊 Size change: 2.50 MB -> 1.20 MB (Saved: 1.30 MB, Compression ratio: 48.0%)
 
-🔄 开始处理: animation.gif (1.2 MB)
-🎬 检测到动画图像: animation.gif
-✅ 转换完成: animation.gif (Animated Image Conversion)
-📋 元数据复制成功: animation.gif
-🎉 处理成功: animation.gif
-📊 大小变化: 1.20 MB -> 0.80 MB (节省: 0.40 MB, 压缩率: 66.7%)
+🔄 Starting to process: animation.gif (1.2 MB)
+🎬 Detected animated image: animation.gif
+✅ Conversion complete: animation.gif (Animated Image Conversion)
+📋 Metadata copied successfully: animation.gif
+🎉 Processing successful: animation.gif
+📊 Size change: 1.20 MB -> 0.80 MB (Saved: 0.40 MB, Compression ratio: 66.7%)
 
 ...
 
-⏱️  总处理时间: 3m15.2s
-🎯 ===== 处理摘要 =====
-✅ 成功处理图像: 150
-❌ 转换失败图像: 0
-📊 ===== 大小统计 =====
-📥 原始总大小: 500.00 MB
-📤 转换后大小: 300.00 MB
-💾 节省空间: 200.00 MB (压缩率: 60.0%)
-🎉 ===== 处理完成 =====
+⏱️  Total processing time: 3m15.2s
+🎯 ===== Processing Summary =====
+✅ Successfully processed images: 150
+❌ Failed to convert images: 0
+📊 ===== Size Statistics =====
+📥 Original total size: 500.00 MB
+📤 Converted size: 300.00 MB
+💾 Space saved: 200.00 MB (Compression ratio: 60.0%)
+🎉 ===== Processing Complete =====
 ```
 
-## static2avif - 静态图像转 AVIF
+## static2avif - Static Images to AVIF
 
-### 概述
-`static2avif` 是一个专门针对静态图像的AVIF转换工具，提供了优化的处理流程。
+### Overview
+`static2avif` is a specialized AVIF conversion tool for static images, providing an optimized processing flow.
 
-### 特性
-- 支持静态图像：JPEG、PNG、BMP、TIFF、WebP、HEIC、HEIF、AVIF
-- 针对静态图像优化，处理速度更快
-- 可配置的质量和速度设置
-- 完整的元数据保留
+### Features
+- Supports static images: JPEG, PNG, BMP, TIFF, WebP, HEIC, HEIF, AVIF
+- Optimized for static images, faster processing speed
+- Configurable quality and speed settings
+- Complete metadata preservation
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/static2avif
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本转换
+# Basic conversion
 ./static2avif -input /path/to/images
 
-# 查看帮助
+# View help
 ./static2avif -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-input` | 必需 | 输入目录路径 |
-| `-output` | 输入目录 | 输出目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-quality` | 80 | 图像质量 (1-100) |
-| `-speed` | 4 | 编码速度 (0-6) |
-| `-skip-exist` | true | 跳过已存在的 AVIF 文件 |
-| `-replace` | true | 转换后删除原始文件 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
-| `-retries` | 1 | 重试次数 |
+| Argument | Default | Description |
+|---|---|---|
+| `-input` | Required | Input directory path |
+| `-output` | Input directory | Output directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-quality` | 80 | Image quality (1-100) |
+| `-speed` | 4 | Encoding speed (0-6) |
+| `-skip-exist` | true | Skip existing AVIF files |
+| `-replace` | true | Delete original files after conversion |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
+| `-retries` | 1 | Number of retries |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本转换
+# Basic conversion
 ./static2avif -input ~/Pictures
 
-# 高质量转换
+# High-quality conversion
 ./static2avif -input ~/Pictures -quality 90
 
-# 快速转换
+# Fast conversion
 ./static2avif -input ~/Pictures -speed 6
 
-# 指定输出目录
+# Specify output directory
 ./static2avif -input ~/Pictures -output ~/Pictures/avif
 
-# 试运行模式
+# Dry run mode
 ./static2avif -input ~/Pictures -dry-run
 ```
 
-## dynamic2avif - 动画图像转 AVIF
+## dynamic2avif - Animated Images to AVIF
 
-### 概述
-`dynamic2avif` 是一个专门针对动画图像的AVIF转换工具，支持多种动画格式。
+### Overview
+`dynamic2avif` is a specialized AVIF conversion tool for animated images, supporting a variety of animated formats.
 
-### 特性
-- 支持动画图像：GIF、WebP 动画、APNG、HEIF 动画
-- 智能动画检测（支持HEIF动画检测）
-- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
-- 多重转换策略：自动在ImageMagick、FFmpeg和宽松模式间切换以处理HEIC/HEIF文件
-- 可配置的质量设置
-- 完整的元数据保留
+### Features
+- Supports animated images: GIF, animated WebP, APNG, animated HEIF
+- Intelligent animation detection (supports HEIF animation detection)
+- Live Photo protection: Automatically detects and skips Apple Live Photos (.mov sidecar files)
+- Multiple conversion strategies: Automatically switches between ImageMagick, FFmpeg, and a relaxed mode to handle HEIC/HEIF files
+- Configurable quality settings
+- Complete metadata preservation
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/dynamic2avif
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本转换
+# Basic conversion
 ./dynamic2avif -input /path/to/images
 
-# 查看帮助
+# View help
 ./dynamic2avif -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-input` | 必需 | 输入目录路径 |
-| `-output` | 输入目录 | 输出目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-quality` | 80 | 图像质量 (1-100) |
-| `-skip-exist` | true | 跳过已存在的 AVIF 文件 |
-| `-replace` | true | 转换后删除原始文件 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
-| `-retries` | 1 | 重试次数 |
+| Argument | Default | Description |
+|---|---|---|
+| `-input` | Required | Input directory path |
+| `-output` | Input directory | Output directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-quality` | 80 | Image quality (1-100) |
+| `-skip-exist` | true | Skip existing AVIF files |
+| `-replace` | true | Delete original files after conversion |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
+| `-retries` | 1 | Number of retries |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本转换
+# Basic conversion
 ./dynamic2avif -input ~/Animations
 
-# 高质量转换
+# High-quality conversion
 ./dynamic2avif -input ~/Animations -quality 90
 
-# 指定输出目录
+# Specify output directory
 ./dynamic2avif -input ~/Animations -output ~/Animations/avif
 
-# 试运行模式
+# Dry run mode
 ./dynamic2avif -input ~/Animations -dry-run
 ```
 
-## static2jxl - 静态图像转 JXL
+## static2jxl - Static Images to JXL
 
-### 概述
-`static2jxl` 是一个专门针对静态图像的JPEG XL转换工具，提供无损和有损转换选项。
+### Overview
+`static2jxl` is a specialized JPEG XL conversion tool for static images, providing lossless and lossy conversion options.
 
-### 特性
-- 支持静态图像：JPEG、PNG、GIF、WebP、BMP、TIFF、HEIC、HEIF、AVIF
-- 针对静态图像优化的处理流程
-- 无损和数学上无损转换
-- 完整的元数据保留
-- 高性能并行处理
+### Features
+- Supports static images: JPEG, PNG, GIF, WebP, BMP, TIFF, HEIC, HEIF, AVIF
+- Optimized processing flow for static images
+- Lossless and mathematically lossless conversion
+- Complete metadata preservation
+- High-performance parallel processing
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/static2jxl
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本转换
+# Basic conversion
 ./static2jxl -input /path/to/images
 
-# 查看帮助
+# View help
 ./static2jxl -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-input` | 必需 | 输入目录路径 |
-| `-output` | 输入目录 | 输出目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-quality` | 95 | 图像质量 (1-100) |
-| `-skip-exist` | true | 跳过已存在的 JXL 文件 |
-| `-replace` | true | 转换后删除原始文件 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
-| `-retries` | 1 | 重试次数 |
+| Argument | Default | Description |
+|---|---|---|
+| `-input` | Required | Input directory path |
+| `-output` | Input directory | Output directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-quality` | 95 | Image quality (1-100) |
+| `-skip-exist` | true | Skip existing JXL files |
+| `-replace` | true | Delete original files after conversion |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
+| `-retries` | 1 | Number of retries |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本转换
+# Basic conversion
 ./static2jxl -input ~/Pictures
 
-# 高质量转换
+# High-quality conversion
 ./static2jxl -input ~/Pictures -quality 98
 
-# 指定输出目录
+# Specify output directory
 ./static2jxl -input ~/Pictures -output ~/Pictures/jxl
 
-# 试运行模式
+# Dry run mode
 ./static2jxl -input ~/Pictures -dry-run
 ```
 
-## dynamic2jxl - 动画图像转 JXL
+## dynamic2jxl - Animated Images to JXL
 
-### 概述
-`dynamic2jxl` 是一个专门针对动画图像的JPEG XL转换工具，支持多种动画格式。
+### Overview
+`dynamic2jxl` is a specialized JPEG XL conversion tool for animated images, supporting a variety of animated formats.
 
-### 特性
-- 支持动画图像：GIF、WebP 动画、APNG、HEIF 动画
-- 智能动画检测（支持HEIF动画检测）
-- Live Photo 保护：自动检测并跳过 Apple Live Photos（.mov 配对文件）
-- 无损和数学上无损转换
-- 完整的元数据保留
-- 高性能并行处理
+### Features
+- Supports animated images: GIF, animated WebP, APNG, animated HEIF
+- Intelligent animation detection (supports HEIF animation detection)
+- Live Photo protection: Automatically detects and skips Apple Live Photos (.mov sidecar files)
+- Lossless and mathematically lossless conversion
+- Complete metadata preservation
+- High-performance parallel processing
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/dynamic2jxl
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本转换
+# Basic conversion
 ./dynamic2jxl -input /path/to/images
 
-# 查看帮助
+# View help
 ./dynamic2jxl -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-input` | 必需 | 输入目录路径 |
-| `-output` | 输入目录 | 输出目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-quality` | 95 | 图像质量 (1-100) |
-| `-skip-exist` | true | 跳过已存在的 JXL 文件 |
-| `-replace` | true | 转换后删除原始文件 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
-| `-retries` | 1 | 重试次数 |
+| Argument | Default | Description |
+|---|---|---|
+| `-input` | Required | Input directory path |
+| `-output` | Input directory | Output directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-quality` | 95 | Image quality (1-100) |
+| `-skip-exist` | true | Skip existing JXL files |
+| `-replace` | true | Delete original files after conversion |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
+| `-retries` | 1 | Number of retries |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本转换
+# Basic conversion
 ./dynamic2jxl -input ~/Animations
 
-# 高质量转换
+# High-quality conversion
 ./dynamic2jxl -input ~/Animations -quality 98
 
-# 指定输出目录
+# Specify output directory
 ./dynamic2jxl -input ~/Animations -output ~/Animations/jxl
 
-# 试运行模式
+# Dry run mode
 ./dynamic2jxl -input ~/Animations -dry-run
 ```
 
-## deduplicate_media - 媒体文件去重
+## deduplicate_media - Deduplicate Media Files
 
-### 概述
-`deduplicate_media` 是一个用于检测和删除重复媒体文件的工具。
+### Overview
+`deduplicate_media` is a tool for detecting and deleting duplicate media files.
 
-### 特性
-- 比较文件内容识别重复项
-- 高效的哈希算法
-- 安全删除机制
-- 支持图片和视频文件
+### Features
+- Compares file content to identify duplicates
+- Efficient hashing algorithm
+- Safe deletion mechanism
+- Supports both image and video files
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/deduplicate_media
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本去重
+# Basic deduplication
 ./deduplicate_media -dir /path/to/media
 
-# 查看帮助
+# View help
 ./deduplicate_media -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-dir` | 必需 | 输入目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
+| Argument | Default | Description |
+|---|---|---|
+| `-dir` | Required | Input directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本去重
+# Basic deduplication
 ./deduplicate_media -dir ~/Photos
 
-# 使用更多工作线程
+# Use more worker threads
 ./deduplicate_media -dir ~/Photos -workers 20
 
-# 试运行模式
+# Dry run mode
 ./deduplicate_media -dir ~/Photos -dry-run
 ```
 
-## merge_xmp - XMP元数据合并
+## merge_xmp - Merge XMP Metadata
 
-### 概述
-`merge_xmp` 是一个用于合并和管理XMP元数据的工具。
+### Overview
+`merge_xmp` is a tool for merging and managing XMP metadata.
 
-### 特性
-- 保留和合并元数据信息
-- 支持多种图像格式
-- 安全的元数据操作
+### Features
+- Preserves and merges metadata information
+- Supports a variety of image formats
+- Safe metadata operations
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/merge_xmp
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本合并
+# Basic merge
 ./merge_xmp -input /path/to/images
 
-# 查看帮助
+# View help
 ./merge_xmp -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-input` | 必需 | 输入目录路径 |
-| `-output` | 输入目录 | 输出目录路径 |
-| `-dry-run` | false | 试运行模式 |
+| Argument | Default | Description |
+|---|---|---|
+| `-input` | Required | Input directory path |
+| `-output` | Input directory | Output directory path |
+| `-dry-run` | false | Dry run mode |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本合并
+# Basic merge
 ./merge_xmp -input ~/Photos
 
-# 指定输出目录
+# Specify output directory
 ./merge_xmp -input ~/Photos -output ~/Photos/xmp-merged
 
-# 试运行模式
+# Dry run mode
 ./merge_xmp -input ~/Photos -dry-run
 ```
 
-## video2mov - 视频格式转换
+## video2mov - Video Format Conversion
 
-### 概述
-`video2mov` 是一个用于转换各种视频格式的工具。
+### Overview
+`video2mov` is a tool for converting various video formats.
 
-### 特性
-- 支持多种视频格式转换
-- 保持视频质量
-- 高效处理
+### Features
+- Supports a variety of video format conversions
+- Preserves video quality
+- Efficient processing
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 进入工具目录
+# Navigate to the tool directory
 cd easymode/video2mov
 
-# 构建工具
+# Build the tool
 ./build.sh
 
-# 基本转换
+# Basic conversion
 ./video2mov -input /path/to/videos
 
-# 查看帮助
+# View help
 ./video2mov -h
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `-input` | 必需 | 输入目录路径 |
-| `-output` | 输入目录 | 输出目录路径 |
-| `-workers` | 10 | 工作线程数 |
-| `-dry-run` | false | 试运行模式 |
-| `-timeout` | 300 | 单个文件超时时间（秒） |
+| Argument | Default | Description |
+|---|---|---|
+| `-input` | Required | Input directory path |
+| `-output` | Input directory | Output directory path |
+| `-workers` | 10 | Number of worker threads |
+| `-dry-run` | false | Dry run mode |
+| `-timeout` | 300 | Timeout in seconds for a single file |
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 基本转换
+# Basic conversion
 ./video2mov -input ~/Videos
 
-# 指定输出目录
+# Specify output directory
 ./video2mov -input ~/Videos -output ~/Videos/converted
 
-# 试运行模式
+# Dry run mode
 ./video2mov -input ~/Videos -dry-run
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 选择合适的工具
+### 1. Choose the Right Tool
 
-- **使用 all2jxl**: 当您需要无损压缩和最高质量时
-- **使用 all2avif**: 当您需要现代格式和良好的压缩率时
+- **Use all2jxl**: When you need lossless compression and the highest quality.
+- **Use all2avif**: When you need a modern format and good compression.
 
-### 2. 性能优化
+### 2. Performance Optimization
 
-#### 工作线程设置
+#### Worker Thread Settings
 ```bash
-# 对于多核CPU，使用更多工作线程
+# For multi-core CPUs, use more worker threads
 ./all2jxl -dir /path/to/images -workers 20
 ./all2avif -dir /path/to/images -workers 20
 
-# 对于内存受限的系统，减少工作线程
+# For memory-constrained systems, reduce worker threads
 ./all2jxl -dir /path/to/images -workers 4
 ./all2avif -dir /path/to/images -workers 4
 ```
 
-#### 质量与速度平衡
+#### Quality vs. Speed Balance
 ```bash
-# 高质量设置（适合最终输出）
+# High-quality settings (suitable for final output)
 ./all2avif -dir /path/to/images -quality 95 -speed 1
 
-# 快速设置（适合预览或测试）
+# Fast settings (suitable for previews or testing)
 ./all2avif -dir /path/to/images -quality 70 -speed 6
 ```
 
-### 3. 批量处理
+### 3. Batch Processing
 
-#### 处理多个目录
+#### Processing Multiple Directories
 ```bash
-# 使用循环处理多个目录
+# Use a loop to process multiple directories
 for dir in ~/Pictures/*/; do
     ./all2jxl -dir "$dir"
 done
@@ -726,182 +726,182 @@ for dir in ~/Pictures/*/; do
 done
 ```
 
-#### 使用脚本自动化
+#### Automation with a Script
 ```bash
 #!/bin/bash
-# 批量转换脚本
+# Batch conversion script
 
-# 设置目录
+# Set directories
 INPUT_DIR="/path/to/images"
 OUTPUT_DIR="/path/to/output"
 
-# 创建输出目录
+# Create output directories
 mkdir -p "$OUTPUT_DIR"
 
-# 转换到JXL
-echo "开始JXL转换..."
+# Convert to JXL
+echo "Starting JXL conversion..."
 ./all2jxl -dir "$INPUT_DIR" -output "$OUTPUT_DIR/jxl"
 
-# 转换到AVIF
-echo "开始AVIF转换..."
+# Convert to AVIF
+echo "Starting AVIF conversion..."
 ./all2avif -dir "$INPUT_DIR" -output "$OUTPUT_DIR/avif"
 
-echo "转换完成！"
+echo "Conversion complete!"
 ```
 
-### 4. 错误处理
+### 4. Error Handling
 
-#### 试运行模式
+#### Dry Run Mode
 ```bash
-# 在正式转换前先试运行
+# Dry run before actual conversion
 ./all2jxl -dir /path/to/images -dry-run
 ./all2avif -dir /path/to/images -dry-run
 ```
 
-#### 重试机制
+#### Retry Mechanism
 ```bash
-# 对于不稳定的文件，增加重试次数
+# For unstable files, increase the number of retries
 ./all2jxl -dir /path/to/images -retries 5
 ./all2avif -dir /path/to/images -retries 5
 ```
 
-#### 超时设置
+#### Timeout Setting
 ```bash
-# 对于大文件，增加超时时间
+# For large files, increase the timeout
 ./all2jxl -dir /path/to/images -timeout 600
 ./all2avif -dir /path/to/images -timeout 600
 ```
 
-### 5. 存储管理
+### 5. Storage Management
 
-#### 磁盘空间检查
+#### Disk Space Check
 ```bash
-# 在转换前检查可用空间
+# Check available space before conversion
 df -h /path/to/images
 
-# 使用du命令查看目录大小
+# Check directory size with du
 du -sh /path/to/images
 ```
 
-#### 备份重要文件
+#### Backing Up Important Files
 ```bash
-# 在转换前备份重要文件
+# Back up important files before conversion
 cp -r /path/to/images /path/to/backup
 
-# 或者使用rsync进行增量备份
+# Or use rsync for incremental backups
 rsync -av /path/to/images/ /path/to/backup/
 ```
 
-### 6. 监控和日志
+### 6. Monitoring and Logging
 
-#### 查看处理进度
+#### Checking Processing Progress
 ```bash
-# 在另一个终端中监控日志
+# Monitor logs in another terminal
 tail -f all2jxl.log
 tail -f all2avif.log
 ```
 
-#### 检查系统资源
+#### Checking System Resources
 ```bash
-# 监控CPU和内存使用
+# Monitor CPU and memory usage
 top -p $(pgrep all2jxl)
 top -p $(pgrep all2avif)
 ```
 
-### 7. 故障排除
+### 7. Troubleshooting
 
-#### 常见问题解决
+#### Common Problem Solving
 
-**问题**: 转换失败，提示"缺少依赖工具"
+**Problem**: Conversion fails with "missing dependency tool"
 ```bash
-# 检查依赖工具安装
+# Check dependency installation
 which cjxl djxl exiftool
 which ffmpeg exiftool
 
-# 重新安装依赖
+# Reinstall dependencies
 brew install jpeg-xl exiftool ffmpeg
 ```
 
-**问题**: 内存不足
+**Problem**: Insufficient memory
 ```bash
-# 减少工作线程数
+# Reduce the number of worker threads
 ./all2jxl -dir /path/to/images -workers 4
 ./all2avif -dir /path/to/images -workers 4
 ```
 
-**问题**: 处理速度慢
+**Problem**: Slow processing speed
 ```bash
-# 增加工作线程数（如果CPU和内存允许）
+# Increase the number of worker threads (if CPU and memory allow)
 ./all2jxl -dir /path/to/images -workers 20
 ./all2avif -dir /path/to/images -workers 20
 ```
 
-**问题**: 某些文件处理失败
+**Problem**: Some files fail to process
 ```bash
-# 检查文件是否损坏
+# Check if the file is corrupted
 file /path/to/problematic/file
 
-# 尝试单独处理问题文件
+# Try to process the problematic file individually
 ./all2jxl -dir /path/to/single/file
 ./all2avif -dir /path/to/single/file
 ```
 
-### 8. 性能基准测试
+### 8. Performance Benchmarking
 
-#### 测试不同设置的效果
+#### Testing the effect of different settings
 ```bash
-# 测试不同工作线程数的性能
+# Test the performance of different numbers of worker threads
 for workers in 1 4 8 16 20; do
-    echo "测试 $workers 个工作线程..."
+    echo "Testing $workers worker threads..."
     time ./all2jxl -dir /path/to/test/images -workers $workers
 done
 ```
 
-#### 比较不同质量设置
+#### Comparing different quality settings
 ```bash
-# 测试不同质量设置
+# Test different quality settings
 for quality in 60 70 80 90 95; do
-    echo "测试质量 $quality..."
+    echo "Testing quality $quality..."
     time ./all2avif -dir /path/to/test/images -quality $quality
 done
 ```
 
-## 总结
+## Summary
 
-easymode 程序提供了一套完整的媒体处理解决方案：
+The easymode programs provide a complete media processing solution:
 
-1. **all2jxl**: 适合需要无损压缩的场景
-2. **all2avif**: 适合需要现代格式和良好压缩率的场景
-3. **static2avif/static2jxl**: 适合需要专门处理静态图像的场景
-4. **dynamic2avif/dynamic2jxl**: 适合需要专门处理动画图像的场景
-5. **deduplicate_media**: 适合需要清理重复媒体文件的场景
-6. **merge_xmp**: 适合需要管理XMP元数据的场景
-7. **video2mov**: 适合需要转换视频格式的场景
+1. **all2jxl**: Suitable for scenarios requiring lossless compression.
+2. **all2avif**: Suitable for scenarios requiring modern formats and good compression ratios.
+3. **static2avif/static2jxl**: Suitable for scenarios requiring specialized processing of static images.
+4. **dynamic2avif/dynamic2jxl**: Suitable for scenarios requiring specialized processing of animated images.
+5. **deduplicate_media**: Suitable for scenarios requiring cleanup of duplicate media files.
+6. **merge_xmp**: Suitable for scenarios requiring management of XMP metadata.
+7. **video2mov**: Suitable for scenarios requiring video format conversion.
 
-通过合理使用这些工具和遵循最佳实践，您可以高效地处理各种媒体文件，同时保持高质量和良好的性能。
+By using these tools appropriately and following best practices, you can efficiently process a variety of media files while maintaining high quality and good performance.
 
-记住：
-- 总是先进行试运行
-- 根据系统资源调整工作线程数
-- 定期备份重要文件
-- 监控处理进度和系统资源
-- 根据需求选择合适的质量和速度设置
+Remember:
+- Always do a dry run first.
+- Adjust the number of worker threads based on system resources.
+- Back up important files regularly.
+- Monitor processing progress and system resources.
+- Choose the appropriate quality and speed settings based on your needs.
 
-## 更新日志
+## Changelog
 
 ### v2.0.2 (2025-01-27)
-- **新增工具**: 添加了 `static2jxl`, `dynamic2jxl`, `deduplicate_media`, `merge_xmp`, `video2mov` 工具
-- **功能增强**: 改进了所有工具的安全性和性能
-- **HEIC/HEIF 支持**: 增强了 `dynamic2avif` 工具对 HEIC/HEIF 格式的支持，现在具有与 `dynamic2jxl` 相同的健壮处理能力
-- **文档更新**: 完善了所有工具的文档说明
+- **New Tools**: Added `static2jxl`, `dynamic2jxl`, `deduplicate_media`, `merge_xmp`, `video2mov` tools.
+- **Functional Enhancements**: Improved the security and performance of all tools.
+- **HEIC/HEIF Support**: Enhanced HEIC/HEIF support in the `dynamic2avif` tool to have the same robust processing as `dynamic2jxl`.
+- **Documentation Updates**: Improved the documentation for all tools.
 
 ### v2.0.1
-- **重要修复**: 添加文件数量验证功能，防止临时文件残留
-- **自动清理**: 自动检测和清理未清理的临时文件
-- **质量保证**: 确保处理前后文件数量符合预期
+- **Important Fix**: Added file count verification to prevent residual temporary files.
+- **Automatic Cleanup**: Automatically detects and cleans up uncleared temporary files.
+- **Quality Assurance**: Ensures that the number of files before and after processing meets expectations.
 
 ### v2.0.0
-- 合并 `dynamic2avif` 和 `static2avif` 为统一的 `all2avif` 工具
-- 改进错误处理和统计功能
-- 优化性能和内存使用
-- 更新所有文档为简体中文
+- Merged `dynamic2avif` and `static2avif` into a unified `all2avif` tool.
+- Improved error handling and statistics.
+- Optimized performance and memory usage.
+- Updated all documentation to Simplified Chinese.

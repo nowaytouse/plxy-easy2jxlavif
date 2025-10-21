@@ -1,3 +1,14 @@
+// video2mov - 批量视频转MOV格式工具
+//
+// 功能说明：
+// - 支持多种视频格式批量转换为MOV格式
+// - 保留原始文件的元数据和系统时间戳
+// - 使用ffmpeg进行视频重新封装，不重新编码
+// - 提供详细的处理统计和进度报告
+// - 支持并发处理以提高转换效率
+//
+// 作者：AI Assistant
+// 版本：2.1.0
 package main
 
 import (
@@ -18,80 +29,96 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/karrick/godirwalk"
 	"pixly/utils"
+
+	"github.com/karrick/godirwalk"
 )
 
+// 程序常量定义
 const (
-	logFileName      = "video2mov.log"
-	version     = "2.1.0"
-	author           = "AI Assistant"
+	logFileName = "video2mov.log" // 日志文件名
+	version     = "2.1.0"         // 程序版本号
+	author      = "AI Assistant"  // 作者信息
 )
 
+// 全局变量定义
 var (
-	logger *log.Logger
-	procSem chan struct{}
-	fdSem   chan struct{}
+	logger *log.Logger // 全局日志记录器，同时输出到控制台和文件
+
+	// 并发控制信号量，用于限制外部进程和文件句柄的并发数量
+	// 防止系统资源过载导致程序卡死或崩溃
+	procSem chan struct{} // 外部进程并发限制信号量
+	fdSem   chan struct{} // 文件句柄并发限制信号量
 )
 
+// Options 结构体定义了程序的配置选项
+// 这些选项控制着转换过程的各种参数和行为
 type Options struct {
-	Workers          int
-	SkipExist        bool
-	DryRun           bool
-	TimeoutSeconds   int
-	Retries          int
-	InputDir         string
-	OutputDir        string
-	ReplaceOriginals bool
+	Workers          int    // 并发工作线程数，控制同时处理的文件数量
+	SkipExist        bool   // 是否跳过已存在的MOV文件
+	DryRun           bool   // 试运行模式，只显示将要处理的文件而不实际转换
+	TimeoutSeconds   int    // 单个文件处理的超时时间（秒）
+	Retries          int    // 转换失败时的重试次数
+	InputDir         string // 输入目录路径
+	OutputDir        string // 输出目录路径，默认为输入目录
+	ReplaceOriginals bool   // 是否在转换成功后删除原始文件
 }
 
-// FileProcessInfo 记录单个文件的处理信息
+// FileProcessInfo 结构体用于记录单个文件在处理过程中的详细信息
+// 这对于生成详细的处理报告和调试非常有用
 type FileProcessInfo struct {
-	FilePath        string
-	FileSize        int64
-	FileType        string
-	ProcessingTime  time.Duration
-	ConversionMode  string
-	Success         bool
-	ErrorMsg        string
-	SizeSaved       int64
-	MetadataSuccess bool
+	FilePath        string        // 文件完整路径
+	FileSize        int64         // 文件大小（字节）
+	FileType        string        // 文件类型（扩展名）
+	ProcessingTime  time.Duration // 处理耗时
+	ConversionMode  string        // 转换模式
+	Success         bool          // 是否处理成功
+	ErrorMsg        string        // 错误信息（如果处理失败）
+	SizeSaved       int64         // 节省的空间大小
+	MetadataSuccess bool          // 元数据复制是否成功
 }
 
-// Stats 统计信息结构体
+// Stats 结构体用于在整个批处理过程中收集和管理统计数据
+// 它使用互斥锁（sync.Mutex）来确保并发访问时的线程安全
 type Stats struct {
-	sync.Mutex
-	imagesProcessed     int64
-	imagesFailed        int64
-	othersSkipped       int64
-	totalBytesBefore    int64
-	totalBytesAfter     int64
-	byExt               map[string]int
-	detailedLogs        []FileProcessInfo
-	processingStartTime time.Time
-	totalProcessingTime time.Duration
+	sync.Mutex                            // 互斥锁，确保并发安全
+	imagesProcessed     int64             // 成功处理的视频数量
+	imagesFailed        int64             // 处理失败的视频数量
+	othersSkipped       int64             // 跳过的其他文件数量
+	totalBytesBefore    int64             // 原始文件总大小
+	totalBytesAfter     int64             // 转换后文件总大小
+	byExt               map[string]int    // 按扩展名统计的文件数量
+	detailedLogs        []FileProcessInfo // 详细的处理日志记录
+	processingStartTime time.Time         // 处理开始时间
+	totalProcessingTime time.Duration     // 总处理时间
 }
 
+// addImageProcessed 原子性地增加成功处理视频的计数
 func (s *Stats) addImageProcessed(sizeBefore, sizeAfter int64) {
 	atomic.AddInt64(&s.imagesProcessed, 1)
 	atomic.AddInt64(&s.totalBytesBefore, sizeBefore)
 	atomic.AddInt64(&s.totalBytesAfter, sizeAfter)
 }
 
+// addImageFailed 原子性地增加处理失败视频的计数
 func (s *Stats) addImageFailed() {
 	atomic.AddInt64(&s.imagesFailed, 1)
 }
 
+// addOtherSkipped 原子性地增加跳过其他文件的计数
 func (s *Stats) addOtherSkipped() {
 	atomic.AddInt64(&s.othersSkipped, 1)
 }
 
+// addDetailedLog 线程安全地向详细日志中添加一条处理记录
 func (s *Stats) addDetailedLog(info FileProcessInfo) {
 	s.Lock()
 	defer s.Unlock()
 	s.detailedLogs = append(s.detailedLogs, info)
 }
 
+// logDetailedSummary 输出详细的处理摘要信息
+// 包括按格式统计的处理结果、处理时间最长的文件等信息
 func (s *Stats) logDetailedSummary() {
 	s.Lock()
 	defer s.Unlock()
@@ -104,7 +131,7 @@ func (s *Stats) logDetailedSummary() {
 		logger.Printf("📈 平均处理时间: 无处理文件")
 	}
 
-	// 按格式统计
+	// 按格式统计处理结果
 	formatStats := make(map[string][]FileProcessInfo)
 	for _, log := range s.detailedLogs {
 		formatStats[log.FileType] = append(formatStats[log.FileType], log)
@@ -154,7 +181,7 @@ func printSummary(stats *Stats) {
 	}
 	totalSavedKB := float64(totalSavedBytes) / 1024.0
 	totalSavedMB := totalSavedKB / 1024.0
-	
+
 	// 计算压缩率（如果转换后文件更大则显示大于100%）
 	compressionRatio := float64(stats.totalBytesAfter) / float64(stats.totalBytesBefore) * 100
 
@@ -176,30 +203,35 @@ func printSummary(stats *Stats) {
 	logger.Println("🎉 ===== 处理完成 =====")
 }
 
+// init 函数在main函数之前执行，用于初始化日志记录器和并发控制信号量
 func init() {
+	// 设置日志记录器，同时输出到控制台和文件
 	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalf("Failed to open log file: %v", err)
+		log.Fatalf("无法创建日志文件: %v", err)
 	}
 	logger = log.New(io.MultiWriter(os.Stdout, logFile), "", log.LstdFlags)
 
+	// 初始化并发控制信号量，防止系统资源过载
 	cpuCount := runtime.NumCPU()
 	procLimit := cpuCount / 2
 	if procLimit < 2 {
 		procLimit = 2
 	}
 	if procLimit > 4 {
-		procLimit = 4
+		procLimit = 4 // 更严格的进程限制，防止系统卡死
 	}
 	procSem = make(chan struct{}, procLimit)
 	fdSem = make(chan struct{}, procLimit*2)
 }
 
+// main 函数是程序的入口点
 func main() {
 	logger.Printf("🎥 视频重新包装工具 v%s", version)
-	logger.Println("✨ 作者:", author)
-	logger.Println("🔧 开始初始化...")
+	logger.Printf("✨ 作者: %s", author)
+	logger.Printf("🔧 开始初始化...")
 
+	// 解析命令行参数
 	opts := parseFlags()
 
 	if opts.InputDir == "" {
@@ -207,7 +239,7 @@ func main() {
 	}
 
 	if opts.OutputDir == "" {
-		opts.OutputDir = opts.InputDir // Default to input directory if not specified
+		opts.OutputDir = opts.InputDir // 默认输出目录为输入目录
 	}
 
 	if _, err := os.Stat(opts.InputDir); os.IsNotExist(err) {
@@ -216,6 +248,13 @@ func main() {
 
 	if err := os.MkdirAll(opts.OutputDir, 0755); err != nil {
 		logger.Fatalf("❌ 错误: 无法创建输出目录 %s: %v", opts.OutputDir, err)
+	}
+
+	// 检查系统依赖工具是否可用
+	logger.Println("🔍 检查系统依赖...")
+	if err := checkDependencies(); err != nil {
+		logger.Printf("❌ 系统依赖检查失败: %v", err)
+		return
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -230,7 +269,7 @@ func main() {
 	}()
 
 	stats := &Stats{
-		byExt: make(map[string]int),
+		byExt:               make(map[string]int),
 		processingStartTime: time.Now(),
 	}
 
@@ -250,6 +289,21 @@ func main() {
 	printSummary(stats)
 }
 
+// checkDependencies 检查系统依赖工具是否可用
+// 返回错误如果任何必需的依赖工具不可用
+func checkDependencies() error {
+	dependencies := []string{"ffmpeg", "exiftool"}
+	for _, dep := range dependencies {
+		if _, err := exec.LookPath(dep); err != nil {
+			return fmt.Errorf("缺少依赖: %s", dep)
+		}
+	}
+	logger.Printf("✅ ffmpeg 已就绪")
+	logger.Printf("✅ exiftool 已就绪")
+	return nil
+}
+
+// parseFlags 解析命令行参数并返回配置选项
 func parseFlags() *Options {
 	opts := &Options{
 		Workers:          0,

@@ -1,51 +1,51 @@
-# video2mov - 视频重新包装工具
+# video2mov - Video Repackaging Tool
 
-`video2mov` 是一款专为视频文件设计的命令行工具，旨在将各种视频格式**无损地重新包装**为 `.mov` 容器格式。此工具不进行视频编码，而是通过流复制（stream copy）的方式，确保原始视频和音频流的质量完全保留，同时提供更好的兼容性和元数据处理能力。
+`video2mov` is a command-line tool designed for video files, aiming to **losslessly repackage** various video formats into the `.mov` container format. This tool does not re-encode video, but instead uses stream copy to ensure that the quality of the original video and audio streams is fully preserved, while providing better compatibility and metadata handling capabilities.
 
-## 🚀 核心功能
+## 🚀 Core Features
 
-- **无损重新包装**: 使用 `ffmpeg -c copy` 进行流复制，不进行任何视频或音频的重新编码，确保原始质量。
-- **广泛视频格式支持**: 支持常见的视频格式，如 `.mp4`, `.avi`, `.mkv`, `.wmv`, `.flv`, `.webm`, `.m4v`, `.3gp` 等。
-- **元数据保留**: 使用 `exiftool` 将原始视频文件的元数据完整复制到新的 `.mov` 文件中。
-- **精确的文件数量验证**: 重新包装完成后，提供详细的文件数量验证报告，确保处理过程的准确性和可靠性。
-- **安全可靠**: 支持重试机制，并在删除原始文件前验证输出文件存在且有效，确保处理过程的安全性。
-- **详细日志**: 提供全面的处理日志 `video2mov.log`。
+- **Lossless Repackaging**: Uses `ffmpeg -c copy` for stream copying, without any re-encoding of video or audio, ensuring original quality.
+- **Wide Video Format Support**: Supports common video formats such as `.mp4`, `.avi`, `.mkv`, `.wmv`, `.flv`, `.webm`, `.m4v`, `.3gp`, etc.
+- **Metadata Preservation**: Uses `exiftool` to completely copy the metadata of the original video file to the new `.mov` file.
+- **Accurate File Count Verification**: After repackaging is complete, a detailed file count verification report is provided to ensure the accuracy and reliability of the processing.
+- **Safe and Reliable**: Supports a retry mechanism and verifies that the output file exists and is valid before deleting the original file, ensuring the safety of the processing.
+- **Detailed Logging**: Provides a comprehensive processing log `video2mov.log`.
 
-## 🛠️ 使用方法
+## 🛠️ Usage
 
-### 基本用法
+### Basic Usage
 ```bash
-# 导航到脚本目录
+# Navigate to the script directory
 cd /path/to/easy2jxlavif-beta/easymode/video2mov
 
-# 运行脚本重新包装指定目录中的视频
+# Run the script to repackage videos in the specified directory
 go run main.go -input /path/to/your/videos -output /path/to/mov/output
 ```
 
-### 命令行参数
+### Command-Line Arguments
 
-| 参数 | 类型 | 默认值 | 说明 |
+| Argument | Type | Default | Description |
 |---|---|---|---|
-| `-input` | 字符串 | 无 | 输入目录（必需） |
-| `-output` | 字符串 | 无 | 输出目录（默认为输入目录） |
-| `-workers` | 整数 | CPU核心数 | 并发工作线程数 |
-| `-skip-exist` | 布尔 | `true` | 跳过已存在的目标 `.mov` 文件 |
-| `-dry-run` | 布尔 | `false` | 试运行模式，只显示将要处理的文件 |
-| `-timeout` | 整数 | 300 | 单个文件处理超时秒数 |
-| `-retries` | 整数 | 2 | 失败重试次数 |
-| `-replace` | 布尔 | `false` | 重新包装后删除原始视频文件 |
+| `-input` | string | none | Input directory (required) |
+| `-output` | string | none | Output directory (defaults to the input directory) |
+| `-workers` | integer | CPU cores | Number of concurrent worker threads |
+| `-skip-exist` | boolean | `true` | Skip existing target `.mov` files |
+| `-dry-run` | boolean | `false` | Dry run mode, only prints the files to be processed |
+| `-timeout` | integer | 300 | Timeout in seconds for a single file |
+| `-retries` | integer | 2 | Number of retries on failure |
+| `-replace` | boolean | `false` | Delete original video files after repackaging |
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### 常见问题
-1. **依赖缺失**: 确保安装了 `ffmpeg` 和 `exiftool`。
-2. **权限问题**: 检查文件读写权限。
-3. **空间不足**: 确保有足够的磁盘空间。
+### Common Problems
+1. **Missing dependencies**: Make sure `ffmpeg` and `exiftool` are installed.
+2. **Permission issues**: Check file read/write permissions.
+3. **Insufficient space**: Make sure there is enough disk space.
 
-## 📝 更新日志
+## 📝 Update Log
 
 ### v1.0.0 - 2025-10-20
-- ✅ 新增视频重新包装工具 `video2mov`。
-- ✅ 实现视频无损流复制到 `.mov` 格式。
-- ✅ 集成精确文件数量验证。
-- ✅ 支持元数据保留。
+- ✅ Added video repackaging tool `video2mov`.
+- ✅ Implemented lossless stream copying of videos to `.mov` format.
+- ✅ Integrated accurate file count verification.
+- ✅ Supports metadata preservation.
