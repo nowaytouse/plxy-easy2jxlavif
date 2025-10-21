@@ -521,13 +521,16 @@ func processFileWithOpts(filePath string, opts Options, stats *Stats) {
 	logger.Printf("🔄 开始处理: %s", filepath.Base(filePath))
 
 	// 获取文件信息
-	info, err := os.Stat(filePath)
+	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		logger.Printf("⚠️  无法获取文件信息 %s: %v", filepath.Base(filePath), err)
 		stats.addOtherSkipped()
 		stats.addDetailedLog(processInfo)
 		return
 	}
+	
+	// 设置原始文件大小
+	processInfo.OriginalSize = fileInfo.Size()
 
 	// 检查是否已存在AVIF文件
 	avifPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".avif"
@@ -577,10 +580,8 @@ func processFileWithOpts(filePath string, opts Options, stats *Stats) {
 
 	if isAnimated {
 		logger.Printf("🎬 检测到动画图像: %s", filepath.Base(filePath))
-		processInfo.ConversionMode = "Animated Conversion"
 	} else {
 		logger.Printf("🖼️  静态图像: %s", filepath.Base(filePath))
-		processInfo.ConversionMode = "Static Conversion"
 	}
 
 	// 执行转换
@@ -647,17 +648,108 @@ func convertToAvif(filePath string, kind types.Type, isAnimated bool, opts Optio
 	avifPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".avif"
 	originalFilePath := filePath // Preserve original file path for metadata copy
 
-	// HEIC/HEIF conversion using magick to a more stable PNG intermediate
+	// HEIC/HEIF conversion using enhanced magick to a more stable PNG intermediate
 	if kind.Extension == "heic" || kind.Extension == "heif" {
 		tempPngPath := avifPath + ".png"
 		logger.Printf("INFO: [HEIC] Converting to PNG intermediate: %s", filepath.Base(tempPngPath))
-		cmd := exec.Command("magick", filePath, tempPngPath)
+		
+		// Approach 1: Use ImageMagick with increased limits to convert to png first
+		cmd := exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", "-define", "heic:use-embedded-profile=false", filePath, tempPngPath)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
-			return 0, fmt.Errorf("magick execution for HEIC failed: %s\nOutput: %s", err, string(output))
+			logger.Printf("WARN: ImageMagick failed for %s: %v. Output: %s. Trying alternative method.", filepath.Base(filePath), err, string(output))
+			
+			// Approach 2: Use ffmpeg as fallback to convert HEIC to PNG with multiple options
+			// First, get the actual dimensions of the HEIC file to ensure we extract the full resolution
+			var ffmpegOutput []byte
+			var ffmpegErr error
+			dimCmd := exec.Command("exiftool", "-s", "-S", "-ImageWidth", "-ImageHeight", filePath)
+			dimOutput, dimErr := dimCmd.CombinedOutput()
+			
+			if dimErr != nil {
+				// If exiftool fails, fall back to default approach
+				logger.Printf("WARN: Exiftool dimension detection failed for %s: %v. Falling back to default method.", filepath.Base(filePath), dimErr)
+				cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+				ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+				if ffmpegErr != nil {
+					// If that fails, try with different parameters
+					logger.Printf("WARN: Default ffmpeg method failed for %s: %v. Output: %s. Trying enhanced approach.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+					cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-vcodec", "png", "-frames:v", "1", tempPngPath)
+					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+					if ffmpegErr != nil {
+						logger.Printf("WARN: Second ffmpeg attempt failed for %s: %v. Output: %s. Trying ImageMagick with more relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+					}
+				}
+			} else {
+				// Parse the dimensions from exiftool output
+				lines := strings.Split(strings.TrimSpace(string(dimOutput)), "\n")
+				var width, height int
+				
+				// Handle numeric format from exiftool
+				for _, line := range lines {
+					line = strings.TrimSpace(line)
+					if line == "" {
+						continue
+					}
+					
+					// Try simple numeric format (just the numbers)
+					if intValue, err := strconv.Atoi(line); err == nil {
+						// Assume first number is width, second is height
+						if width == 0 {
+							width = intValue
+						} else if height == 0 {
+							height = intValue
+						}
+					}
+				}
+				
+				// If we have valid dimensions, use them for proper scaling
+				if width > 0 && height > 0 {
+					cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-vf", fmt.Sprintf("scale=%d:%d", width, height), "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+					if ffmpegErr != nil {
+						logger.Printf("WARN: Scaled ffmpeg method failed for %s: %v. Output: %s. Trying unscaled approach.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+						// Try without scaling if that fails
+						cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+						ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+						if ffmpegErr != nil {
+							logger.Printf("WARN: Unscaled ffmpeg method also failed for %s: %v. Output: %s. Trying ImageMagick with more relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+						}
+					}
+				} else {
+					// Fall back to default approach if dimensions are invalid
+					logger.Printf("WARN: Invalid dimensions detected for %s (width: %d, height: %d). Falling back to default method.", filepath.Base(filePath), width, height)
+					cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+				}
+			}
+			
+			// Only if both ffmpeg and ImageMagick approaches fail, try ImageMagick with more relaxed limits
+			if ffmpegErr != nil {
+				logger.Printf("WARN: Ffmpeg failed for %s: %v. Output: %s. Trying ImageMagick with more relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+				
+				// Approach 3: Try using ImageMagick with even more relaxed policy
+				tempRelaxedPngPath := avifPath + ".relaxed.png"
+				cmd = exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", "-define", "heic:use-embedded-profile=false", "-define", "heic:decode-effort=0", "-depth", "16", filePath, tempRelaxedPngPath)
+				output, err = cmd.CombinedOutput()
+				if err != nil {
+					logger.Printf("WARN: All HEIC conversion methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s", 
+						filepath.Base(filePath), string(output), string(ffmpegOutput), string(output))
+					return 0, fmt.Errorf("all HEIC conversion methods failed: ImageMagick error: %v, ffmpeg error: %v", err, ffmpegErr)
+				}
+				// Use the relaxed ImageMagick output
+				defer os.Remove(tempRelaxedPngPath)
+				filePath = tempRelaxedPngPath
+			} else {
+				// Successfully converted with ffmpeg, now use PNG as input
+				defer os.Remove(tempPngPath)
+				filePath = tempPngPath
+			}
+		} else {
+			// Successfully converted with original ImageMagick approach
+			defer os.Remove(tempPngPath)
+			filePath = tempPngPath
 		}
-		defer os.Remove(tempPngPath)
-		filePath = tempPngPath // Use the new png file as input for ffmpeg
 	}
 
 	// 构建ffmpeg命令

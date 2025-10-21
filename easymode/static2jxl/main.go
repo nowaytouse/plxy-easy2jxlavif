@@ -11,10 +11,14 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/karrick/godirwalk"
+	"github.com/panjf2000/ants/v2"
 )
 
 const (
@@ -145,14 +149,13 @@ func main() {
 		byExt: make(map[string]int),
 	}
 
-	files, err := processDirectory(ctx, opts, stats)
+	err := processDirectory(ctx, opts, stats)
 	if err != nil {
 		logger.Fatalf("❌ 处理目录时出错: %v", err)
 	}
 
 	// 输出统计信息
 	printSummary(stats)
-	validateFileCount(opts.InputDir, len(files), stats)
 }
 
 func parseFlags() *Options {
@@ -179,11 +182,11 @@ func parseFlags() *Options {
 	return opts
 }
 
-func processDirectory(ctx context.Context, opts *Options, stats *Stats) ([]string, error) {
+func processDirectory(ctx context.Context, opts *Options, stats *Stats) error {
 	logger.Printf("📂 扫描目录: %s", opts.InputDir)
 
 	// 使用 godirwalk 遍历目录
-	files := make([]string, 0)
+	var files []string
 	err := godirwalk.Walk(opts.InputDir, &godirwalk.Options{
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
 			// 检查是否应该停止遍历
@@ -209,14 +212,14 @@ func processDirectory(ctx context.Context, opts *Options, stats *Stats) ([]strin
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("目录扫描失败: %w", err)
+		return fmt.Errorf("目录扫描失败: %w", err)
 	}
 
 	logger.Printf("✅ 找到 %d 个支持的静态图像文件", len(files))
 
 	if len(files) == 0 {
 		logger.Println("⚠️  没有找到支持的静态图像文件")
-		return files, nil
+		return nil
 	}
 
 	if opts.DryRun {
@@ -224,7 +227,7 @@ func processDirectory(ctx context.Context, opts *Options, stats *Stats) ([]strin
 		for _, file := range files {
 			logger.Printf("  - %s", file)
 		}
-		return files, nil
+		return nil
 	}
 
 	// ⚡ 智能性能配置
@@ -252,7 +255,7 @@ func processDirectory(ctx context.Context, opts *Options, stats *Stats) ([]strin
 	p, err := ants.NewPool(workers, ants.WithPreAlloc(true))
 	if err != nil {
 		logger.Printf("❌ 关键错误: 创建线程池失败: %v", err)
-		return files, err
+		return err
 	}
 	defer p.Release()
 
@@ -326,7 +329,7 @@ func processDirectory(ctx context.Context, opts *Options, stats *Stats) ([]strin
 	}
 
 	logger.Println("🎉 所有文件处理完成")
-	return files, nil
+	return nil
 }
 func processFile(ctx context.Context, filePath string, opts *Options) FileProcessInfo {
 	startTime := time.Now()
@@ -446,23 +449,90 @@ func convertToJxlWithOpts(filePath, outputPath string, opts *Options) error {
 	ext := strings.ToLower(filepath.Ext(filePath))
 	if ext == ".heic" || ext == ".heif" {
 		// Use multiple approaches to convert HEIC to a format that cjxl can handle
-		// Approach 1: Use magick with increased limits to convert to tiff first
+		// Approach 1: Use ImageMagick with increased limits to convert to tiff first
 		tempTiffPath := outputPath + ".tiff"
-		cmd := exec.Command("magick", filePath, tempTiffPath)
+		cmd := exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", "-define", "heic:use-embedded-profile=false", filePath, tempTiffPath)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			logger.Printf("WARN: ImageMagick failed for %s: %v. Output: %s. Trying alternative method.", filepath.Base(filePath), err, string(output))
 			
-			// Approach 2: Use ffmpeg as fallback to convert HEIC to PNG
-			tempPngPath := outputPath + ".png"
-			cmd = exec.Command("ffmpeg", "-i", filePath, "-c:v", "png", tempPngPath)
-			ffmpegOutput, ffmpegErr := cmd.CombinedOutput()
-			if ffmpegErr != nil {
-				logger.Printf("WARN: Ffmpeg failed for %s: %v. Output: %s. Trying ImageMagick with relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+			// Approach 2: Use ffmpeg as fallback to convert HEIC to PNG with multiple options
+			// First, get the actual dimensions of the HEIC file to ensure we extract the full resolution
+			var tempPngPath string  // Declare here to avoid scope issues
+			dimCmd := exec.Command("exiftool", "-s", "-S", "-ImageWidth", "-ImageHeight", filePath)
+			dimOutput, dimErr := dimCmd.CombinedOutput()
+			var ffmpegOutput []byte
+			var ffmpegErr error
+			
+			if dimErr != nil {
+				// If exiftool fails, fall back to default approach
+				logger.Printf("WARN: Exiftool dimension detection failed for %s: %v. Falling back to default method.", filepath.Base(filePath), dimErr)
+				tempPngPath = outputPath + ".png"
+				cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+				ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+				if ffmpegErr != nil {
+					// If that fails, try with different parameters
+					logger.Printf("WARN: Default ffmpeg method failed for %s: %v. Output: %s. Trying enhanced approach.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+					cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-vcodec", "png", "-frames:v", "1", tempPngPath)
+					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+					if ffmpegErr != nil {
+						logger.Printf("WARN: Second ffmpeg attempt failed for %s: %v. Output: %s. Trying ImageMagick with more relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+					}
+				}
+			} else {
+				// Parse the dimensions from exiftool output
+				lines := strings.Split(strings.TrimSpace(string(dimOutput)), "\n")
+				var width, height int
 				
-				// Approach 3: Try using ImageMagick with relaxed policy
-				tempRelaxedTiffPath := outputPath + ".relaxed.tiff"
-				cmd = exec.Command("magick", filePath, "-define", "heic:limit-num-tiles=0", tempRelaxedTiffPath)
+				// Handle both key-value format and simple numeric format from exiftool
+				for _, line := range lines {
+					line = strings.TrimSpace(line)
+					if line == "" {
+						continue
+					}
+					
+					// Try simple numeric format (just the numbers)
+					if intValue, err := strconv.Atoi(line); err == nil {
+						// Assume first number is width, second is height
+						if width == 0 {
+							width = intValue
+						} else if height == 0 {
+							height = intValue
+						}
+					}
+				}
+				
+				// If we have valid dimensions, use them for proper scaling
+				if width > 0 && height > 0 {
+					tempPngPath = outputPath + ".png"
+					ffmpegCmd := exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-vf", fmt.Sprintf("scale=%d:%d", width, height), "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+					ffmpegOutput, ffmpegErr = ffmpegCmd.CombinedOutput()
+					if ffmpegErr != nil {
+						logger.Printf("WARN: Scaled ffmpeg method failed for %s: %v. Output: %s. Trying unscaled approach.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+						// Try without scaling if that fails
+						tempPngPath = outputPath + ".png"  // Ensure variable is defined
+						cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+						ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+						if ffmpegErr != nil {
+							logger.Printf("WARN: Unscaled ffmpeg method also failed for %s: %v. Output: %s. Trying ImageMagick with more relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+						}
+					}
+				} else {
+					// Fall back to default approach if dimensions are invalid
+					logger.Printf("WARN: Invalid dimensions detected for %s (width: %d, height: %d). Falling back to default method.", filepath.Base(filePath), width, height)
+					tempPngPath = outputPath + ".png"
+					cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", filePath, "-pix_fmt", "rgb24", "-frames:v", "1", "-c:v", "png", tempPngPath)
+					ffmpegOutput, ffmpegErr = cmd.CombinedOutput()
+				}
+			}
+			
+			// Only if both ffmpeg and ImageMagick approaches fail, try ImageMagick with more relaxed limits
+			if ffmpegErr != nil {
+				logger.Printf("WARN: Ffmpeg failed for %s: %v. Output: %s. Trying ImageMagick with more relaxed limits.", filepath.Base(filePath), ffmpegErr, string(ffmpegOutput))
+				
+				// Approach 3: Try using ImageMagick with even more relaxed policy
+				tempRelaxedPngPath := outputPath + ".relaxed.png"
+				cmd = exec.Command("magick", "-define", "heic:limit-num-tiles=0", "-define", "heic:max-image-size=0", "-define", "heic:use-embedded-profile=false", "-define", "heic:decode-effort=0", "-depth", "16", filePath, tempRelaxedPngPath)
 				output, err = cmd.CombinedOutput()
 				if err != nil {
 					logger.Printf("WARN: All HEIC conversion methods failed for %s. ImageMagick, ffmpeg, and relaxed ImageMagick all failed. Output ImageMagick: %s, ffmpeg: %s, relaxed ImageMagick: %s", 
@@ -470,8 +540,8 @@ func convertToJxlWithOpts(filePath, outputPath string, opts *Options) error {
 					return fmt.Errorf("all HEIC conversion methods failed: ImageMagick error: %v, ffmpeg error: %v", err, ffmpegErr)
 				}
 				// Use the relaxed ImageMagick output
-				defer os.Remove(tempRelaxedTiffPath)
-				filePath = tempRelaxedTiffPath
+				defer os.Remove(tempRelaxedPngPath)
+				filePath = tempRelaxedPngPath
 			} else {
 				// Successfully converted with ffmpeg, now use PNG as input
 				defer os.Remove(tempPngPath)
