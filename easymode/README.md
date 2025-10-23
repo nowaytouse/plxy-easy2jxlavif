@@ -1,207 +1,321 @@
-# 媒体文件转换工具集
+# EasyMode Media Conversion Toolkit v2.2.0
 
-这是一套完整的媒体文件转换工具，支持多种图像和视频格式的批量转换，并保留原始文件的元数据。
+A powerful Go-based media conversion toolkit supporting batch conversion of multiple image and video formats, featuring complete metadata preservation, intelligent performance optimization, and an 8-layer validation system.
 
-## 🚀 工具列表
+## 🚀 Key Features
 
-### 图像转换工具
+- **🎨 Multi-format Support**: Supports mainstream image formats including JPG, PNG, GIF, WebP, AVIF, HEIC, TIFF, BMP
+- **🔒 Lossless Conversion**: Provides lossless conversion for JPEG XL and AVIF modern image formats
+- **📋 Metadata Preservation**: Complete preservation of EXIF, IPTC, XMP metadata information
+- **⚡ Intelligent Performance Optimization**: Dynamically adjusts processing threads based on system load
+- **🛡️ 8-Layer Validation System**: Ensures conversion quality and data integrity, prevents cheating bypass
+- **🏞️ Live Photo Detection**: Automatically identifies and skips Apple Live Photo files
+- **📝 Smart Log Management**: Log rotation and detailed processing records
+- **🔧 Modular Design**: Unified parameter parsing and validation modules
+- **🎯 Universal Converter**: One tool supports all conversion types and modes
 
-#### 1. all2jxl - 批量图像转JPEG XL格式工具
-- **功能**: 支持多种图像格式批量转换为JPEG XL格式
-- **特点**: 保留原始文件的元数据和系统时间戳，支持动画图像和静态图像的无损转换
-- **编译**: `go build -o bin/all2jxl main.go`
-- **使用**: `./bin/all2jxl -dir <目录路径> [选项]`
+## 📦 Tool List
 
-#### 2. static2jxl - 静态图像转JPEG XL格式工具
-- **功能**: 专门处理静态图像文件转换为JPEG XL格式
-- **特点**: 支持多种静态图像格式（JPEG、PNG、BMP、TIFF等），使用CJXL编码器进行高质量转换
-- **编译**: `go build -o bin/static2jxl main.go`
-- **使用**: `./bin/static2jxl -input <输入目录> -output <输出目录> [选项]`
+### 🎨 Image Conversion Tools
+- `all2avif` - Batch convert to AVIF format
+- `all2jxl` - Batch convert to JPEG XL format
+- `static2avif` - Static images to AVIF
+- `static2jxl` - Static images to JPEG XL
+- `dynamic2avif` - Dynamic images to AVIF
+- `dynamic2jxl` - Dynamic images to JPEG XL
 
-#### 3. dynamic2jxl - 动态图像转JPEG XL格式工具
-- **功能**: 专门处理动态图像文件转换为JPEG XL格式
-- **特点**: 支持多种动态图像格式（GIF、APNG、WebP、AVIF、HEIF等），使用CJXL编码器进行高质量转换
-- **编译**: `go build -o bin/dynamic2jxl main.go`
-- **使用**: `./bin/dynamic2jxl -input <输入目录> -output <输出目录> [选项]`
+### 🎬 Video Processing Tools
+- `video2mov` - Video re-encapsulation to MOV format
 
-#### 4. static2avif - 静态图像转AVIF格式工具
-- **功能**: 专门处理静态图像文件转换为AVIF格式
-- **特点**: 支持多种静态图像格式，使用ImageMagick进行高质量转换
-- **编译**: `go build -o bin/static2avif main.go`
-- **使用**: `./bin/static2avif -input <输入目录> -output <输出目录> [选项]`
+### 🔧 Media Management Tools
+- `media_tools` - Metadata management, file deduplication, extension normalization
+- `universal_converter` - Universal conversion tool supporting all formats and modes
 
-#### 5. dynamic2avif - 动态图像转AVIF格式工具
-- **功能**: 专门处理动态图像文件转换为AVIF格式
-- **特点**: 支持多种动态图像格式，使用ImageMagick进行高质量转换
-- **编译**: `go build -o bin/dynamic2avif main.go`
-- **使用**: `./bin/dynamic2avif -input <输入目录> -output <输出目录> [选项]`
+## 📚 Documentation Resources
 
-### 视频转换工具
+### User Guides
+- [User Guide v2.2.0](docs/USER_GUIDE_v2.2.0.md) - Complete usage tutorial
+- [Animation Processing Guide](docs/ANIMATION_PROCESSING_GUIDE.md) - Detailed animation conversion guide
+- [Technical Architecture](docs/TECHNICAL_ARCHITECTURE.md) - System architecture and design
 
-#### 6. video2mov - 批量视频转MOV格式工具
-- **功能**: 支持多种视频格式批量转换为MOV格式
-- **特点**: 使用ffmpeg进行视频重新封装，不重新编码，保留原始文件的元数据
-- **编译**: `go build -o bin/video2mov main.go`
-- **使用**: `./bin/video2mov -input <输入目录> -output <输出目录> [选项]`
+### Developer Resources
+- [API Reference](docs/API_REFERENCE.md) - Complete API interface documentation
+- [Validation Strategy](docs/VALIDATION_STRATEGY.md) - 8-layer validation system details
+- [Test Report](docs/TEST_REPORT_v2.1.0.md) - Functional testing and performance benchmarks
 
-### 元数据处理工具
+### Historical Versions
+- [Comprehensive Test Report](docs/COMPREHENSIVE_TEST_REPORT.md)
+- [Final Comprehensive Report v2.2.0](docs/FINAL_COMPREHENSIVE_REPORT_v2.2.0.md)
+- [Optimization Report v2.2.1](docs/OPTIMIZATION_v2.2.1.md)
 
-#### 7. merge_xmp - XMP元数据合并工具
-- **功能**: 将XMP侧边文件合并到对应的媒体文件中
-- **特点**: 支持多种媒体格式（图像、视频等），自动检测XMP文件
-- **编译**: `go build -o bin/merge_xmp main.go`
-- **使用**: `./bin/merge_xmp -dir <目录路径>`
+## 🛠️ Installation and Usage
 
-### 文件管理工具
+### System Requirements
+- Go 1.25+
+- ImageMagick (for AVIF conversion)
+- libjxl (for JPEG XL conversion)
+- FFmpeg (for video conversion)
+- ExifTool (for metadata processing)
+- libavif (for static AVIF conversion with avifenc)
 
-#### 8. deduplicate_media - 媒体文件去重工具
-- **功能**: 扫描目录中的重复媒体文件
-- **特点**: 使用SHA256哈希值进行文件内容比较，标准化文件扩展名，将重复文件移动到垃圾箱目录
-- **编译**: `go build -o bin/deduplicate_media main.go`
-- **使用**: `./bin/deduplicate_media -dir <扫描目录> -trash-dir <垃圾箱目录>`
+### Quick Start
 
-## 🛠️ 系统依赖
-
-所有工具都需要以下系统依赖：
-
-### 图像转换工具依赖
-- **cjxl**: JPEG XL编码器
-- **djxl**: JPEG XL解码器
-- **exiftool**: 元数据处理工具
-- **magick**: ImageMagick图像处理工具（用于AVIF转换）
-
-### 视频转换工具依赖
-- **ffmpeg**: 视频处理工具
-- **exiftool**: 元数据处理工具
-
-### 元数据处理工具依赖
-- **exiftool**: 元数据处理工具
-
-## 📦 安装依赖
-
-### macOS (使用Homebrew)
-```bash
-# 安装JPEG XL工具
-brew install libjxl
-
-# 安装ImageMagick
-brew install imagemagick
-
-# 安装FFmpeg
-brew install ffmpeg
-
-# 安装ExifTool
-brew install exiftool
-```
-
-### Ubuntu/Debian
-```bash
-# 安装JPEG XL工具
-sudo apt-get install libjxl-tools
-
-# 安装ImageMagick
-sudo apt-get install imagemagick
-
-# 安装FFmpeg
-sudo apt-get install ffmpeg
-
-# 安装ExifTool
-sudo apt-get install libimage-exiftool-perl
-```
-
-## 🚀 快速开始
-
-1. **克隆仓库**
+1. **Clone Repository**
 ```bash
 git clone <repository-url>
 cd easymode
 ```
 
-2. **编译所有工具**
+2. **Install Dependencies**
 ```bash
-# 编译所有工具
-for dir in all2jxl video2mov merge_xmp deduplicate_media static2jxl dynamic2jxl static2avif dynamic2avif; do
-    cd $dir
-    go build -o bin/$dir main.go
-    cd ..
-done
+# macOS
+brew install imagemagick libjxl ffmpeg exiftool
+
+# Ubuntu/Debian
+sudo apt-get install imagemagick libjxl-tools ffmpeg exiftool
 ```
 
-3. **使用工具**
+3. **Build All Tools**
 ```bash
-# 转换图像为JPEG XL
-./all2jxl/bin/all2jxl -dir /path/to/images
-
-# 转换视频为MOV
-./video2mov/bin/video2mov -input /path/to/videos -output /path/to/output
-
-# 合并XMP元数据
-./merge_xmp/bin/merge_xmp -dir /path/to/media
-
-# 去重媒体文件
-./deduplicate_media/bin/deduplicate_media -dir /path/to/media -trash-dir /path/to/trash
+./build_all.sh
 ```
 
-## ⚙️ 通用选项
+4. **Use Universal Converter (Recommended)**
+```bash
+# Convert all images to JPEG XL
+./universal_converter/bin/universal_converter -dir ./images -type jxl -mode all
 
-所有工具都支持以下通用选项：
+# Convert static images to AVIF
+./universal_converter/bin/universal_converter -dir ./photos -type avif -mode static
 
-- `-workers int`: 并发工作线程数（默认：CPU核心数）
-- `-timeout int`: 单个文件处理超时秒数
-- `-retries int`: 转换失败时的重试次数
-- `-skip-exist`: 跳过已存在的目标文件
-- `-dry-run`: 试运行模式，只显示将要处理的文件而不实际转换
+# Convert videos to MOV
+./universal_converter/bin/universal_converter -dir ./videos -type mov -mode video
 
-## 📊 功能特点
+# Convert dynamic images to JPEG XL
+./universal_converter/bin/universal_converter -dir ./gifs -type jxl -mode dynamic
+```
 
-### 统一的基础架构
-- 统一的错误处理和日志记录
-- 统一的并发控制和资源管理
-- 统一的元数据保留机制
-- 统一的统计和报告系统
+5. **Use Individual Tools**
+```bash
+# Convert all images to JPEG XL
+./all2jxl/bin/all2jxl -dir ./images -workers 4
 
-### 元数据保留
-- 使用exiftool复制EXIF数据
-- 在macOS上使用mdls和exiftool保留文件创建/修改时间
-- 支持XMP侧边文件的自动合并
+# Convert all images to AVIF
+./all2avif/bin/all2avif -dir ./images -workers 4
+```
 
-### 并发处理
-- 智能线程数配置，根据CPU核心数动态调整
-- 资源限制机制，防止系统过载
-- 优雅的中断处理
+## 📋 Detailed Parameters
 
-### 详细日志
-- 同时输出到控制台和文件
-- 详细的处理统计和进度报告
-- 按格式统计的处理结果
-- 处理时间最长的文件信息
+### General Parameters
+- `-dir`: Input directory path
+- `-output`: Output directory (default: same as input)
+- `-workers`: Number of worker threads (0=auto-detect)
+- `-dry-run`: Dry run mode
+- `-skip-exist`: Skip existing output files
+- `-retries`: Number of retries on conversion failure
+- `-timeout`: Timeout for single file processing (seconds)
 
-## 🔧 开发说明
+### Conversion Parameters
+- `-type`: Conversion type (avif, jxl, mov)
+- `-mode`: Processing mode (all, static, dynamic, video)
 
-### 代码结构
-每个工具都遵循统一的结构：
-- 详细的简体中文注释
-- 统一的错误处理
-- 统一的日志格式
-- 统一的并发控制
+### Quality Parameters
+- `-quality`: Output quality (1-100)
+- `-speed`: Encoding speed (0-9)
+- `-cjxl-threads`: CJXL encoder thread count
 
-### 编译要求
-- Go 1.19+
-- 相关系统依赖工具
+### Validation Parameters
+- `-strict`: Strict validation mode
+- `-tolerance`: Allowed pixel difference percentage
 
-### 测试
-每个工具都支持`-h`参数查看帮助信息，`-dry-run`参数进行试运行测试。
+### Metadata Parameters
+- `-copy-metadata`: Copy metadata
+- `-preserve-times`: Preserve file timestamps
 
-## 📝 版本信息
+### Logging Parameters
+- `-log-level`: Log level (DEBUG, INFO, WARN, ERROR)
+- `-log-file`: Log file path
+- `-log-max-size`: Maximum log file size (bytes)
 
-- **版本**: 2.1.0
-- **作者**: AI Assistant
-- **更新日期**: 2024年10月22日
+### Performance Parameters
+- `-max-memory`: Maximum memory usage (bytes)
+- `-process-limit`: Maximum concurrent processes
+- `-file-limit`: Maximum concurrent files
 
-## 🤝 贡献
+## 🔍 8-Layer Validation System
 
-欢迎提交Issue和Pull Request来改进这些工具。
+To ensure conversion quality, all tools integrate an 8-layer validation system:
 
-## 📄 许可证
+1. **Basic File Validation**: Check file existence and readability
+2. **File Size Validation**: Verify converted file size reasonableness
+3. **Format Integrity Validation**: Ensure correct output format
+4. **Metadata Integrity Validation**: Check critical metadata fields
+5. **Image Dimension Validation**: Verify image dimension consistency
+6. **Pixel-Level Validation**: Perform pixel-level quality checks
+7. **Quality Metrics Validation**: Calculate PSNR, SSIM quality metrics
+8. **Anti-Cheat Validation**: Detect hardcoded bypasses and fake conversions
 
-本项目采用MIT许可证。
+## 🚀 Performance Optimization
+
+- **Smart Thread Adjustment**: Dynamically adjust worker threads based on system memory usage
+- **File Type Priority**: Prioritize fast conversion formats like JPEG
+- **Memory Management**: Intelligent memory usage monitoring and limiting
+- **Concurrency Control**: Limit external processes and file handle usage
+- **Enhanced File Type Detection**: Solve AVIF/HEIC format recognition issues
+
+## 📊 Usage Examples
+
+### Universal Converter Examples
+```bash
+# Convert entire photo library to JPEG XL
+./universal_converter/bin/universal_converter \
+  -dir /Users/username/Pictures \
+  -type jxl \
+  -mode all \
+  -workers 8 \
+  -quality 95 \
+  -strict
+
+# Convert static images to AVIF
+./universal_converter/bin/universal_converter \
+  -dir /Users/username/Photos \
+  -type avif \
+  -mode static \
+  -workers 4 \
+  -quality 90
+
+# Convert videos to MOV
+./universal_converter/bin/universal_converter \
+  -dir /Users/username/Videos \
+  -type mov \
+  -mode video \
+  -workers 2
+```
+
+### Individual Tool Examples
+```bash
+# Convert all images to JPEG XL
+./all2jxl/bin/all2jxl -dir ./images -workers 4 -strict
+
+# Convert static images to AVIF
+./static2avif/bin/static2avif -dir ./photos -quality 90
+
+# Convert dynamic images to JPEG XL
+./dynamic2jxl/bin/dynamic2jxl -dir ./gifs -workers 2
+```
+
+### Metadata Processing Examples
+```bash
+# Merge XMP metadata
+./merge_xmp/bin/merge_xmp -dir /Users/username/Photos
+
+# Detect duplicate files
+./deduplicate_media/bin/deduplicate_media -dir /Users/username/Photos -trash ./trash
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Missing Dependencies**
+```bash
+# macOS
+brew install imagemagick libjxl ffmpeg exiftool
+
+# Ubuntu/Debian
+sudo apt-get install imagemagick libjxl-tools ffmpeg exiftool
+```
+
+2. **Permission Issues**
+```bash
+chmod +x build_all.sh
+chmod +x */build.sh
+```
+
+3. **Insufficient Memory**
+```bash
+# Reduce worker threads
+./universal_converter/bin/universal_converter -dir ./images -workers 2
+```
+
+4. **File Type Recognition Issues**
+```bash
+# Use strict mode for detailed validation
+./universal_converter/bin/universal_converter -dir ./images -type jxl -strict
+```
+
+## 📈 Performance Benchmarks
+
+Test results on MacBook Pro M1:
+- JPEG to JXL: ~50MB/s
+- PNG to AVIF: ~30MB/s
+- HEIC to JXL: ~20MB/s
+- Metadata processing: ~1000 files/minute
+
+## 🆕 v2.2.0 New Features
+
+- ✅ **Universal Converter**: One tool supports all conversion types and modes
+- ✅ **Enhanced File Type Detection**: Solve AVIF/HEIC format recognition issues
+- ✅ **8-Layer Validation System**: Ensure conversion quality and data integrity
+- ✅ **Modular Design**: Unified parameter parsing and validation modules
+- ✅ **Smart Performance Optimization**: Dynamic adjustment based on system load
+- ✅ **Live Photo Detection**: Automatically skip Apple Live Photo files
+- ✅ **Anti-Cheat Mechanism**: Prevent hardcoded bypasses and fake conversions
+
+## 📝 Version History
+
+### v2.2.0 (Latest)
+- **Universal Converter**: One tool supports all conversion types and modes
+- **Enhanced File Type Detection**: Solve AVIF/HEIC format recognition issues
+- **Modular Design**: Unified parameter parsing and validation modules
+- **8-Layer Validation System**: Ensure conversion quality and data integrity
+- **Smart Performance Optimization**: Dynamic adjustment based on system load
+- **Live Photo Detection**: Automatically skip Apple Live Photo files
+- **Anti-Cheat Mechanism**: Prevent hardcoded bypasses and fake conversions
+
+### v2.1.1
+- **8-Layer Validation System** - Multi-layer protection against various bypass attacks
+- **HEIC/HEIF Support** - Comprehensive support for modern image formats
+- **Smart Performance Optimization** - Dynamic thread adjustment and file priority processing
+- **Live Photo Detection** - Automatically skip Live Photo files
+- **Log Management Optimization** - Automatic log rotation to prevent oversized files
+- **Anti-Cheat Mechanism** - Prevent hardcoded and demo code bypassing validation
+- **Enhanced Chinese Comments** - Detailed technical annotations
+
+### v2.1.0
+- Enhanced security validation mechanisms
+- Improved error handling and logging
+- Optimized performance and memory usage
+- Added XMP format validation
+- Enhanced documentation and examples
+
+## 🌐 Language Support
+
+- **English**: [README.md](README.md) (Current)
+- **简体中文**: [README_ZH.md](README_ZH.md)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📞 Support
+
+If you encounter any issues or have questions, please open an issue on GitHub.
+
+## 🎯 Use Cases
+
+- **Photographers** - Batch process RAW images, convert formats
+- **Designers** - Optimize image file sizes while maintaining quality
+- **Content Creators** - Video format conversion, metadata management
+- **System Administrators** - File deduplication, storage optimization
+
+## 🔗 Related Links
+
+- [JPEG XL Official Website](https://jpeg.org/jpegxl/)
+- [AVIF Format Specification](https://aomediacodec.github.io/av1-avif/)
+- [ExifTool Documentation](https://exiftool.org/)
+- [FFmpeg Documentation](https://ffmpeg.org/documentation.html)

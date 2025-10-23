@@ -1,2 +1,0 @@
-{"level":"info","time":"2025-09-05T09:07:33.843+0800","caller":"cmd/root.go:112","msg":"Pixly initialized","version":"1.65.7.3"}
-{"level":"info","time":"2025-09-05T09:07:33.895+0800","caller":"cmd/root.go:146","msg":"欢迎界面显示完成"}
