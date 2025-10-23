@@ -203,7 +203,7 @@ func findMediaFile(xmpFile string) string {
 	basePath = strings.TrimSuffix(basePath, ".sidecar")
 
 	// 尝试查找对应的媒体文件
-	mediaExts := []string{".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi", ".jxl", ".avif", ".heic", ".heif", ".webp", ".bmp", ".tiff", ".tif"}
+	mediaExts := []string{".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi", ".jxl", ".avif", ".heic", ".heif", ".webp", ".bmp", ".tiff", ".tif", ".psd", ".psb", ".cr2", ".cr3", ".nef", ".arw", ".dng", ".raf", ".orf", ".rw2"}
 	for _, ext := range mediaExts {
 		mediaFile := basePath + ext
 		if _, err := os.Stat(mediaFile); err == nil {
@@ -269,7 +269,7 @@ func isValidFilePath(filePath string) bool {
 // isMediaFile 检查文件扩展名是否为支持的媒体格式
 func isMediaFile(ext string) bool {
 	switch strings.ToLower(ext) {
-	case ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".mp4", ".mov", ".heic", ".heif", ".webp", ".avif", ".jxl", ".avi", ".mkv", ".bmp":
+	case ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".mp4", ".mov", ".heic", ".heif", ".webp", ".avif", ".jxl", ".avi", ".mkv", ".bmp", ".psd", ".psb", ".cr2", ".cr3", ".nef", ".arw", ".dng", ".raf", ".orf", ".rw2":
 		return true
 	default:
 		return false
@@ -369,16 +369,23 @@ func verifyMerge(mediaPath, xmpPath string) bool {
 func runDedup(args []string) {
 	fs := flag.NewFlagSet("dedup", flag.ExitOnError)
 	inputDir := fs.String("dir", "", "📂 输入目录路径（必需）")
-	trashDir := fs.String("trash", "", "🗑️  垃圾箱目录（必需）")
+	trashDir := fs.String("trash", "", "🗑️  垃圾箱目录（可选，默认为<dir>/.trash）")
 	dryRun := fs.Bool("dry-run", false, "🔍 试运行模式，不实际执行")
 
 	fs.Parse(args)
 
-	if *inputDir == "" || *trashDir == "" {
-		logger.Println("❌ 错误: 必须指定输入目录和垃圾箱目录")
+	if *inputDir == "" {
+		logger.Println("❌ 错误: 必须指定输入目录 (-dir)")
 		fs.PrintDefaults()
 		os.Exit(1)
 	}
+
+	// 如果未指定trash目录，使用默认的.trash
+	if *trashDir == "" {
+		*trashDir = filepath.Join(*inputDir, ".trash")
+		logger.Printf("📂 使用默认垃圾箱: %s", *trashDir)
+	}
+
 
 	logger.Printf("🔧 开始媒体文件去重...")
 	logger.Printf("📂 输入目录: %s", *inputDir)
@@ -443,6 +450,9 @@ func scanMediaFiles(dir string) ([]string, error) {
 		".mp4": true, ".mov": true, ".avi": true, ".mkv": true,
 		".jxl": true, ".avif": true, ".heic": true, ".heif": true,
 		".webp": true, ".bmp": true, ".tiff": true, ".tif": true,
+		".psd": true, ".psb": true,
+		".cr2": true, ".cr3": true, ".nef": true, ".arw": true,
+		".dng": true, ".raf": true, ".orf": true, ".rw2": true,
 	}
 
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -566,15 +576,21 @@ func scanFilesForNormalization(dir string) (map[string]string, error) {
 func runAuto(args []string) {
 	fs := flag.NewFlagSet("auto", flag.ExitOnError)
 	inputDir := fs.String("dir", "", "📂 输入目录路径（必需）")
-	trashDir := fs.String("trash", "", "🗑️  垃圾箱目录（必需）")
+	trashDir := fs.String("trash", "", "🗑️  垃圾箱目录（可选，默认为<dir>/.trash）")
 	dryRun := fs.Bool("dry-run", false, "🔍 试运行模式，不实际执行")
 
 	fs.Parse(args)
 
-	if *inputDir == "" || *trashDir == "" {
-		logger.Println("❌ 错误: 必须指定输入目录和垃圾箱目录")
+	if *inputDir == "" {
+		logger.Println("❌ 错误: 必须指定输入目录 (-dir)")
 		fs.PrintDefaults()
 		os.Exit(1)
+	}
+
+	// 如果未指定trash目录，使用默认的.trash
+	if *trashDir == "" {
+		*trashDir = filepath.Join(*inputDir, ".trash")
+		logger.Printf("📂 使用默认垃圾箱: %s", *trashDir)
 	}
 
 	logger.Printf("🚀 开始自动处理媒体文件...")

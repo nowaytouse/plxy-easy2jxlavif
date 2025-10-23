@@ -282,6 +282,11 @@ func scanFiles(opts utils.UniversalOptions) ([]string, error) {
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
 			// 跳过目录
 			if de.IsDir() {
+				// 排除垃圾箱和临时目录
+				dirName := filepath.Base(osPathname)
+				if dirName == ".trash" || dirName == ".Trash" || dirName == "Trash" {
+					return filepath.SkipDir
+				}
 				return nil
 			}
 
