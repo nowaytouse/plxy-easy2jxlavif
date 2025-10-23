@@ -48,7 +48,7 @@ func ToPNGOrTIFF(inputPath, tempOutPath string, preferTIFF bool) (string, error)
 
 	// 获取输入文件扩展名
 	inputExt := strings.ToLower(filepath.Ext(inputPath))
-
+	
 	// 对于HEIC/HEIF文件，必须使用完整图像而非缩略图
 	if inputExt == ".heic" || inputExt == ".heif" {
 		// 优先使用macOS的sips工具（最可靠，支持完整分辨率）
@@ -59,7 +59,7 @@ func ToPNGOrTIFF(inputPath, tempOutPath string, preferTIFF bool) (string, error)
 			// sips工具失败，尝试其他工具
 			_ = out
 		}
-
+		
 		// 备用方案1: heif-convert (如果安装了libheif)
 		cmd = exec.Command("heif-convert", inputPath, png)
 		if out, err := cmd.CombinedOutput(); err == nil {
@@ -67,7 +67,7 @@ func ToPNGOrTIFF(inputPath, tempOutPath string, preferTIFF bool) (string, error)
 		} else {
 			_ = out
 		}
-
+		
 		// 备用方案2: 尝试ImageMagick（可能会有问题）
 		cmd = exec.Command("magick", inputPath, "-auto-orient", png)
 		if out, err := cmd.CombinedOutput(); err == nil {
@@ -75,7 +75,7 @@ func ToPNGOrTIFF(inputPath, tempOutPath string, preferTIFF bool) (string, error)
 		} else {
 			_ = out
 		}
-
+		
 		// 备用方案3: ffmpeg（可能只提取缩略图）
 		cmd = exec.Command("ffmpeg", "-hwaccel", "none", "-i", inputPath, "-frames:v", "1", "-pix_fmt", "rgb24", "-y", png)
 		if out, err := cmd.CombinedOutput(); err == nil {
@@ -83,11 +83,11 @@ func ToPNGOrTIFF(inputPath, tempOutPath string, preferTIFF bool) (string, error)
 		} else {
 			_ = out
 		}
-
+		
 		// 所有工具都失败，返回错误
 		return "", fmt.Errorf("HEIC/HEIF转PNG失败(所有工具都无法处理): %s", inputPath)
 	}
-
+	
 	// 对于AVIF文件，优先使用ffmpeg（magick可能生成有问题的PNG）
 	if inputExt == ".avif" {
 		cmd := exec.Command("ffmpeg", "-hwaccel", "none", "-i", inputPath, "-frames:v", "1", "-pix_fmt", "rgb24", "-y", png)

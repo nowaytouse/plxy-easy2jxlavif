@@ -2,6 +2,10 @@
 
 > 🚀 **A powerful Go-based media conversion toolkit supporting batch conversion of multiple image and video formats, featuring complete metadata preservation, intelligent performance optimization, and an 8-layer validation system.**
 
+> ⚠️ **TEST VERSION WARNING**: This is a test version with limited testing scope. Only tested by the author for personal use. No extensive testing has been conducted.
+
+> 📋 **FORMAT QUALITY NOTICE**: This toolkit provides true mathematical lossless conversion for JPEG XL (JXL) format, while AVIF conversion uses visually lossless compression.
+
 EasyMode is a comprehensive media conversion toolkit designed for image collectors and efficiency seekers. It provides professional-grade tools for converting various media formats to modern, efficient formats with complete metadata preservation and intelligent processing.
 
 ---

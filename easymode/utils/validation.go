@@ -415,10 +415,10 @@ func (v *EightLayerValidator) validateLayer5_ImageDimensions(originalPath, conve
 	// 对于视频格式，允许1-2像素的差异（某些编码器可能调整为偶数）
 	convExt := strings.ToLower(filepath.Ext(convertedPath))
 	isVideoFormat := convExt == ".mov" || convExt == ".mp4" || convExt == ".avi" || convExt == ".mkv"
-
+	
 	widthDiff := absI(originalDims.Width - convertedDims.Width)
 	heightDiff := absI(originalDims.Height - convertedDims.Height)
-
+	
 	if isVideoFormat {
 		// 视频格式允许2像素以内的差异
 		if widthDiff > 2 || heightDiff > 2 {
@@ -438,19 +438,19 @@ func (v *EightLayerValidator) validateLayer5_ImageDimensions(originalPath, conve
 		}
 	} else {
 		// 图像格式要求完全一致
-		if originalDims.Width != convertedDims.Width || originalDims.Height != convertedDims.Height {
-			return &ValidationResult{
-				Success: false,
-				Message: fmt.Sprintf("图像尺寸不匹配: 原始(%dx%d) vs 转换后(%dx%d)",
-					originalDims.Width, originalDims.Height, convertedDims.Width, convertedDims.Height),
-				Layer:     5,
-				LayerName: "图像尺寸验证",
-				Details: map[string]interface{}{
-					"original_width":   originalDims.Width,
-					"original_height":  originalDims.Height,
-					"converted_width":  convertedDims.Width,
-					"converted_height": convertedDims.Height,
-				},
+	if originalDims.Width != convertedDims.Width || originalDims.Height != convertedDims.Height {
+		return &ValidationResult{
+			Success: false,
+			Message: fmt.Sprintf("图像尺寸不匹配: 原始(%dx%d) vs 转换后(%dx%d)",
+				originalDims.Width, originalDims.Height, convertedDims.Width, convertedDims.Height),
+			Layer:     5,
+			LayerName: "图像尺寸验证",
+			Details: map[string]interface{}{
+				"original_width":   originalDims.Width,
+				"original_height":  originalDims.Height,
+				"converted_width":  convertedDims.Width,
+				"converted_height": convertedDims.Height,
+			},
 			}
 		}
 	}
@@ -503,7 +503,7 @@ func (v *EightLayerValidator) validateLayer6_PixelLevel(originalPath, convertedP
 			}
 		}
 	}
-
+	
 	// 对于视频格式→MOV，跳过像素级验证（视频重新封装不涉及重编码）
 	if (origExt == ".mp4" || origExt == ".avi" || origExt == ".mkv" || origExt == ".webm" || origExt == ".mov") && convExt == ".mov" {
 		return &ValidationResult{
