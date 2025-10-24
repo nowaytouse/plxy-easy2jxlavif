@@ -15,27 +15,27 @@ import (
 
 // TestStats 测试统计
 type TestStats struct {
-	TotalFiles    int
-	TestedFiles   int
-	SkippedFiles  int
+	TotalFiles         int
+	TestedFiles        int
+	SkippedFiles       int
 	SuccessPredictions int
 	FailedPredictions  int
-	
+
 	// 按格式统计
 	FormatStats map[string]*FormatStat
-	
+
 	StartTime time.Time
 	EndTime   time.Time
 }
 
 // FormatStat 格式统计
 type FormatStat struct {
-	Format        string
-	Count         int
-	TestedCount   int
-	TargetFormats map[string]int // 目标格式分布
+	Format             string
+	Count              int
+	TestedCount        int
+	TargetFormats      map[string]int // 目标格式分布
 	AvgPredictedSaving float64
-	TotalSize     int64
+	TotalSize          int64
 }
 
 func main() {
@@ -315,7 +315,7 @@ func printSummary(stats *TestStats) {
 	fmt.Println()
 
 	fmt.Println("  实际行为（测试验证）:")
-	
+
 	// 验证PNG → JXL
 	if pngStat, ok := stats.FormatStats["png"]; ok {
 		jxlCount := pngStat.TargetFormats["jxl"]
@@ -363,4 +363,3 @@ func printSummary(stats *TestStats) {
 		fmt.Println("  ✅ 100%预测成功率")
 	}
 }
-

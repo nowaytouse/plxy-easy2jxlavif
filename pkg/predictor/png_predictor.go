@@ -94,7 +94,7 @@ func (pp *PNGPredictor) calculateOptimalEffort(features *FileFeatures) int {
 func (pp *PNGPredictor) estimateSaving(features *FileFeatures) float64 {
 	// TESTPACK实测数据:
 	//   黑白起稿.png (BPP低): 56.5%节省
-	//   psc.png (BPP高): 71.6%节省  
+	//   psc.png (BPP高): 71.6%节省
 	//   026.png (BPP中): 41.7%节省
 	//   平均: 56.6%节省
 	//
