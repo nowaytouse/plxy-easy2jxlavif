@@ -56,7 +56,7 @@ func main() {
 	totalExpectedSaving := 0.0
 	totalActualSize := int64(0)
 	totalExpectedSize := int64(0)
-	
+
 	// 测试每个文件
 	for i, filePath := range testFiles {
 		// 检查文件是否存在
@@ -115,47 +115,47 @@ func main() {
 	fmt.Printf("  测试文件: %d\n", len(testFiles))
 	fmt.Printf("  成功预测: %d\n", successCount)
 	fmt.Printf("  成功率: %.2f%%\n", float64(successCount)/float64(len(testFiles))*100)
-	
+
 	if successCount > 0 {
 		avgFeatureTime := totalFeatureTime / time.Duration(successCount)
 		avgPredictTime := totalPredictTime / time.Duration(successCount)
 		avgTotalTime := (totalFeatureTime + totalPredictTime) / time.Duration(successCount)
 		avgExpectedSaving := totalExpectedSaving / float64(successCount) * 100
-		
+
 		totalSaving := float64(totalActualSize-totalExpectedSize) / float64(totalActualSize) * 100
-		
+
 		fmt.Printf("\n  ⚡ 性能指标:\n")
 		fmt.Printf("     平均特征提取: %v\n", avgFeatureTime)
 		fmt.Printf("     平均预测耗时: %v\n", avgPredictTime)
 		fmt.Printf("     平均总耗时: %v\n", avgTotalTime)
-		
+
 		fmt.Printf("\n  💾 空间预测:\n")
 		fmt.Printf("     平均预期节省: %.1f%%\n", avgExpectedSaving)
 		fmt.Printf("     总体预期节省: %.1f%% (%.2f MB → %.2f MB)\n",
 			totalSaving,
 			float64(totalActualSize)/(1024*1024),
 			float64(totalExpectedSize)/(1024*1024))
-		
+
 		fmt.Printf("\n  🎯 v3.0 MVP验证:\n")
 		if avgTotalTime < 100*time.Millisecond {
 			fmt.Printf("     ✅ 预测速度: %v < 100ms (目标达成)\n", avgTotalTime)
 		} else {
 			fmt.Printf("     ⚠️  预测速度: %v (目标: <100ms)\n", avgTotalTime)
 		}
-		
+
 		if avgExpectedSaving > 80 {
 			fmt.Printf("     ✅ 空间节省: %.1f%% > 80%% (目标达成)\n", avgExpectedSaving)
 		} else {
 			fmt.Printf("     ⚠️  空间节省: %.1f%% (目标: >80%%)\n", avgExpectedSaving)
 		}
-		
+
 		if successCount == len(testFiles) {
 			fmt.Println("     ✅ 成功率: 100% (目标达成)")
 		}
 	}
-	
+
 	fmt.Println()
-	
+
 	if successCount == len(testFiles) {
 		fmt.Println("✅ PNG预测器MVP测试通过！")
 		fmt.Println()
@@ -163,7 +163,6 @@ func main() {
 	} else {
 		fmt.Printf("⚠️  部分文件预测失败: %d/%d\n", len(testFiles)-successCount, len(testFiles))
 	}
-	
+
 	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 }
-
