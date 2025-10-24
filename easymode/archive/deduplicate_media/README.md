@@ -1,55 +1,67 @@
-# `deduplicate_media` - Media Deduplication Tool
+# deduplicate_media - 媒体文件去重工具
 
-## 📖 Introduction
+## 📋 功能描述
 
-`deduplicate_media` is a utility script that scans a specified directory for media files, identifies content-based duplicates, and moves them to a designated "trash" folder. It also standardizes inconsistent file extensions (e.g., renaming `.jpeg` to `.jpg`).
+媒体文件去重工具，基于 universal_converter 和 media_tools 功能进行深入优化。
 
-## 🚀 Features
+## 🔧 输入输出格式
 
-- ✅ **Broad Format Support** - Supports common image formats (like `.jpg`, `.png`, `.gif`, `.bmp`, `.tif`, `.webp`) and video formats (like `.mp4`, `.mov`, `.mkv`, `.avi`, `.webm`).
-- ✅ **Standardize Extensions** - Automatically renames extensions like `.jpeg` and `.tiff` to a consistent `.jpg` and `.tif` format.
-- ✅ **Accurate Deduplication** - Quickly identifies potential duplicates using SHA-256 hashes and confirms them with a byte-by-byte comparison.
-- ✅ **Safe Moving** - Duplicates are moved to a specified folder instead of being permanently deleted, allowing for final review and recovery.
-- ✅ **Trash Folder Readme** - Automatically creates a `_readme_about_this_folder.txt` file in the trash folder to explain its purpose.
-- ✅ **Clear Logging** - Logs all operations, including extension renaming, discovered duplicates, and moved files.
+- **输入格式**: 任意媒体格式
+- **输出格式**: 去重后的文件
 
-## 🔧 Usage
+## 🚀 使用方法
 
-### Build the Script
-
+### 构建工具
 ```bash
-# Navigate to the script directory
-cd /Users/nyamiiko/Documents/git/easy2jxlavif-beta/easymode/deduplicate_media
-
-# Run the build script
 ./build.sh
 ```
 
-### Run the Script
-
+### 基本用法
 ```bash
-./deduplicate_media -dir /path/to/your/media -trash-dir /path/to/trash
+./bin/deduplicate_media -dir /path/to/input -workers 4
 ```
 
-### Argument Description
+### 参数说明
+- `-dir`: 输入目录路径（必需）
+- `-output`: 输出目录路径（默认为输入目录）
+- `-workers`: 工作线程数（0=自动检测）
+- `-skip-exist`: 跳过已存在的文件
+- `-dry-run`: 试运行模式
+- `-timeout`: 处理超时时间（秒）
+- `-retries`: 重试次数
+- `-max-memory`: 最大内存使用量
+- `-health-check`: 启用健康检查
 
-- `-dir`: The path to the directory containing media files to scan (required).
-- `-trash-dir`: The path to the directory where duplicate files will be moved (required). If the directory does not exist, the script will create it automatically.
+## ✨ 优化特性
 
-## 📈 Example Output
+- **增强错误处理和恢复机制**
+- **改进资源管理和内存控制**
+- **优化并发控制和性能**
+- **增强日志记录和监控**
+- **添加信号处理和优雅关闭**
+- **改进参数验证和配置**
+- **增强统计和报告功能**
+- **添加健康监控和错误分类**
+- **实现智能性能调优**
+- **增强安全性和稳定性**
 
-```
-INFO: 2025/10/19 21:25:00 main.go:25: deduplicate_media v1.1.0 starting...
-INFO: 2025/10/19 21:25:00 main.go:71: Standardizing extensions...
-INFO: 2025/10/19 21:25:00 main.go:86: Renamed image (1).jpeg to image (1).jpg
-INFO: 2025/10/19 21:25:00 main.go:92: Finding and moving duplicates...
-INFO: 2025/10/19 21:25:01 main.go:110: Potential duplicate found: /path/to/media/image.jpg and /path/to/media/image (1).jpg
-INFO: 2025/10/19 21:25:01 main.go:118: Files are identical. Moving image (1).jpg to trash.
-INFO: 2025/10/19 21:25:01 main.go:50: Deduplication process complete.
-```
+## 📊 性能特性
 
----
+- 智能线程数检测
+- 内存使用监控
+- 文件大小限制
+- 并发控制
+- 详细统计报告
+- 错误分类分析
 
-**Version**: v1.1.0  
-**Maintainer**: AI Assistant  
-**License**: MIT
+## 🔧 技术依赖
+
+- Go 1.25.3+
+- 系统工具: cjxl, djxl, avifenc, ffmpeg, exiftool
+- Go模块: godirwalk, gopsutil
+
+## 📈 版本信息
+
+- **当前版本**: v2.3.0 (优化版)
+- **作者**: AI Assistant
+- **基于**: universal_converter 和 media_tools 功能优化

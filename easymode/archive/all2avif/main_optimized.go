@@ -1,4 +1,4 @@
-// all2jxl - 批量图像转JPEG XL格式工具 (优化版)
+// all2avif - 批量图像转AVIF格式工具 (优化版)
 //
 // 基于 universal_converter 功能进行深入优化
 // 版本: v2.3.0 (优化版)
@@ -47,7 +47,7 @@ import (
 
 // 程序常量定义
 const (
-	logFileName = "all2jxl_optimized.log"
+	logFileName = "all2avif_optimized.log"
 	version     = "2.3.0"
 	author      = "AI Assistant"
 
@@ -65,12 +65,12 @@ const (
 
 // 全局变量定义
 var (
-	logger *log.Logger
-	globalCtx  context.Context
-	cancelFunc context.CancelFunc
-	stats      *Stats
-	procSem    chan struct{}
-	fdSem      chan struct{}
+	logger        *log.Logger
+	globalCtx     context.Context
+	cancelFunc    context.CancelFunc
+	stats         *Stats
+	procSem       chan struct{}
+	fdSem         chan struct{}
 	healthMonitor *HealthMonitor
 )
 
@@ -84,25 +84,26 @@ const (
 
 // Options 结构体定义了程序的配置选项
 type Options struct {
-	Workers        int
-	Verify         VerifyMode
-	DoCopy         bool
-	Sample         int
-	SkipExist      bool
-	DryRun         bool
-	CJXLThreads    int
-	TimeoutSeconds int
-	Retries        int
-	InputDir       string
-	OutputDir      string
-	LogLevel       string
-	MaxMemory      int64
-	MaxFileSize    int64
-	MinFreeMemory  int64
+	Workers           int
+	Verify            VerifyMode
+	DoCopy            bool
+	Sample            int
+	SkipExist         bool
+	DryRun            bool
+	Quality           int
+	Speed             int
+	TimeoutSeconds    int
+	Retries           int
+	InputDir          string
+	OutputDir         string
+	LogLevel          string
+	MaxMemory         int64
+	MaxFileSize       int64
+	MinFreeMemory     int64
 	EnableHealthCheck bool
-	ProgressReport bool
-	DetailedStats  bool
-	ErrorRecovery  bool
+	ProgressReport    bool
+	DetailedStats     bool
+	ErrorRecovery     bool
 	PerformanceTuning bool
 }
 
@@ -128,20 +129,20 @@ type FileProcessInfo struct {
 // Stats 结构体用于统计处理过程中的各种数据
 type Stats struct {
 	sync.RWMutex
-	imagesProcessed  int
-	imagesFailed     int
-	imagesSkipped    int
-	videosSkipped    int
-	otherSkipped     int
-	totalBytesBefore int64
-	totalBytesAfter  int64
-	startTime        time.Time
-	detailedLogs     []FileProcessInfo
-	byExt            map[string]int
-	peakMemoryUsage  int64
-	totalRetries     int
-	recoveryActions  int
-	errorTypes       map[string]int
+	imagesProcessed    int
+	imagesFailed       int
+	imagesSkipped      int
+	videosSkipped      int
+	otherSkipped       int
+	totalBytesBefore   int64
+	totalBytesAfter    int64
+	startTime          time.Time
+	detailedLogs       []FileProcessInfo
+	byExt              map[string]int
+	peakMemoryUsage    int64
+	totalRetries       int
+	recoveryActions    int
+	errorTypes         map[string]int
 	performanceMetrics map[string]float64
 }
 
@@ -162,9 +163,9 @@ type HealthMonitor struct {
 func init() {
 	setupLogging()
 	stats = &Stats{
-		startTime: time.Now(),
-		byExt:     make(map[string]int),
-		errorTypes: make(map[string]int),
+		startTime:          time.Now(),
+		byExt:              make(map[string]int),
+		errorTypes:         make(map[string]int),
 		performanceMetrics: make(map[string]float64),
 	}
 	healthMonitor = &HealthMonitor{
@@ -214,12 +215,13 @@ func parseFlags() Options {
 	flag.IntVar(&opts.Workers, "workers", 0, "⚡ 工作线程数 (0=自动检测)")
 	flag.BoolVar(&opts.DoCopy, "copy", false, "📋 复制文件而不是移动")
 	flag.IntVar(&opts.Sample, "sample", 0, "🎯 采样处理文件数量 (0=处理所有)")
-	flag.BoolVar(&opts.SkipExist, "skip-exist", false, "⏭️ 跳过已存在的JXL文件")
+	flag.BoolVar(&opts.SkipExist, "skip-exist", false, "⏭️ 跳过已存在的AVIF文件")
 	flag.BoolVar(&opts.DryRun, "dry-run", false, "🔍 试运行模式，只显示将要处理的文件")
 
 	// 转换参数
 	flag.StringVar((*string)(&opts.Verify), "verify", "fast", "🔍 验证模式: strict, fast")
-	flag.IntVar(&opts.CJXLThreads, "cjxl-threads", 4, "🧵 CJXL编码器线程数")
+	flag.IntVar(&opts.Quality, "quality", 80, "🎨 图像质量 (1-100)")
+	flag.IntVar(&opts.Speed, "speed", 4, "⚡ 编码速度 (0-10)")
 	flag.IntVar(&opts.TimeoutSeconds, "timeout", DefaultTimeoutSeconds, "⏰ 单个文件处理超时时间（秒）")
 	flag.IntVar(&opts.Retries, "retries", MaxRetries, "🔄 转换失败重试次数")
 
@@ -249,8 +251,11 @@ func parseFlags() Options {
 	if opts.Workers < 0 {
 		opts.Workers = 0
 	}
-	if opts.CJXLThreads < 1 {
-		opts.CJXLThreads = 1
+	if opts.Quality < 1 || opts.Quality > 100 {
+		opts.Quality = 80
+	}
+	if opts.Speed < 0 || opts.Speed > 10 {
+		opts.Speed = 4
 	}
 	if opts.TimeoutSeconds < 1 {
 		opts.TimeoutSeconds = DefaultTimeoutSeconds
@@ -267,7 +272,7 @@ func parseFlags() Options {
 
 // 检查系统依赖
 func checkDependencies() error {
-	dependencies := []string{"cjxl", "djxl", "exiftool"}
+	dependencies := []string{"avifenc", "avifdec", "exiftool"}
 	for _, dep := range dependencies {
 		if _, err := exec.LookPath(dep); err != nil {
 			return fmt.Errorf("缺少依赖: %s", dep)
@@ -329,7 +334,7 @@ func checkSystemHealth(opts *Options) {
 	if mem, err := mem.VirtualMemory(); err == nil {
 		healthMonitor.memoryUsage = mem.Used
 		if opts.MaxMemory > 0 && mem.Used > uint64(opts.MaxMemory) {
-			logger.Printf("⚠️  内存使用过高: %d MB / %d MB", 
+			logger.Printf("⚠️  内存使用过高: %d MB / %d MB",
 				mem.Used/1024/1024, opts.MaxMemory/1024/1024)
 			healthMonitor.isHealthy = false
 		}
@@ -390,7 +395,7 @@ func scanCandidateFiles(inputDir string, opts Options) []string {
 				if info.Size() > 0 && info.Size() <= opts.MaxFileSize {
 					files = append(files, osPathname)
 				} else if info.Size() > opts.MaxFileSize {
-					logger.Printf("⚠️  文件过大，跳过: %s (%d MB)", 
+					logger.Printf("⚠️  文件过大，跳过: %s (%d MB)",
 						filepath.Base(osPathname), info.Size()/1024/1024)
 				}
 			}
@@ -419,7 +424,7 @@ func isImageFile(ext string) bool {
 		".png": true, ".bmp": true,
 		".tiff": true, ".tif": true,
 		".gif": true, ".webp": true,
-		".avif": true, ".heic": true, ".heif": true,
+		".jxl": true, ".heic": true, ".heif": true,
 	}
 	return imageExts[ext]
 }
@@ -442,7 +447,7 @@ func processFileWithRetry(filePath string, fileInfo os.FileInfo, opts Options) {
 		}
 		lastErr = err
 		errorType = classifyError(err)
-		logger.Printf("⚠️  处理文件失败: %s - %v (错误类型: %s)", 
+		logger.Printf("⚠️  处理文件失败: %s - %v (错误类型: %s)",
 			filepath.Base(filePath), err, errorType)
 		stats.Lock()
 		stats.errorTypes[errorType]++
@@ -492,14 +497,14 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 		return fmt.Errorf("文件类型检测失败: %v", err)
 	}
 	if opts.SkipExist {
-		outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".jxl"
+		outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".avif"
 		if _, err := os.Stat(outputPath); err == nil {
 			logger.Printf("⏩ 跳过已存在: %s", filepath.Base(filePath))
 			stats.addImageSkipped()
 			return nil
 		}
 	}
-	conversionMode, outputPath, errorMsg, err := convertToJxlWithOpts(filePath, enhancedType, opts)
+	conversionMode, outputPath, errorMsg, err := convertToAvifWithOpts(filePath, enhancedType, opts)
 	processingTime := time.Since(startTime)
 	processInfo := FileProcessInfo{
 		FilePath:       filePath,
@@ -525,30 +530,32 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 	return err
 }
 
-// 转换到JXL格式
-func convertToJxlWithOpts(filePath string, enhancedType utils.EnhancedFileType, opts Options) (string, string, string, error) {
-	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".jxl"
+// 转换到AVIF格式
+func convertToAvifWithOpts(filePath string, enhancedType utils.EnhancedFileType, opts Options) (string, string, string, error) {
+	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".avif"
 	if enhancedType.IsAnimated {
-		return convertAnimatedToJxl(filePath, outputPath, opts)
+		return convertAnimatedToAvif(filePath, outputPath, opts)
 	}
-	return convertStaticToJxl(filePath, outputPath, opts)
+	return convertStaticToAvif(filePath, outputPath, opts)
 }
 
-// 转换静态图像到JXL
-func convertStaticToJxl(inputPath, outputPath string, opts Options) (string, string, string, error) {
+// 转换静态图像到AVIF
+func convertStaticToAvif(inputPath, outputPath string, opts Options) (string, string, string, error) {
 	args := []string{
-		inputPath,
-		"-d", "0",
-		"-e", "7",
-		"--num_threads", strconv.Itoa(opts.CJXLThreads),
+		"-i", inputPath,
+		"-c:v", "libaom-av1",
+		"-crf", strconv.Itoa(63 - opts.Quality/2), // 质量映射: 100->0(最佳), 1->63(最差)
+		"-cpu-used", strconv.Itoa(opts.Speed),
+		"-an", // 不包含音频
+		"-y",  // 覆盖已存在的文件
 		outputPath,
 	}
 	ctx, cancel := context.WithTimeout(globalCtx, time.Duration(opts.TimeoutSeconds)*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "cjxl", args...)
+	cmd := exec.CommandContext(ctx, "ffmpeg", args...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "静态转换", outputPath, string(output), fmt.Errorf("cjxl转换失败: %v", err)
+		return "静态转换", outputPath, string(output), fmt.Errorf("ffmpeg转换失败: %v", err)
 	}
 	if err := copyMetadata(inputPath, outputPath); err != nil {
 		logger.Printf("⚠️  元数据复制失败: %v", err)
@@ -556,22 +563,23 @@ func convertStaticToJxl(inputPath, outputPath string, opts Options) (string, str
 	return "静态转换", outputPath, "", nil
 }
 
-// 转换动画图像到JXL
-func convertAnimatedToJxl(inputPath, outputPath string, opts Options) (string, string, string, error) {
+// 转换动画图像到AVIF
+func convertAnimatedToAvif(inputPath, outputPath string, opts Options) (string, string, string, error) {
 	args := []string{
-		inputPath,
-		"-d", "0",
-		"-e", "7",
-		"--num_threads", strconv.Itoa(opts.CJXLThreads),
-		"--container=1",
+		"-i", inputPath,
+		"-c:v", "libaom-av1",
+		"-crf", strconv.Itoa(63 - opts.Quality/2), // 质量映射: 100->0(最佳), 1->63(最差)
+		"-cpu-used", strconv.Itoa(opts.Speed),
+		"-an", // 不包含音频
+		"-y",  // 覆盖已存在的文件
 		outputPath,
 	}
 	ctx, cancel := context.WithTimeout(globalCtx, time.Duration(opts.TimeoutSeconds)*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "cjxl", args...)
+	cmd := exec.CommandContext(ctx, "ffmpeg", args...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "动画转换", outputPath, string(output), fmt.Errorf("cjxl动画转换失败: %v", err)
+		return "动画转换", outputPath, string(output), fmt.Errorf("ffmpeg动画转换失败: %v", err)
 	}
 	if err := copyMetadata(inputPath, outputPath); err != nil {
 		logger.Printf("⚠️  元数据复制失败: %v", err)
@@ -660,7 +668,7 @@ func printStatistics() {
 
 // 主函数
 func main() {
-	logger.Printf("🎨 JPEG XL 批量转换工具 v%s (优化版)", version)
+	logger.Printf("🎨 AVIF 批量转换工具 v%s (优化版)", version)
 	logger.Printf("✨ 作者: %s", author)
 	logger.Printf("🔧 开始初始化...")
 	opts := parseFlags()

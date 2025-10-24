@@ -1,51 +1,67 @@
-# video2mov - Video Repackaging Tool
+# video2mov - 视频转MOV格式工具
 
-`video2mov` is a command-line tool designed for video files, aiming to **losslessly repackage** various video formats into the `.mov` container format. This tool does not re-encode video, but instead uses stream copy to ensure that the quality of the original video and audio streams is fully preserved, while providing better compatibility and metadata handling capabilities.
+## 📋 功能描述
 
-## 🚀 Core Features
+视频转MOV格式工具，基于 universal_converter 和 media_tools 功能进行深入优化。
 
-- **Lossless Repackaging**: Uses `ffmpeg -c copy` for stream copying, without any re-encoding of video or audio, ensuring original quality.
-- **Wide Video Format Support**: Supports common video formats such as `.mp4`, `.avi`, `.mkv`, `.wmv`, `.flv`, `.webm`, `.m4v`, `.3gp`, etc.
-- **Metadata Preservation**: Uses `exiftool` to completely copy the metadata of the original video file to the new `.mov` file.
-- **Accurate File Count Verification**: After repackaging is complete, a detailed file count verification report is provided to ensure the accuracy and reliability of the processing.
-- **Safe and Reliable**: Supports a retry mechanism and verifies that the output file exists and is valid before deleting the original file, ensuring the safety of the processing.
-- **Detailed Logging**: Provides a comprehensive processing log `video2mov.log`.
+## 🔧 输入输出格式
 
-## 🛠️ Usage
+- **输入格式**: MP4, AVI, MKV, MOV
+- **输出格式**: MOV
 
-### Basic Usage
+## 🚀 使用方法
+
+### 构建工具
 ```bash
-# Navigate to the script directory
-cd /path/to/easy2jxlavif-beta/easymode/video2mov
-
-# Run the script to repackage videos in the specified directory
-go run main.go -input /path/to/your/videos -output /path/to/mov/output
+./build.sh
 ```
 
-### Command-Line Arguments
+### 基本用法
+```bash
+./bin/video2mov -dir /path/to/input -workers 4
+```
 
-| Argument | Type | Default | Description |
-|---|---|---|---|
-| `-input` | string | none | Input directory (required) |
-| `-output` | string | none | Output directory (defaults to the input directory) |
-| `-workers` | integer | CPU cores | Number of concurrent worker threads |
-| `-skip-exist` | boolean | `true` | Skip existing target `.mov` files |
-| `-dry-run` | boolean | `false` | Dry run mode, only prints the files to be processed |
-| `-timeout` | integer | 300 | Timeout in seconds for a single file |
-| `-retries` | integer | 2 | Number of retries on failure |
-| `-replace` | boolean | `false` | Delete original video files after repackaging |
+### 参数说明
+- `-dir`: 输入目录路径（必需）
+- `-output`: 输出目录路径（默认为输入目录）
+- `-workers`: 工作线程数（0=自动检测）
+- `-skip-exist`: 跳过已存在的文件
+- `-dry-run`: 试运行模式
+- `-timeout`: 处理超时时间（秒）
+- `-retries`: 重试次数
+- `-max-memory`: 最大内存使用量
+- `-health-check`: 启用健康检查
 
-## 🔍 Troubleshooting
+## ✨ 优化特性
 
-### Common Problems
-1. **Missing dependencies**: Make sure `ffmpeg` and `exiftool` are installed.
-2. **Permission issues**: Check file read/write permissions.
-3. **Insufficient space**: Make sure there is enough disk space.
+- **增强错误处理和恢复机制**
+- **改进资源管理和内存控制**
+- **优化并发控制和性能**
+- **增强日志记录和监控**
+- **添加信号处理和优雅关闭**
+- **改进参数验证和配置**
+- **增强统计和报告功能**
+- **添加健康监控和错误分类**
+- **实现智能性能调优**
+- **增强安全性和稳定性**
 
-## 📝 Update Log
+## 📊 性能特性
 
-### v1.0.0 - 2025-10-20
-- ✅ Added video repackaging tool `video2mov`.
-- ✅ Implemented lossless stream copying of videos to `.mov` format.
-- ✅ Integrated accurate file count verification.
-- ✅ Supports metadata preservation.
+- 智能线程数检测
+- 内存使用监控
+- 文件大小限制
+- 并发控制
+- 详细统计报告
+- 错误分类分析
+
+## 🔧 技术依赖
+
+- Go 1.25.3+
+- 系统工具: cjxl, djxl, avifenc, ffmpeg, exiftool
+- Go模块: godirwalk, gopsutil
+
+## 📈 版本信息
+
+- **当前版本**: v2.3.0 (优化版)
+- **作者**: AI Assistant
+- **基于**: universal_converter 和 media_tools 功能优化

@@ -1,112 +1,147 @@
-# Archive 归档说明
+# Archive Tools - 归档工具集
 
-本目录包含EasyMode项目的归档文件，按类型分类存储。
+## 📋 概述
 
-## 📁 目录结构
+本目录包含9个经过深入优化的独立媒体处理工具，基于 `universal_converter` 和 `media_tools` 的功能进行优化升级。
 
-### duplicates/ - 重复文件
-- `.gitignore 2` - 重复的gitignore文件
+## 🛠️ 工具列表
 
-### logs/ - 日志文件
-- `media_tools.log` - 媒体工具日志
-- `universal_converter.log` - 通用转换器日志
+### 图像转换工具
 
-### old_docs/ - 历史文档
-- `v2.1.0/` - v2.1.0版本相关文档
-  - `TEST_REPORT_v2.1.0.md` - 测试报告
-  - `UPDATE_SUMMARY_v2.1.0.md` - 更新摘要
-- `v2.1.1/` - v2.1.1版本相关文档
-  - `ENHANCEMENT_REPORT_v2.1.1.md` - 增强报告
-  - `FINAL_SUMMARY_v2.1.1.md` - 最终总结
-- `test_reports/` - 测试报告
-  - `COMPREHENSIVE_TEST_REPORT.md` - 综合测试报告
-- 其他历史文档
-  - `FINAL_COMPREHENSIVE_REPORT_v2.2.0.md` - v2.2.0最终报告
-  - `OPTIMIZATION_v2.2.1.md` - 优化报告
-  - `USAGE_TUTORIAL.md` - 旧版使用教程
-  - `USAGE_TUTORIAL_ZH.md` - 旧版中文教程
+| 工具名称 | 功能描述 | 输入格式 | 输出格式 |
+|---------|---------|---------|---------|
+| **all2jxl** | 批量图像转JPEG XL格式 | JPG, PNG, BMP, TIFF, GIF, WebP, AVIF, HEIC | JXL |
+| **all2avif** | 批量图像转AVIF格式 | JPG, PNG, BMP, TIFF, GIF, WebP, JXL, HEIC | AVIF |
+| **static2jxl** | 静态图像转JXL格式 | JPG, PNG, BMP, TIFF | JXL |
+| **static2avif** | 静态图像转AVIF格式 | JPG, PNG, BMP, TIFF | AVIF |
+| **dynamic2jxl** | 动态图像转JXL格式 | GIF, WebP, AVIF | JXL |
+| **dynamic2avif** | 动态图像转AVIF格式 | GIF, WebP, JXL | AVIF |
 
-### old_versions/ - 旧版本代码
-- `Single version/` - 单一功能版本工具
-  - `all2avif/` - AVIF转换工具
-  - `all2jxl/` - JXL转换工具
-  - `dynamic2avif/` - 动态图像转AVIF
-  - `dynamic2jxl/` - 动态图像转JXL
-  - `static2avif/` - 静态图像转AVIF
-  - `static2jxl/` - 静态图像转JXL
-  - `video2mov/` - 视频转MOV
-  - `merge_xmp/` - XMP合并工具
-  - `deduplicate_media/` - 媒体去重工具
+### 视频处理工具
 
-### scripts/ - 脚本文件
-- `update_filetype_detection.sh` - 文件类型检测更新脚本
+| 工具名称 | 功能描述 | 输入格式 | 输出格式 |
+|---------|---------|---------|---------|
+| **video2mov** | 视频转MOV格式 | MP4, AVI, MKV, MOV | MOV |
 
-### junk/ - 垃圾文件
-- `ds_store/` - 所有.DS_Store文件
-- `logs/` - 历史日志文件
-- `duplicates/` - 重复文件
-- `build_all.sh` - 旧版构建脚本
+### 元数据处理工具
 
-### trash/ - 临时文件
-- 各种临时和垃圾文件
+| 工具名称 | 功能描述 | 输入格式 | 输出格式 |
+|---------|---------|---------|---------|
+| **merge_xmp** | XMP元数据合并 | 任意图像格式 | 原格式 + XMP |
+| **deduplicate_media** | 媒体文件去重 | 任意媒体格式 | 去重后的文件 |
 
-### final_trash/ - 最终垃圾文件
-- 处理过程中的临时文件
+## ✨ 优化特性
 
-## 📋 整理说明
+### 🔧 核心优化
+- **增强错误处理和恢复机制** - 智能重试和错误分类
+- **改进资源管理和内存控制** - 防止内存溢出和资源泄漏
+- **优化并发控制和性能** - 智能线程管理和性能调优
+- **增强日志记录和监控** - 详细的处理日志和统计信息
 
-### 整理时间
-- **整理日期**: 2025-10-24
-- **整理原因**: 清理冗余文件，优化项目结构
+### 🏥 健康监控
+- **系统健康检查** - 实时监控内存、CPU使用情况
+- **错误分类统计** - 自动分类和统计各种错误类型
+- **性能指标监控** - 处理速度、压缩比等关键指标
 
-### 整理原则
-1. **保留历史**: 所有历史版本和文档都保留在archive目录
-2. **分类存储**: 按文件类型和版本分类存储
-3. **便于查找**: 清晰的目录结构和说明文档
-4. **避免重复**: 移除重复文件，保留最新版本
+### 🛡️ 安全特性
+- **信号处理** - 优雅关闭和资源清理
+- **参数验证** - 严格的输入参数验证
+- **文件安全检查** - 防止恶意文件处理
 
-### 当前活跃目录
-- `docs/` - 当前版本文档
-- `universal_converter/` - 通用转换器
-- `media_tools/` - 媒体工具集
-- `utils/` - 工具库
-- `test_data/` - 测试数据
+## 🚀 使用方法
 
-## 🔍 查找文件
+### 基本用法
 
-### 查找历史文档
 ```bash
-# 查找v2.1.0相关文档
-ls archive/old_docs/v2.1.0/
+# 进入工具目录
+cd archive/[工具名称]
 
-# 查找测试报告
-ls archive/old_docs/test_reports/
+# 构建工具
+./build.sh
 
-# 查找旧版本工具
-ls archive/old_versions/Single\ version/
+# 运行工具
+./bin/[工具名称] -dir /path/to/input -workers 4
 ```
 
-### 查找日志文件
+### 通用参数
+
+| 参数 | 描述 | 默认值 |
+|------|------|--------|
+| `-dir` | 输入目录路径 | 必需 |
+| `-output` | 输出目录路径 | 与输入目录相同 |
+| `-workers` | 工作线程数 | 自动检测 |
+| `-skip-exist` | 跳过已存在的文件 | false |
+| `-dry-run` | 试运行模式 | false |
+| `-timeout` | 处理超时时间（秒） | 30 |
+| `-retries` | 重试次数 | 3 |
+| `-max-memory` | 最大内存使用量 | 无限制 |
+| `-health-check` | 启用健康检查 | true |
+
+### 示例命令
+
 ```bash
-# 查找所有日志
-find archive/logs/ -name "*.log"
+# 批量转换图像为JXL格式
+./bin/all2jxl -dir ./images -workers 8 -skip-exist
+
+# 批量转换图像为AVIF格式
+./bin/all2avif -dir ./images -workers 4 -quality 80
+
+# 视频转MOV格式
+./bin/video2mov -dir ./videos -workers 2
+
+# 元数据合并
+./bin/merge_xmp -dir ./photos -workers 4
+
+# 媒体去重
+./bin/deduplicate_media -dir ./media -workers 4
 ```
 
-### 查找脚本文件
-```bash
-# 查找所有脚本
-find archive/scripts/ -name "*.sh"
-```
+## 📊 性能特性
 
-## ⚠️ 注意事项
+### 智能性能调优
+- **自动线程数检测** - 根据CPU核心数自动调整
+- **内存使用监控** - 防止内存溢出
+- **文件大小限制** - 避免处理过大文件
+- **并发控制** - 智能控制并发处理数量
 
-1. **不要删除**: archive目录中的文件都是历史记录，请勿删除
-2. **定期清理**: 可以定期清理trash目录中的临时文件
-3. **版本管理**: 新版本文件不要放入archive，应放在对应目录
-4. **文档更新**: 更新文档时请同时更新本说明文件
+### 统计报告
+- **处理统计** - 成功/失败/跳过文件数量
+- **性能指标** - 处理时间、压缩比、内存使用
+- **错误分析** - 错误类型统计和分类
+- **详细日志** - 每个文件的处理详情
+
+## 🔧 技术架构
+
+### 依赖要求
+- **Go 1.25.3+** - 编程语言环境
+- **系统工具** - cjxl, djxl, avifenc, ffmpeg, exiftool
+- **Go模块** - godirwalk, gopsutil
+
+### 构建系统
+- **自动依赖管理** - go mod tidy
+- **交叉编译支持** - 支持多平台构建
+- **版本控制** - 集成Git版本信息
+
+## 📈 版本历史
+
+### v2.3.0 (当前版本)
+- ✅ 基于 universal_converter 和 media_tools 功能优化
+- ✅ 增强错误处理和恢复机制
+- ✅ 改进资源管理和内存控制
+- ✅ 优化并发控制和性能
+- ✅ 添加健康监控和错误分类
+- ✅ 实现智能性能调优
+
+## 🤝 贡献指南
+
+1. **报告问题** - 使用详细的错误信息和日志
+2. **功能请求** - 描述具体需求和用例
+3. **代码贡献** - 遵循Go代码规范和项目结构
+
+## 📄 许可证
+
+本项目采用 MIT 许可证，详见 LICENSE 文件。
 
 ---
 
-**归档版本**: v2.2.0  
-**整理日期**: 2025-10-24  
-**维护者**: AI Assistant
+**注意**: 所有工具都经过深入优化，具有更好的可靠性、性能和用户体验。建议在生产环境中使用前进行充分测试。

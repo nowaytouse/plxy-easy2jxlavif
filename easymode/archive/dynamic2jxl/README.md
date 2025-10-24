@@ -1,109 +1,67 @@
-# dynamic2jxl - Dynamic Image to JXL Converter
+# dynamic2jxl - 动态图像转JXL格式工具
 
-## 📖 Introduction
+## 📋 功能描述
 
-`dynamic2jxl` is a tool specifically designed for converting dynamic images to the JXL format. It supports animated formats such as GIF, WebP, APNG, and HEIC/HEIF, providing lossless compression and batch processing capabilities.
+动态图像转JXL格式工具，基于 universal_converter 和 media_tools 功能进行深入优化。
 
-## 🚀 Features
+## 🔧 输入输出格式
 
-- ✅ **Dynamic Image Support** - Supports animated formats such as GIF, WebP, APNG, and HEIC/HEIF.
-- ✅ **Lossless Compression** - Achieves lossless compression using the JXL format.
-- ✅ **Intelligent Detection** - Automatically identifies dynamic image types.
-- ✅ **Batch Processing** - Efficient concurrent processing capabilities.
-- ✅ **Safety Protection** - Fixed an issue where original files were mistakenly deleted when skipping existing files.
-- ✅ **Metadata Preservation** - Retains EXIF information using exiftool.
-- ✅ **Progress Display** - Real-time processing progress and statistics.
-- ✅ **Accurate File Count Verification** - After conversion, a detailed file count verification report is provided to ensure the accuracy and reliability of the processing.
-- ✅ **Optimized HEIC/HEIF Handling** - Adopts a more stable intermediate format conversion strategy to improve the success rate of HEIC/HEIF file conversion.
-- ✅ **Fixed JPEG Parameter Error** - Corrected a bug where the `--lossless_jpeg=1` parameter was incorrectly applied to non-JPEG files.
+- **输入格式**: GIF, WebP, AVIF
+- **输出格式**: JXL
 
-## 🔧 Usage
+## 🚀 使用方法
 
-### Basic Usage
+### 构建工具
 ```bash
-go run main.go -input /path/to/images -output /path/to/output -workers 4
+./build.sh
 ```
 
-### Argument Description
-- `-input`: Input directory path (required).
-- `-output`: Output directory path (required).
-- `-workers`: Number of concurrent worker threads (default: number of CPU cores).
-- `-skip-exist`: Skip existing files (default: true).
-- `-dry-run`: Dry run mode, only prints the files to be processed.
-- `-retries`: Number of retries on failure (default: 2).
-- `-timeout`: Timeout in seconds for a single file (default: 300).
-- `-cjxl-threads`: Number of threads for each conversion task (default: 1).
-- `-replace`: Delete original files after conversion. **⚠️ Safety Note**: Only deletes original files after verifying that the target file exists and is valid.
-
-### Advanced Usage
+### 基本用法
 ```bash
-# High-concurrency processing
-go run main.go -input /path/to/images -output /path/to/output -workers 8
-
-# Dry run mode
-go run main.go -input /path/to/images -output /path/to/output -dry-run
-
-# Skip existing files
-go run main.go -input /path/to/images -output /path/to/output -skip-exist
-
-# Custom number of retries
-go run main.go -input /path/to/images -output /path/to/output -retries 3 -timeout 600
+./bin/dynamic2jxl -dir /path/to/input -workers 4
 ```
 
-## 📊 Performance Optimization
+### 参数说明
+- `-dir`: 输入目录路径（必需）
+- `-output`: 输出目录路径（默认为输入目录）
+- `-workers`: 工作线程数（0=自动检测）
+- `-skip-exist`: 跳过已存在的文件
+- `-dry-run`: 试运行模式
+- `-timeout`: 处理超时时间（秒）
+- `-retries`: 重试次数
+- `-max-memory`: 最大内存使用量
+- `-health-check`: 启用健康检查
 
-### Concurrency Control
-- Intelligent worker thread configuration.
-- Resource limits to prevent system overload.
-- File handle management.
+## ✨ 优化特性
 
-### Memory Management
-- Reduced memory footprint.
-- Optimized file processing flow.
-- Prevention of memory leaks.
+- **增强错误处理和恢复机制**
+- **改进资源管理和内存控制**
+- **优化并发控制和性能**
+- **增强日志记录和监控**
+- **添加信号处理和优雅关闭**
+- **改进参数验证和配置**
+- **增强统计和报告功能**
+- **添加健康监控和错误分类**
+- **实现智能性能调优**
+- **增强安全性和稳定性**
 
-## 🛡️ Safety Features
+## 📊 性能特性
 
-### File Safety
-- Fixed an issue where original files were mistakenly deleted when skipping existing files.
-- Atomic file operations.
-- Backup mechanism.
+- 智能线程数检测
+- 内存使用监控
+- 文件大小限制
+- 并发控制
+- 详细统计报告
+- 错误分类分析
 
-### Error Handling
-- Comprehensive error recovery mechanism.
-- Detailed logging.
-- Automatic retry function.
+## 🔧 技术依赖
 
-## 🔍 Troubleshooting
+- Go 1.25.3+
+- 系统工具: cjxl, djxl, avifenc, ffmpeg, exiftool
+- Go模块: godirwalk, gopsutil
 
-### Common Problems
-1. **Missing dependencies**: Make sure `cjxl` and `exiftool` are installed.
-2. **Permission issues**: Check file read/write permissions.
-3. **Insufficient space**: Make sure there is enough disk space.
+## 📈 版本信息
 
-### Getting Help
-- Check the log file for detailed errors.
-- Use the dry run mode to test the configuration.
-- Check file permissions and disk space.
-
-### Supported File Formats
-
-- **GIF**: .gif (including animation)
-- **WebP**: .webp (including animation)
-- **APNG**: .png (PNG with animation)
-- **HEIC/HEIF**: .heic, .heif (including animation)
-
-## 📝 Update Log
-
-### v2.0.1 (2025-01-27)
-- ✅ Added dynamic image to JXL conversion tool.
-- ✅ Fixed an issue where original files were mistakenly deleted when skipping existing files.
-- ✅ Improved error handling and logging.
-- ✅ Optimized performance and memory usage.
-- ✅ Enhanced security protection mechanisms.
-
----
-
-**Version**: v2.0.1  
-**Maintainer**: AI Assistant  
-**License**: MIT
+- **当前版本**: v2.3.0 (优化版)
+- **作者**: AI Assistant
+- **基于**: universal_converter 和 media_tools 功能优化

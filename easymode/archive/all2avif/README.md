@@ -1,36 +1,67 @@
-# all2avif - Universal Image to AVIF Converter
+# all2avif - 批量图像转AVIF格式工具
 
-A powerful command-line tool to convert a wide variety of static image formats to AVIF.
+## 📋 功能描述
 
-## 🚀 Features
+批量图像转AVIF格式工具，基于 universal_converter 和 media_tools 功能进行深入优化。
 
-- **Broad Format Support**: Converts all common static image formats, including JPEG, PNG, BMP, TIFF, HEIC/HEIF, and more.
-- **Intelligent HEIC Handling**: Automatically uses the best conversion strategy for HEIC/HEIF files, ensuring maximum compatibility.
-- **Metadata Preservation**: Copies all metadata (EXIF, XMP, etc.) from the source image to the new AVIF file.
-- **Robust Verification**: Ensures the conversion process is clean and file counts are accurate.
-- **Safe by Default**: Skips conversion if an AVIF file of the same name already exists.
-- **Detailed Logging**: Provides comprehensive logs of the entire process in `all2avif.log`.
+## 🔧 输入输出格式
 
-## 🛠️ Usage
+- **输入格式**: JPG, PNG, BMP, TIFF, GIF, WebP, JXL, HEIC
+- **输出格式**: AVIF
 
+## 🚀 使用方法
+
+### 构建工具
 ```bash
-# Navigate to the script directory
-cd /path/to/easy2jxlavif-beta/easymode/all2avif
-
-# Run the script on your target directory
-go run main.go -dir /path/to/your/images
+./build.sh
 ```
 
-### Command-Line Arguments
+### 基本用法
+```bash
+./bin/all2avif -dir /path/to/input -workers 4
+```
 
-| Flag | Description | Default |
-|---|---|---|
-| `-dir` | **(Required)** Input directory containing images to convert. | |
-| `-workers` | Number of concurrent worker threads. | 0 (auto-detect based on CPU cores) |
-| `-quality` | AVIF quality (0-100). Higher value = higher quality. | 80 |
-| `-speed` | Encoding speed (0-6). Higher value = faster encoding, but larger file size. | 4 |
-| `-skip-exist` | If `true`, skips conversion if an `.avif` file already exists. | `true` |
-| `-dry-run` | If `true`, simulates the process without actually converting files. | `false` |
-| `-timeout` | Timeout in seconds for each conversion task. | 300 |
-| `-retries` | Number of times to retry a failed conversion. | 1 |
-| `-replace` | If `true`, deletes original files after successful conversion. | `true` |
+### 参数说明
+- `-dir`: 输入目录路径（必需）
+- `-output`: 输出目录路径（默认为输入目录）
+- `-workers`: 工作线程数（0=自动检测）
+- `-skip-exist`: 跳过已存在的文件
+- `-dry-run`: 试运行模式
+- `-timeout`: 处理超时时间（秒）
+- `-retries`: 重试次数
+- `-max-memory`: 最大内存使用量
+- `-health-check`: 启用健康检查
+
+## ✨ 优化特性
+
+- **增强错误处理和恢复机制**
+- **改进资源管理和内存控制**
+- **优化并发控制和性能**
+- **增强日志记录和监控**
+- **添加信号处理和优雅关闭**
+- **改进参数验证和配置**
+- **增强统计和报告功能**
+- **添加健康监控和错误分类**
+- **实现智能性能调优**
+- **增强安全性和稳定性**
+
+## 📊 性能特性
+
+- 智能线程数检测
+- 内存使用监控
+- 文件大小限制
+- 并发控制
+- 详细统计报告
+- 错误分类分析
+
+## 🔧 技术依赖
+
+- Go 1.25.3+
+- 系统工具: cjxl, djxl, avifenc, ffmpeg, exiftool
+- Go模块: godirwalk, gopsutil
+
+## 📈 版本信息
+
+- **当前版本**: v2.3.0 (优化版)
+- **作者**: AI Assistant
+- **基于**: universal_converter 和 media_tools 功能优化
