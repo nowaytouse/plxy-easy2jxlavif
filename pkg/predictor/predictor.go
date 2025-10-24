@@ -12,7 +12,10 @@ type Predictor struct {
 	logger           *zap.Logger
 	featureExtractor *FeatureExtractor
 	pngPredictor     *PNGPredictor
-	// 未来扩展：jpegPredictor, gifPredictor等
+	jpegPredictor    *JPEGPredictor  // Week 3-4
+	gifPredictor     *GIFPredictor   // Week 5-6
+	webpPredictor    *WebPPredictor  // Week 5-6
+	videoPredictor   *VideoPredictor // Week 5-6
 }
 
 // NewPredictor 创建主预测器
@@ -21,6 +24,10 @@ func NewPredictor(logger *zap.Logger, ffprobePath string) *Predictor {
 		logger:           logger,
 		featureExtractor: NewFeatureExtractor(logger, ffprobePath),
 		pngPredictor:     NewPNGPredictor(logger),
+		jpegPredictor:    NewJPEGPredictor(logger),
+		gifPredictor:     NewGIFPredictor(logger),   // Week 5-6新增
+		webpPredictor:    NewWebPPredictor(logger),  // Week 5-6新增
+		videoPredictor:   NewVideoPredictor(logger), // Week 5-6新增
 	}
 }
 
@@ -51,18 +58,24 @@ func (p *Predictor) PredictOptimalParams(filePath string) (*Prediction, error) {
 
 // selectAndPredict 选择合适的预测器并执行预测
 func (p *Predictor) selectAndPredict(features *FileFeatures) *Prediction {
-	// Week 1-2 MVP：仅实现PNG预测
-	// 未来扩展：JPEG, GIF, 视频等
-
 	switch features.Format {
 	case "png":
 		return p.pngPredictor.Predict(features)
 
-	// 未来扩展：
-	// case "jpg", "jpeg":
-	//     return p.jpegPredictor.Predict(features)
-	// case "gif":
-	//     return p.gifPredictor.Predict(features)
+	case "jpg", "jpeg":
+		return p.jpegPredictor.Predict(features)
+
+	case "gif":
+		// Week 5-6新增：GIF预测器
+		return p.gifPredictor.Predict(features)
+
+	case "webp":
+		// Week 5-6新增：WebP预测器
+		return p.webpPredictor.Predict(features)
+
+	case "mp4", "avi", "mkv", "mov", "wmv", "flv", "m4v":
+		// Week 5-6新增：视频预测器
+		return p.videoPredictor.Predict(features)
 
 	default:
 		// 对于未支持的格式，返回保守的默认预测

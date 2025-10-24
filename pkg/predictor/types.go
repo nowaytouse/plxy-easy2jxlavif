@@ -71,8 +71,8 @@ type Prediction struct {
 	ExpectedSizeBytes int64   // 预期文件大小
 
 	// 辅助信息
-	ShouldExplore         bool               // 是否需要探索
-	ExplorationCandidates []ConversionParams // 探索候选参数
+	ShouldExplore         bool                // 是否需要探索
+	ExplorationCandidates []*ConversionParams // 探索候选参数
 
 	PredictionTime time.Duration
 }

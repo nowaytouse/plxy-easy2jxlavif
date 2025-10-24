@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"pixly/pkg/core/types"
+	"pixly/pkg/knowledge"
 	"pixly/pkg/predictor"
 
 	"go.uber.org/zap"
@@ -25,8 +26,15 @@ type BalanceOptimizer struct {
 
 	// v3.0新增：智能预测器
 	predictor           *predictor.Predictor
-	enablePrediction    bool    // 是否启用预测（v3.0默认启用）
-	confidenceThreshold float64 // 置信度阈值（>此值直接使用预测）
+	explorationEngine   *predictor.ExplorationEngine // Week 3-4新增
+	enablePrediction    bool                         // 是否启用预测（v3.0默认启用）
+	enableExploration   bool                         // 是否启用探索（Week 3-4新增）
+	confidenceThreshold float64                      // 置信度阈值（>此值直接使用预测）
+
+	// Week 7-8新增：知识库
+	knowledgeDB     *knowledge.Database      // 知识库数据库
+	recordBuilder   *knowledge.RecordBuilder // 记录构建器
+	enableKnowledge bool                     // 是否启用知识库记录
 }
 
 // OptimizationResult 优化结果
@@ -64,14 +72,35 @@ func NewBalanceOptimizer(logger *zap.Logger, toolPaths types.ToolCheckResults, t
 
 	pred := predictor.NewPredictor(logger, ffprobePath)
 
+	// Week 3-4新增：创建探索引擎
+	explorer := predictor.NewExplorationEngine(
+		logger,
+		toolPaths.CjxlPath,
+		toolPaths.FfmpegStablePath,
+		tempDir,
+	)
+
+	// Week 7-8新增：初始化知识库
+	dbPath := filepath.Join(tempDir, "pixly_knowledge.db")
+	knowledgeDB, err := knowledge.NewDatabase(dbPath, logger)
+	if err != nil {
+		logger.Warn("知识库初始化失败，将禁用知识库功能",
+			zap.Error(err))
+		knowledgeDB = nil
+	}
+
 	return &BalanceOptimizer{
 		logger:              logger,
 		toolPaths:           toolPaths,
 		tempDir:             tempDir,
 		debugMode:           os.Getenv("PIXLY_DEBUG") == "true",
 		predictor:           pred,
-		enablePrediction:    os.Getenv("PIXLY_DISABLE_PREDICTION") != "true", // 默认启用
-		confidenceThreshold: 0.80,                                            // 置信度>0.80直接使用预测
+		explorationEngine:   explorer,                                         // Week 3-4新增
+		enablePrediction:    os.Getenv("PIXLY_DISABLE_PREDICTION") != "true",  // 默认启用
+		enableExploration:   os.Getenv("PIXLY_DISABLE_EXPLORATION") != "true", // Week 3-4新增
+		confidenceThreshold: 0.80,                                             // 置信度>0.80直接使用预测
+		knowledgeDB:         knowledgeDB,                                      // Week 7-8新增
+		enableKnowledge:     knowledgeDB != nil && os.Getenv("PIXLY_DISABLE_KNOWLEDGE") != "true",
 	}
 }
 
@@ -520,9 +549,43 @@ func (bo *BalanceOptimizer) tryPredictiveOptimization(ctx context.Context, fileP
 		zap.Float64("expected_saving", prediction.ExpectedSaving*100),
 		zap.Bool("should_explore", prediction.ShouldExplore))
 
-	// 步骤2: 检查置信度
-	if prediction.Confidence < bo.confidenceThreshold {
-		bo.logger.Debug("预测置信度低，回退到v1.0探索流程",
+	// 步骤2: 检查置信度和探索需求
+	if prediction.Confidence < bo.confidenceThreshold || prediction.ShouldExplore {
+		// Week 3-4新增：低置信度时使用智能探索
+		if bo.enableExploration && prediction.ShouldExplore && len(prediction.ExplorationCandidates) > 0 {
+			bo.logger.Info("🔍 触发智能探索（v3.0）",
+				zap.String("file", filepath.Base(filePath)),
+				zap.Float64("confidence", prediction.Confidence),
+				zap.Int("candidates", len(prediction.ExplorationCandidates)))
+
+			// 使用探索引擎
+			exploreResult := bo.explorationEngine.ExploreParams(
+				ctx,
+				filePath,
+				prediction.ExplorationCandidates,
+				originalSize,
+			)
+
+			if exploreResult != nil && exploreResult.BestParams != nil {
+				bo.logger.Info("✅ 探索找到最优结果",
+					zap.String("file", filepath.Base(filePath)),
+					zap.Float64("saving", float64(originalSize-exploreResult.BestSize)/float64(originalSize)*100),
+					zap.Duration("explore_time", exploreResult.ExploreTime))
+
+				// 使用探索找到的最优参数进行转换
+				result := bo.executeConversionWithPrediction(ctx, filePath, &predictor.Prediction{
+					Params: exploreResult.BestParams,
+				})
+
+				if result != nil && result.Success {
+					result.Method = "v3_explored_" + result.Method
+					return result
+				}
+			}
+		}
+
+		// 探索失败或未启用，回退到v1.0流程
+		bo.logger.Debug("预测置信度低或探索失败，回退到v1.0探索流程",
 			zap.String("file", filepath.Base(filePath)),
 			zap.Float64("confidence", prediction.Confidence),
 			zap.Float64("threshold", bo.confidenceThreshold))
