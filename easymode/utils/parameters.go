@@ -500,8 +500,8 @@ func (opts *UniversalOptions) IsSupportedInputFormat(filePath string) bool {
 	case ProcessVideo:
 		return opts.isVideoFormat(ext)
 	case ProcessOptimized:
-		// 通用优化模式：仅支持JPEG、动态图片和视频格式
-		return (ext == ".jpg" || ext == ".jpeg") || opts.isDynamicImageFormat(ext) || opts.isVideoFormat(ext)
+		// 通用优化模式：支持JPEG、PNG、动态图片和视频格式
+		return (ext == ".jpg" || ext == ".jpeg" || ext == ".png") || opts.isDynamicImageFormat(ext) || opts.isVideoFormat(ext)
 	default:
 		return false
 	}
@@ -581,9 +581,10 @@ func (opts *UniversalOptions) GetDescription() string {
 
 // getOptimizedCommand 获取通用优化模式的转换命令
 // 根据文件类型智能选择转换方式：
-// 1. JPEG文件 -> JXL无损模式
-// 2. 动态图片 -> AVIF格式
-// 3. 视频文件 -> MOV重新包装
+// 1. JPEG文件 -> JXL无损模式 (jpeg_lossless=1)
+// 2. PNG文件 -> JXL无损模式 (distance=0)
+// 3. 动态图片 -> AVIF格式
+// 4. 视频文件 -> MOV重新包装
 func (opts *UniversalOptions) getOptimizedCommand(inputPath, outputPath string) (string, []string, error) {
 	fileType, err := DetectFileType(inputPath)
 	if err != nil {
@@ -605,7 +606,20 @@ func (opts *UniversalOptions) getOptimizedCommand(inputPath, outputPath string) 
 		return "cjxl", args, nil
 	}
 
-	// 2. 动态图片使用AVIF格式
+	// 2. PNG文件使用JXL无损模式
+	if ext == ".png" {
+		effort := opts.getSmartEffort(inputPath)
+		args := []string{
+			inputPath,
+			"-d", "0", // 使用无损模式（distance=0）
+			"-e", strconv.Itoa(effort),
+			"--num_threads", strconv.Itoa(opts.CJXLThreads),
+			outputPath,
+		}
+		return "cjxl", args, nil
+	}
+
+	// 3. 动态图片使用AVIF格式
 	if fileType.IsAnimated {
 		args := []string{
 			"-i", inputPath,
@@ -619,7 +633,7 @@ func (opts *UniversalOptions) getOptimizedCommand(inputPath, outputPath string) 
 		return "ffmpeg", args, nil
 	}
 
-	// 3. 视频文件使用MOV重新包装
+	// 4. 视频文件使用MOV重新包装
 	if opts.isVideoFormat(ext) {
 		args := []string{
 			"-i", inputPath,
@@ -648,6 +662,11 @@ func (opts *UniversalOptions) GetOutputExtensionForFile(filePath string) string 
 
 		// JPEG文件输出为JXL
 		if ext == ".jpg" || ext == ".jpeg" {
+			return ".jxl"
+		}
+
+		// PNG文件输出为JXL
+		if ext == ".png" {
 			return ".jxl"
 		}
 
