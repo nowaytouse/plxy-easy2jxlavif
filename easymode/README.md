@@ -1,4 +1,4 @@
-# EasyMode Media Conversion Toolkit v2.3.1
+# EasyMode Media Conversion Toolkit v2.3.2
 
 > 🚀 **A powerful Go-based media conversion toolkit supporting batch conversion of multiple image and video formats, featuring complete metadata preservation, intelligent performance optimization, and an 8-layer validation system.**
 
@@ -278,14 +278,14 @@ Test results on MacBook Pro M1:
 
 ---
 
-## 🆕 v2.3.1 New Features
+## 🆕 v2.3.2 New Features
 
-### Universal Converter v2.3.1
+### Universal Converter v2.3.2
 - ✅ **Apple Live Photo Smart Skip**: Automatically detects HEIC/HEIF + MOV paired files
 - ✅ **Trash Directory Auto-Exclusion**: Automatically skips `.trash`, `.Trash`, `Trash` directories
 - ✅ **Enhanced File Type Detection**: Improved AVIF/HEIC format recognition
 
-### Media Tools v2.3.1
+### Media Tools v2.3.2
 - ✅ **Extended Format Support**: Added PSD, PSB, and 8 RAW formats (26 total formats)
 - ✅ **Default Trash Directory**: `-trash` parameter is now optional, defaults to `<input>/.trash`
 - ✅ **Professional Format Support**: Photoshop and RAW format XMP merging
@@ -390,7 +390,7 @@ easymode/
 
 ## 📝 Version History
 
-### v2.3.1 (Latest)
+### v2.3.2 (Latest)
 - ✅ Universal Converter: Added trash directory exclusion
 - ✅ Media Tools: Made trash parameter optional, default to `.trash`
 - ✅ Enhanced file type detection for AVIF/HEIC
@@ -444,3 +444,29 @@ If you encounter any issues or have questions, please open an issue on GitHub.
 ---
 
 **🎉 Start using EasyMode and make media conversion simple and efficient!**
+## 🆕 v2.3.2 新功能
+
+### Universal Converter v2.3.2 - 通用优化模式
+
+#### ✨ 智能转换模式
+新增通用优化模式 (`-mode optimized`)，根据文件类型智能选择最佳转换方式：
+
+- **📸 JPEG文件** → JXL格式（使用 `jpeg_lossless=1` 无损模式）
+- **🎬 动态图片** → AVIF格式（使用现有AVIF动态图片质量参数）
+- **🎥 视频文件** → MOV格式（重新包装，不重新编码）
+- **🚫 其他格式** → 自动跳过处理
+
+#### 🚀 使用方法
+```bash
+# 通用优化模式（推荐）
+universal_converter -mode optimized -input /path/to/files
+
+# 带参数使用
+universal_converter -mode optimized -input /path/to/files -workers 8 -quality 80
+```
+
+#### 🎯 优势
+- 🧠 **智能检测** - 自动识别文件类型
+- 🎯 **最佳选择** - 为每种格式选择最优转换方式
+- 🚀 **简化操作** - 无需手动选择转换类型
+- 📈 **提高效率** - 减少配置复杂度

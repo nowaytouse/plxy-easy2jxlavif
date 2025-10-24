@@ -1,5 +1,5 @@
 // universal_converter - 通用媒体转换工具
-// 
+//
 // 功能特性：
 // - 支持AVIF、JXL、MOV格式转换
 // - 支持静态、动态、视频文件处理
@@ -9,7 +9,7 @@
 // - 支持批量处理和进度监控
 //
 // 作者: AI Assistant
-// 版本: v2.2.0
+// 版本: v2.3.2
 // 更新: 2025-10-24
 
 package main
@@ -36,43 +36,43 @@ import (
 
 // 全局变量定义
 var (
-        logger     *log.Logger        // 日志记录器，用于输出处理信息
-        stats      *ProcessingStats   // 处理统计信息，记录转换进度和结果
-        procSem    chan struct{}      // 处理信号量，控制并发处理数量
-        fdSem      chan struct{}      // 文件描述符信号量，防止文件句柄耗尽
-        globalCtx  context.Context     // 全局上下文，用于取消操作
-        cancelFunc context.CancelFunc // 取消函数，用于优雅停止处理
+	logger     *log.Logger        // 日志记录器，用于输出处理信息
+	stats      *ProcessingStats   // 处理统计信息，记录转换进度和结果
+	procSem    chan struct{}      // 处理信号量，控制并发处理数量
+	fdSem      chan struct{}      // 文件描述符信号量，防止文件句柄耗尽
+	globalCtx  context.Context    // 全局上下文，用于取消操作
+	cancelFunc context.CancelFunc // 取消函数，用于优雅停止处理
 )
 
 // ProcessingStats 处理统计信息结构体
 // 用于记录和跟踪媒体文件转换过程中的各种统计数据和性能指标
 type ProcessingStats struct {
-        mu              sync.RWMutex     // 读写锁，保护并发访问
-        processed       int              // 成功处理的文件数量
-        failed          int              // 处理失败的文件数量
-        skipped         int              // 跳过的文件总数
-        videoSkipped    int              // 跳过的视频文件数量
-        otherSkipped    int              // 跳过的其他类型文件数量
-        totalSizeBefore int64            // 处理前总文件大小（字节）
-        totalSizeAfter  int64            // 处理后总文件大小（字节）
-        byExt           map[string]int   // 按文件扩展名统计处理数量
-        detailedLogs    []FileProcessInfo // 详细的文件处理日志
-        startTime       time.Time        // 处理开始时间
+	mu              sync.RWMutex      // 读写锁，保护并发访问
+	processed       int               // 成功处理的文件数量
+	failed          int               // 处理失败的文件数量
+	skipped         int               // 跳过的文件总数
+	videoSkipped    int               // 跳过的视频文件数量
+	otherSkipped    int               // 跳过的其他类型文件数量
+	totalSizeBefore int64             // 处理前总文件大小（字节）
+	totalSizeAfter  int64             // 处理后总文件大小（字节）
+	byExt           map[string]int    // 按文件扩展名统计处理数量
+	detailedLogs    []FileProcessInfo // 详细的文件处理日志
+	startTime       time.Time         // 处理开始时间
 }
 
 // FileProcessInfo 文件处理信息结构体
 // 记录单个文件在转换过程中的详细信息，用于日志记录和性能分析
 type FileProcessInfo struct {
-        FileName       string          // 文件名（不含路径）
-        FilePath       string          // 完整文件路径
-        FileType       string          // 文件类型（如：jpg, png, gif等）
-        IsAnimated     bool            // 是否为动画文件
-        Success        bool            // 处理是否成功
-        ErrorMsg       string          // 错误信息（如果处理失败）
-        ProcessingTime time.Duration   // 处理耗时
-        SizeBefore     int64           // 处理前文件大小（字节）
-        SizeAfter      int64           // 处理后文件大小（字节）
-        ConversionMode string          // 转换模式（static/dynamic/video）
+	FileName       string        // 文件名（不含路径）
+	FilePath       string        // 完整文件路径
+	FileType       string        // 文件类型（如：jpg, png, gif等）
+	IsAnimated     bool          // 是否为动画文件
+	Success        bool          // 处理是否成功
+	ErrorMsg       string        // 错误信息（如果处理失败）
+	ProcessingTime time.Duration // 处理耗时
+	SizeBefore     int64         // 处理前文件大小（字节）
+	SizeAfter      int64         // 处理后文件大小（字节）
+	ConversionMode string        // 转换模式（static/dynamic/video）
 }
 
 // 统计方法
@@ -128,24 +128,24 @@ func (s *ProcessingStats) addByExt(ext string) {
 // main 主函数
 // 程序入口点，负责初始化、参数解析、依赖检查和启动转换流程
 func main() {
-        // 初始化轮转日志系统
-        // 日志文件大小限制为50MB，超过后自动轮转
+	// 初始化轮转日志系统
+	// 日志文件大小限制为50MB，超过后自动轮转
 	rl, lf, err := utils.NewRotatingLogger("universal_converter.log", 50*1024*1024)
 	if err != nil {
 		log.Fatalf("无法初始化轮转日志: %v", err)
 	}
 	logger = rl
 	_ = lf
-	logger.Printf("🎨 通用媒体转换工具 v2.2.0")
+	logger.Printf("🎨 通用媒体转换工具 v2.3.2")
 	logger.Printf("✨ 作者: AI Assistant")
 	logger.Printf("🔧 开始初始化...")
 
-        // 解析命令行参数，获取用户配置
+	// 解析命令行参数，获取用户配置
 	opts := utils.ParseUniversalFlags()
 	logger.Printf("📋 配置: %s", opts.GetDescription())
 
-        // 检查系统依赖工具是否可用
-        // 包括cjxl、djxl、ffmpeg、exiftool等必要工具
+	// 检查系统依赖工具是否可用
+	// 包括cjxl、djxl、ffmpeg、exiftool等必要工具
 	if err := checkDependencies(opts); err != nil {
 		logger.Fatalf("❌ 系统依赖检查失败: %v", err)
 	}
@@ -300,7 +300,7 @@ func scanFiles(opts utils.UniversalOptions) ([]string, error) {
 
 			// 检查是否跳过已存在的文件
 			if opts.SkipExist {
-				ext := opts.GetOutputExtension()
+				ext := opts.GetOutputExtensionForFile(osPathname)
 				outputPath := strings.TrimSuffix(osPathname, filepath.Ext(osPathname)) + ext
 				if _, err := os.Stat(outputPath); err == nil {
 					skipExistCount++
@@ -587,7 +587,7 @@ func processFile(filePath string, opts utils.UniversalOptions) string {
 // convertFile 转换文件
 func convertFile(filePath string, opts utils.UniversalOptions, fileType utils.EnhancedFileType) (string, string, error) {
 	// 生成输出路径
-	ext := opts.GetOutputExtension()
+	ext := opts.GetOutputExtensionForFile(filePath)
 	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ext
 
 	// 对于 AVIF/HEIC/HEIF → JXL 转换，需要先转换为中间格式

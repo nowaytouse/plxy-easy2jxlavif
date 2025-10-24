@@ -37,10 +37,11 @@ const (
 type ProcessingMode int
 
 const (
-	ProcessAll     ProcessingMode = iota // 处理所有文件类型
-	ProcessStatic                        // 仅处理静态图像
-	ProcessDynamic                       // 仅处理动态图像
-	ProcessVideo                         // 仅处理视频文件
+	ProcessAll       ProcessingMode = iota // 处理所有文件类型
+	ProcessStatic                          // 仅处理静态图像
+	ProcessDynamic                         // 仅处理动态图像
+	ProcessVideo                           // 仅处理视频文件
+	ProcessOptimized                       // 通用优化模式：JPEG使用无损，动态图片使用AVIF，视频使用MOV
 )
 
 // UniversalOptions 通用选项结构体
@@ -176,7 +177,7 @@ func ParseUniversalFlags() UniversalOptions {
 	flag.StringVar(&conversionTypeStr, "type", "jxl", "🎨 转换类型: avif, jxl, mov")
 
 	var processingModeStr string
-	flag.StringVar(&processingModeStr, "mode", "all", "📋 处理模式: all, static, dynamic, video")
+	flag.StringVar(&processingModeStr, "mode", "all", "📋 处理模式: all, static, dynamic, video, optimized")
 
 	// 质量参数
 	flag.IntVar(&opts.Quality, "quality", opts.Quality, "🎯 输出质量 (1-100)")
@@ -230,6 +231,8 @@ func ParseUniversalFlags() UniversalOptions {
 		opts.ProcessingMode = ProcessDynamic
 	case "video":
 		opts.ProcessingMode = ProcessVideo
+	case "optimized":
+		opts.ProcessingMode = ProcessOptimized
 	default:
 		fmt.Printf("❌ 不支持的处理模式: %s\n", processingModeStr)
 		os.Exit(1)
@@ -338,6 +341,11 @@ func (opts *UniversalOptions) GetOutputExtension() string {
 
 // GetConversionCommand 获取转换命令
 func (opts *UniversalOptions) GetConversionCommand(inputPath, outputPath string) (string, []string, error) {
+	// 通用优化模式：根据文件类型智能选择转换方式
+	if opts.ProcessingMode == ProcessOptimized {
+		return opts.getOptimizedCommand(inputPath, outputPath)
+	}
+
 	switch opts.ConversionType {
 	case ConvertToAVIF:
 		return opts.getAVIFCommand(inputPath, outputPath)
@@ -491,6 +499,9 @@ func (opts *UniversalOptions) IsSupportedInputFormat(filePath string) bool {
 		return opts.isDynamicImageFormat(ext)
 	case ProcessVideo:
 		return opts.isVideoFormat(ext)
+	case ProcessOptimized:
+		// 通用优化模式：仅支持JPEG、动态图片和视频格式
+		return (ext == ".jpg" || ext == ".jpeg") || opts.isDynamicImageFormat(ext) || opts.isVideoFormat(ext)
 	default:
 		return false
 	}
@@ -566,4 +577,94 @@ func (opts *UniversalOptions) GetDescription() string {
 	parts = append(parts, fmt.Sprintf("%d线程", opts.Workers))
 
 	return strings.Join(parts, " | ")
+}
+
+// getOptimizedCommand 获取通用优化模式的转换命令
+// 根据文件类型智能选择转换方式：
+// 1. JPEG文件 -> JXL无损模式
+// 2. 动态图片 -> AVIF格式
+// 3. 视频文件 -> MOV重新包装
+func (opts *UniversalOptions) getOptimizedCommand(inputPath, outputPath string) (string, []string, error) {
+	fileType, err := DetectFileType(inputPath)
+	if err != nil {
+		return "", nil, fmt.Errorf("文件类型检测失败: %v", err)
+	}
+
+	ext := strings.ToLower(filepath.Ext(inputPath))
+
+	// 1. JPEG文件使用JXL无损模式
+	if ext == ".jpg" || ext == ".jpeg" {
+		effort := opts.getSmartEffort(inputPath)
+		args := []string{
+			inputPath,
+			"--lossless_jpeg=1", // 使用JPEG无损模式
+			"-e", strconv.Itoa(effort),
+			"--num_threads", strconv.Itoa(opts.CJXLThreads),
+			outputPath,
+		}
+		return "cjxl", args, nil
+	}
+
+	// 2. 动态图片使用AVIF格式
+	if fileType.IsAnimated {
+		args := []string{
+			"-i", inputPath,
+			"-c:v", "libaom-av1",
+			"-crf", strconv.Itoa(63 - opts.Quality/2), // 质量映射: 100->0(最佳), 1->63(最差)
+			"-cpu-used", strconv.Itoa(opts.Speed),
+			"-an", // 不包含音频
+			"-y",  // 覆盖已存在的文件
+			outputPath,
+		}
+		return "ffmpeg", args, nil
+	}
+
+	// 3. 视频文件使用MOV重新包装
+	if opts.isVideoFormat(ext) {
+		args := []string{
+			"-i", inputPath,
+			"-c", "copy", // 不重新编码，只重新封装
+			"-movflags", "faststart", // 优化流媒体播放
+			"-y", // 覆盖输出文件
+			outputPath,
+		}
+		return "ffmpeg", args, nil
+	}
+
+	// 其他格式不支持
+	return "", nil, fmt.Errorf("通用优化模式不支持此文件格式: %s", ext)
+}
+
+// GetOutputExtensionForFile 根据文件路径获取输出扩展名（用于通用优化模式）
+func (opts *UniversalOptions) GetOutputExtensionForFile(filePath string) string {
+	// 通用优化模式：根据文件类型选择输出格式
+	if opts.ProcessingMode == ProcessOptimized {
+		fileType, err := DetectFileType(filePath)
+		if err != nil {
+			return ".unknown"
+		}
+
+		ext := strings.ToLower(filepath.Ext(filePath))
+
+		// JPEG文件输出为JXL
+		if ext == ".jpg" || ext == ".jpeg" {
+			return ".jxl"
+		}
+
+		// 动态图片输出为AVIF
+		if fileType.IsAnimated {
+			return ".avif"
+		}
+
+		// 视频文件输出为MOV
+		if opts.isVideoFormat(ext) {
+			return ".mov"
+		}
+
+		// 其他格式不应该到达这里
+		return ".unknown"
+	}
+
+	// 非优化模式使用标准逻辑
+	return opts.GetOutputExtension()
 }
