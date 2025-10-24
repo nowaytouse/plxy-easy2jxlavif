@@ -91,8 +91,8 @@ func (jp *JPEGPredictor) estimateSaving(features *FileFeatures) float64 {
 		return 0.23
 	case "yuv420p", "yuvj420p":
 		// 4:2:0采样：TESTPACK实测15.9%
-		// v3.1.1保持: 25%（略乐观但可接受）
-		return 0.25
+		// v3.1.1微调: 从25%降至20%（更接近实测）
+		return 0.20
 	default:
 		// 未知格式，保守估计
 		return 0.20
