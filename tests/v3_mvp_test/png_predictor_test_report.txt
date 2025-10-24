@@ -1,0 +1,250 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 Pixly v3.0 MVP - PNG智能预测器测试
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 测试文件数: 20
+
+[1/20] 黑白起稿.png
+2025-10-25T06:11:21.019+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "黑白起稿.png", "format": "png", "width": 554, "height": 273, "time": "49.551166ms"}
+2025-10-25T06:11:21.054+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "黑白起稿.png", "format": "png", "width": 554, "height": 273, "time": "34.476625ms"}
+2025-10-25T06:11:21.054+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/黑白起稿.png", "effort": 9, "expected_saving": 95, "time": "1.375µs"}
+2025-10-25T06:11:21.054+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/黑白起稿.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 49.741458ms)
+     尺寸: 554x273 | 大小: 0.05 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.3743
+  🎯 预测: JXL distance=0.0 effort=9 | 置信度: 95%
+     预期节省: 95.0% (0.05 MB → 0.00 MB)
+
+[2/20] 蘑菇老师答疑 整理.png
+2025-10-25T06:11:21.132+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "蘑菇老师答疑 整理.png", "format": "png", "width": 608, "height": 9506, "time": "77.65325ms"}
+2025-10-25T06:11:21.211+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "蘑菇老师答疑 整理.png", "format": "png", "width": 608, "height": 9506, "time": "79.201417ms"}
+2025-10-25T06:11:21.211+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/蘑菇老师答疑 整理.png", "effort": 7, "expected_saving": 95, "time": "250ns"}
+2025-10-25T06:11:21.211+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/蘑菇老师答疑 整理.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 77.697958ms)
+     尺寸: 608x9506 | 大小: 2.33 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.4229
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (2.33 MB → 0.12 MB)
+
+[3/20] 肌配色の組み合わせ.png
+2025-10-25T06:11:21.276+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "肌配色の組み合わせ.png", "format": "png", "width": 2940, "height": 4386, "time": "64.325958ms"}
+2025-10-25T06:11:21.341+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "肌配色の組み合わせ.png", "format": "png", "width": 2940, "height": 4386, "time": "65.470417ms"}
+2025-10-25T06:11:21.341+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/肌配色の組み合わせ.png", "effort": 7, "expected_saving": 95, "time": "3.291µs"}
+2025-10-25T06:11:21.341+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/肌配色の組み合わせ.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 64.391875ms)
+     尺寸: 2940x4386 | 大小: 1.02 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.0831
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (1.02 MB → 0.05 MB)
+
+[4/20] 绘画.png
+2025-10-25T06:11:21.462+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "绘画.png", "format": "png", "width": 4127, "height": 8401, "time": "120.079375ms"}
+2025-10-25T06:11:21.572+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "绘画.png", "format": "png", "width": 4127, "height": 8401, "time": "110.3455ms"}
+2025-10-25T06:11:21.572+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/绘画.png", "effort": 7, "expected_saving": 95, "time": "500ns"}
+2025-10-25T06:11:21.572+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/绘画.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 120.123667ms)
+     尺寸: 4127x8401 | 大小: 3.62 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.1093
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (3.62 MB → 0.18 MB)
+
+[5/20] 空气透视规律.png
+2025-10-25T06:11:21.619+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "空气透视规律.png", "format": "png", "width": 787, "height": 1543, "time": "46.893166ms"}
+2025-10-25T06:11:21.663+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "空气透视规律.png", "format": "png", "width": 787, "height": 1543, "time": "44.0335ms"}
+2025-10-25T06:11:21.663+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/空气透视规律.png", "effort": 7, "expected_saving": 75, "time": "834ns"}
+2025-10-25T06:11:21.663+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/空气透视规律.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 75, "should_explore": false}
+  ✅ 预测成功 (耗时: 46.934209ms)
+     尺寸: 787x1543 | 大小: 0.44 MB | Alpha: false
+     PixFmt: rgb24 | Bytes/Pixel: 0.3780
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 75.0% (0.44 MB → 0.11 MB)
+
+[6/20] 烟囱修正提示.png
+2025-10-25T06:11:21.717+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "烟囱修正提示.png", "format": "png", "width": 2000, "height": 1361, "time": "54.151417ms"}
+2025-10-25T06:11:21.769+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "烟囱修正提示.png", "format": "png", "width": 2000, "height": 1361, "time": "51.95625ms"}
+2025-10-25T06:11:21.769+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/烟囱修正提示.png", "effort": 7, "expected_saving": 90, "time": "292ns"}
+2025-10-25T06:11:21.769+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/烟囱修正提示.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 90, "should_explore": false}
+  ✅ 预测成功 (耗时: 54.186376ms)
+     尺寸: 2000x1361 | 大小: 0.61 MB | Alpha: false
+     PixFmt: rgb24 | Bytes/Pixel: 0.2352
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 90.0% (0.61 MB → 0.06 MB)
+
+[7/20] 五分之一分段画法.jpg.png
+2025-10-25T06:11:21.805+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "五分之一分段画法.jpg.png", "format": "png", "width": 1200, "height": 1600, "time": "35.313834ms"}
+2025-10-25T06:11:21.837+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "五分之一分段画法.jpg.png", "format": "png", "width": 1200, "height": 1600, "time": "32.23575ms"}
+2025-10-25T06:11:21.837+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/五分之一分段画法.jpg.png", "effort": 9, "expected_saving": 90, "time": "1.458µs"}
+2025-10-25T06:11:21.837+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/五分之一分段画法.jpg.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 90, "should_explore": false}
+  ✅ 预测成功 (耗时: 35.350624ms)
+     尺寸: 1200x1600 | 大小: 0.03 MB | Alpha: false
+     PixFmt: pal8 | Bytes/Pixel: 0.0156
+  🎯 预测: JXL distance=0.0 effort=9 | 置信度: 95%
+     预期节省: 90.0% (0.03 MB → 0.00 MB)
+
+[8/20] 两边小屋步骤1.png
+2025-10-25T06:11:21.875+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "两边小屋步骤1.png", "format": "png", "width": 750, "height": 768, "time": "37.840625ms"}
+2025-10-25T06:11:21.912+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "两边小屋步骤1.png", "format": "png", "width": 750, "height": 768, "time": "36.549083ms"}
+2025-10-25T06:11:21.912+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/两边小屋步骤1.png", "effort": 7, "expected_saving": 85, "time": "125ns"}
+2025-10-25T06:11:21.912+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/两边小屋步骤1.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 85, "should_explore": false}
+  ✅ 预测成功 (耗时: 37.878541ms)
+     尺寸: 750x768 | 大小: 0.38 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.6937
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 85.0% (0.38 MB → 0.06 MB)
+
+[9/20] 上色7.png
+2025-10-25T06:11:21.960+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色7.png", "format": "png", "width": 1754, "height": 969, "time": "48.753958ms"}
+2025-10-25T06:11:22.006+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色7.png", "format": "png", "width": 1754, "height": 969, "time": "45.740792ms"}
+2025-10-25T06:11:22.006+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色7.png", "effort": 7, "expected_saving": 95, "time": "1.125µs"}
+2025-10-25T06:11:22.006+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色7.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 48.819917ms)
+     尺寸: 1754x969 | 大小: 0.69 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.4275
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (0.69 MB → 0.03 MB)
+
+[10/20] 上色3.png
+2025-10-25T06:11:22.055+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色3.png", "format": "png", "width": 1773, "height": 927, "time": "49.095292ms"}
+2025-10-25T06:11:22.101+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色3.png", "format": "png", "width": 1773, "height": 927, "time": "45.687375ms"}
+2025-10-25T06:11:22.101+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色3.png", "effort": 7, "expected_saving": 95, "time": "125ns"}
+2025-10-25T06:11:22.101+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色3.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 49.134542ms)
+     尺寸: 1773x927 | 大小: 0.62 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.3935
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (0.62 MB → 0.03 MB)
+
+[11/20] 上色2.png
+2025-10-25T06:11:22.151+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色2.png", "format": "png", "width": 1842, "height": 969, "time": "49.434417ms"}
+2025-10-25T06:11:22.197+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色2.png", "format": "png", "width": 1842, "height": 969, "time": "46.538334ms"}
+2025-10-25T06:11:22.197+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色2.png", "effort": 7, "expected_saving": 95, "time": "166ns"}
+2025-10-25T06:11:22.197+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色2.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 49.466291ms)
+     尺寸: 1842x969 | 大小: 0.75 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.4415
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (0.75 MB → 0.04 MB)
+
+[12/20] 上色1.png
+2025-10-25T06:11:22.246+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色1.png", "format": "png", "width": 1832, "height": 909, "time": "48.219583ms"}
+2025-10-25T06:11:22.291+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "上色1.png", "format": "png", "width": 1832, "height": 909, "time": "45.3995ms"}
+2025-10-25T06:11:22.291+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色1.png", "effort": 7, "expected_saving": 95, "time": "166ns"}
+2025-10-25T06:11:22.291+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/上色1.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 48.284708ms)
+     尺寸: 1832x909 | 大小: 0.73 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.4578
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (0.73 MB → 0.04 MB)
+
+[13/20] psc.png
+2025-10-25T06:11:22.466+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "psc.png", "format": "png", "width": 6549, "height": 11393, "time": "175.297584ms"}
+2025-10-25T06:11:22.619+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "psc.png", "format": "png", "width": 6549, "height": 11393, "time": "152.206625ms"}
+2025-10-25T06:11:22.620+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/psc.png", "effort": 7, "expected_saving": 95, "time": "167ns"}
+2025-10-25T06:11:22.620+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/psc.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 175.337834ms)
+     尺寸: 6549x11393 | 大小: 4.99 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.0702
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (4.99 MB → 0.25 MB)
+
+[14/20] 49908524_p0.png
+2025-10-25T06:11:22.673+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "49908524_p0.png", "format": "png", "width": 2500, "height": 3500, "time": "53.656416ms"}
+2025-10-25T06:11:22.728+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "49908524_p0.png", "format": "png", "width": 2500, "height": 3500, "time": "54.321209ms"}
+2025-10-25T06:11:22.728+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/49908524_p0.png", "effort": 7, "expected_saving": 95, "time": "209ns"}
+2025-10-25T06:11:22.728+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/49908524_p0.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 53.685417ms)
+     尺寸: 2500x3500 | 大小: 0.58 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.0693
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (0.58 MB → 0.03 MB)
+
+[15/20] 4c72ae5eaa1f3ad0e2fab48c4283c57f.png
+2025-10-25T06:11:22.781+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "4c72ae5eaa1f3ad0e2fab48c4283c57f.png", "format": "png", "width": 1222, "height": 2572, "time": "53.582667ms"}
+2025-10-25T06:11:22.831+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "4c72ae5eaa1f3ad0e2fab48c4283c57f.png", "format": "png", "width": 1222, "height": 2572, "time": "49.656041ms"}
+2025-10-25T06:11:22.831+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/4c72ae5eaa1f3ad0e2fab48c4283c57f.png", "effort": 7, "expected_saving": 85, "time": "167ns"}
+2025-10-25T06:11:22.831+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/4c72ae5eaa1f3ad0e2fab48c4283c57f.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 85, "should_explore": false}
+  ✅ 预测成功 (耗时: 53.625375ms)
+     尺寸: 1222x2572 | 大小: 2.26 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.7541
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 85.0% (2.26 MB → 0.34 MB)
+
+[16/20] 3-1.png
+2025-10-25T06:11:22.876+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "3-1.png", "format": "png", "width": 1797, "height": 826, "time": "44.977833ms"}
+2025-10-25T06:11:22.918+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "3-1.png", "format": "png", "width": 1797, "height": 826, "time": "42.2135ms"}
+2025-10-25T06:11:22.918+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/3-1.png", "effort": 7, "expected_saving": 95, "time": "250ns"}
+2025-10-25T06:11:22.918+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/3-1.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 45.006709ms)
+     尺寸: 1797x826 | 大小: 0.25 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.1780
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (0.25 MB → 0.01 MB)
+
+[17/20] 20191225192302.png
+2025-10-25T06:11:22.959+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "20191225192302.png", "format": "png", "width": 611, "height": 832, "time": "40.479292ms"}
+2025-10-25T06:11:23.000+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "20191225192302.png", "format": "png", "width": 611, "height": 832, "time": "40.605292ms"}
+2025-10-25T06:11:23.000+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/20191225192302.png", "effort": 7, "expected_saving": 75, "time": "250ns"}
+2025-10-25T06:11:23.000+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/20191225192302.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 75, "should_explore": false}
+  ✅ 预测成功 (耗时: 40.519291ms)
+     尺寸: 611x832 | 大小: 0.68 MB | Alpha: false
+     PixFmt: rgb24 | Bytes/Pixel: 1.3932
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 75.0% (0.68 MB → 0.17 MB)
+
+[18/20] 2-1.png
+2025-10-25T06:11:23.044+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "2-1.png", "format": "png", "width": 1757, "height": 859, "time": "44.217792ms"}
+2025-10-25T06:11:23.085+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "2-1.png", "format": "png", "width": 1757, "height": 859, "time": "41.168ms"}
+2025-10-25T06:11:23.085+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/2-1.png", "effort": 7, "expected_saving": 95, "time": "209ns"}
+2025-10-25T06:11:23.085+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/2-1.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 95, "should_explore": false}
+  ✅ 预测成功 (耗时: 44.268709ms)
+     尺寸: 1757x859 | 大小: 0.34 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 0.2386
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 95.0% (0.34 MB → 0.02 MB)
+
+[19/20] 050.png
+2025-10-25T06:11:23.230+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "050.png", "format": "png", "width": 3450, "height": 2470, "time": "144.643208ms"}
+2025-10-25T06:11:23.374+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "050.png", "format": "png", "width": 3450, "height": 2470, "time": "144.246458ms"}
+2025-10-25T06:11:23.374+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/050.png", "effort": 7, "expected_saving": 85, "time": "208ns"}
+2025-10-25T06:11:23.374+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/050.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 85, "should_explore": false}
+  ✅ 预测成功 (耗时: 144.747624ms)
+     尺寸: 3450x2470 | 大小: 8.87 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 1.0921
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 85.0% (8.87 MB → 1.33 MB)
+
+[20/20] 048.png
+2025-10-25T06:11:23.539+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "048.png", "format": "png", "width": 3447, "height": 2463, "time": "164.582709ms"}
+2025-10-25T06:11:23.684+0800	DEBUG	predictor/feature_extractor.go:63	特征提取完成	{"file": "048.png", "format": "png", "width": 3447, "height": 2463, "time": "144.987666ms"}
+2025-10-25T06:11:23.684+0800	DEBUG	predictor/png_predictor.go:62	PNG预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/048.png", "effort": 7, "expected_saving": 85, "time": "166ns"}
+2025-10-25T06:11:23.684+0800	INFO	predictor/predictor.go:40	预测完成	{"file": "/Users/nyamiiko/Documents/git/PIXLY最初版本backup/TESTPACK PASSIFYOUCAN!/🆕测试大量转换和嵌套文件夹 自动模式 应当仅使用副本 📁 测フォ_Folder Name  复制时必须保留文件夹名称 以便于测试你的文件夹识别功能!!_副本/未命名相簿/048.png", "format": "png", "target": "jxl", "confidence": 0.95, "method": "rule_based", "expected_saving": 85, "should_explore": false}
+  ✅ 预测成功 (耗时: 164.622499ms)
+     尺寸: 3447x2463 | 大小: 8.86 MB | Alpha: true
+     PixFmt: rgba | Bytes/Pixel: 1.0947
+  🎯 预测: JXL distance=0.0 effort=7 | 置信度: 95%
+     预期节省: 85.0% (8.86 MB → 1.33 MB)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 测试总结
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  测试文件: 20
+  成功预测: 20
+  成功率: 100.00%
+
+  ⚡ 性能指标:
+     平均特征提取: 70.190614ms
+     平均预测耗时: 566ns
+     平均总耗时: 70.191181ms
+
+  💾 空间预测:
+     平均预期节省: 90.5%
+     总体预期节省: 89.0% (38.11 MB → 4.20 MB)
+
+  🎯 v3.0 MVP验证:
+     ✅ 预测速度: 70.191181ms < 100ms (目标达成)
+     ✅ 空间节省: 90.5% > 80% (目标达成)
+     ✅ 成功率: 100% (目标达成)
+
+✅ PNG预测器MVP测试通过！
+
+下一步：实际转换测试（验证预测准确性）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

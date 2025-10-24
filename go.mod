@@ -6,8 +6,6 @@ replace pixly/utils => ./utils
 
 require (
 	github.com/fatih/color v1.18.0
-	github.com/h2non/filetype v1.1.3
-	github.com/karrick/godirwalk v1.17.0
 	github.com/panjf2000/ants/v2 v2.11.3
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/stretchr/testify v1.11.1

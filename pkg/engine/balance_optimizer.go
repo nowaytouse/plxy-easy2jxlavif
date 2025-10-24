@@ -10,16 +10,23 @@ import (
 	"time"
 
 	"pixly/pkg/core/types"
+	"pixly/pkg/predictor"
 
 	"go.uber.org/zap"
 )
 
-// BalanceOptimizer 平衡优化器 - 实现README要求的多点探测试探性压缩策略
+// BalanceOptimizer 平衡优化器 - v3.0增强：智能预测优先，探索为辅
+// README要求的多点探测试探性压缩策略
 type BalanceOptimizer struct {
 	logger    *zap.Logger
 	toolPaths types.ToolCheckResults
 	tempDir   string
 	debugMode bool
+
+	// v3.0新增：智能预测器
+	predictor           *predictor.Predictor
+	enablePrediction    bool    // 是否启用预测（v3.0默认启用）
+	confidenceThreshold float64 // 置信度阈值（>此值直接使用预测）
 }
 
 // OptimizationResult 优化结果
@@ -44,16 +51,33 @@ type OptimizationAttempt struct {
 }
 
 // NewBalanceOptimizer 创建平衡优化器
+// v3.0增强：集成智能预测器
 func NewBalanceOptimizer(logger *zap.Logger, toolPaths types.ToolCheckResults, tempDir string) *BalanceOptimizer {
+	// 创建预测器（使用ffprobe命令，通常在PATH中）
+	// 优先使用系统ffprobe，确保与FFmpeg版本一致
+	ffprobePath := "ffprobe" // 使用PATH中的ffprobe
+
+	// 尝试从环境变量获取自定义路径
+	if customPath := os.Getenv("PIXLY_FFPROBE_PATH"); customPath != "" {
+		ffprobePath = customPath
+	}
+
+	pred := predictor.NewPredictor(logger, ffprobePath)
+
 	return &BalanceOptimizer{
-		logger:    logger,
-		toolPaths: toolPaths,
-		tempDir:   tempDir,
-		debugMode: os.Getenv("PIXLY_DEBUG") == "true",
+		logger:              logger,
+		toolPaths:           toolPaths,
+		tempDir:             tempDir,
+		debugMode:           os.Getenv("PIXLY_DEBUG") == "true",
+		predictor:           pred,
+		enablePrediction:    os.Getenv("PIXLY_DISABLE_PREDICTION") != "true", // 默认启用
+		confidenceThreshold: 0.80,                                            // 置信度>0.80直接使用预测
 	}
 }
 
-// OptimizeFile 执行平衡优化 - README要求的核心平衡优化逻辑
+// OptimizeFile 执行平衡优化
+// v3.0增强：智能预测优先，探索为辅
+// README要求的核心平衡优化逻辑
 func (bo *BalanceOptimizer) OptimizeFile(ctx context.Context, filePath string, mediaType types.MediaType) (*OptimizationResult, error) {
 	bo.logger.Debug("开始平衡优化",
 		zap.String("file", filepath.Base(filePath)),
@@ -72,6 +96,34 @@ func (bo *BalanceOptimizer) OptimizeFile(ctx context.Context, filePath string, m
 		OriginalSize: originalSize,
 		ProcessTime:  0,
 	}
+
+	// v3.0新增：优先尝试智能预测（仅对PNG生效）
+	if bo.enablePrediction && mediaType == types.MediaTypeImage {
+		if predictResult := bo.tryPredictiveOptimization(ctx, filePath, originalSize); predictResult != nil {
+			if predictResult.Success && predictResult.NewSize < originalSize {
+				bo.logger.Info("✨ 智能预测成功（v3.0）",
+					zap.String("file", filepath.Base(filePath)),
+					zap.String("method", predictResult.Method),
+					zap.Int64("original_size", originalSize),
+					zap.Int64("new_size", predictResult.NewSize),
+					zap.Float64("saved_percent", float64(originalSize-predictResult.NewSize)/float64(originalSize)*100),
+					zap.Duration("time", time.Since(startTime)))
+
+				result.Success = true
+				result.OutputPath = predictResult.OutputPath
+				result.NewSize = predictResult.NewSize
+				result.SpaceSaved = originalSize - predictResult.NewSize
+				result.Method = "v3_predictive_" + predictResult.Method
+				result.Quality = predictResult.Quality
+				result.ProcessTime = time.Since(startTime)
+				return result, nil
+			}
+		}
+	}
+
+	// v1.0流程：如果预测失败或未启用，回退到原有的平衡优化步骤
+	bo.logger.Debug("使用v1.0平衡优化流程（预测未覆盖此格式）",
+		zap.String("file", filepath.Base(filePath)))
 
 	// README要求的平衡优化步骤：
 	// 1. 无损重新包装优先
@@ -444,4 +496,163 @@ func (bo *BalanceOptimizer) CleanupTempFiles() {
 	if bo.tempDir != "" {
 		os.RemoveAll(bo.tempDir)
 	}
+}
+
+// ========== v3.0新增：智能预测相关函数 ==========
+
+// tryPredictiveOptimization 尝试基于预测的优化（v3.0核心）
+// 使用智能预测器预测最优参数，并直接执行单次转换
+func (bo *BalanceOptimizer) tryPredictiveOptimization(ctx context.Context, filePath string, originalSize int64) *OptimizationResult {
+	// 步骤1: 使用预测器预测最优参数
+	prediction, err := bo.predictor.PredictOptimalParams(filePath)
+	if err != nil {
+		bo.logger.Warn("预测失败，回退到v1.0流程",
+			zap.String("file", filepath.Base(filePath)),
+			zap.Error(err))
+		return nil
+	}
+
+	bo.logger.Debug("预测完成",
+		zap.String("file", filepath.Base(filePath)),
+		zap.String("target_format", prediction.Params.TargetFormat),
+		zap.Float64("confidence", prediction.Confidence),
+		zap.String("method", prediction.Method),
+		zap.Float64("expected_saving", prediction.ExpectedSaving*100),
+		zap.Bool("should_explore", prediction.ShouldExplore))
+
+	// 步骤2: 检查置信度
+	if prediction.Confidence < bo.confidenceThreshold {
+		bo.logger.Debug("预测置信度低，回退到v1.0探索流程",
+			zap.String("file", filepath.Base(filePath)),
+			zap.Float64("confidence", prediction.Confidence),
+			zap.Float64("threshold", bo.confidenceThreshold))
+		return nil
+	}
+
+	// 步骤3: 高置信度预测，直接执行单次转换
+	bo.logger.Info("🎯 使用高置信度预测参数（v3.0）",
+		zap.String("file", filepath.Base(filePath)),
+		zap.Float64("confidence", prediction.Confidence),
+		zap.String("rule", prediction.RuleName))
+
+	// 执行转换
+	result := bo.executeConversionWithPrediction(ctx, filePath, prediction)
+
+	// 步骤4: 验证结果
+	if result != nil && result.Success {
+		savedPercent := float64(originalSize-result.NewSize) / float64(originalSize) * 100
+		expectedPercent := prediction.ExpectedSaving * 100
+
+		bo.logger.Info("预测转换完成",
+			zap.String("file", filepath.Base(filePath)),
+			zap.Float64("actual_saving", savedPercent),
+			zap.Float64("expected_saving", expectedPercent),
+			zap.Float64("prediction_error", savedPercent-expectedPercent))
+	}
+
+	return result
+}
+
+// executeConversionWithPrediction 使用预测参数执行转换
+func (bo *BalanceOptimizer) executeConversionWithPrediction(ctx context.Context, filePath string, prediction *predictor.Prediction) *OptimizationResult {
+	params := prediction.Params
+
+	// 根据目标格式执行转换
+	switch params.TargetFormat {
+	case "jxl":
+		return bo.executePredictedJXLConversion(ctx, filePath, params)
+	case "avif":
+		return bo.executePredictedAVIFConversion(ctx, filePath, params)
+	case "mov":
+		// 视频重封装（未来实现）
+		return nil
+	default:
+		bo.logger.Warn("未知的目标格式",
+			zap.String("format", params.TargetFormat))
+		return nil
+	}
+}
+
+// executePredictedJXLConversion 执行预测的JXL转换
+func (bo *BalanceOptimizer) executePredictedJXLConversion(ctx context.Context, filePath string, params *predictor.ConversionParams) *OptimizationResult {
+	outputPath := bo.generateTempPath(filePath, ".jxl")
+
+	// 构建cjxl命令（使用预测的参数）
+	args := []string{
+		"-d", fmt.Sprintf("%.1f", params.Distance),
+		"-e", fmt.Sprintf("%d", params.Effort),
+		"--num_threads", fmt.Sprintf("%d", params.Threads),
+		filePath,
+		outputPath,
+	}
+
+	// 如果是JPEG无损重包装，添加特殊参数
+	if params.LosslessJPEG {
+		args = append([]string{"--lossless_jpeg=1"}, args...)
+	}
+
+	cmd := exec.CommandContext(ctx, bo.toolPaths.CjxlPath, args...)
+
+	if err := cmd.Run(); err != nil {
+		os.Remove(outputPath)
+		bo.logger.Warn("预测JXL转换失败",
+			zap.String("file", filepath.Base(filePath)),
+			zap.Error(err))
+		return &OptimizationResult{Success: false, Error: err}
+	}
+
+	// 检查输出文件
+	if stat, err := os.Stat(outputPath); err == nil {
+		method := fmt.Sprintf("jxl_predicted_d%.1f_e%d", params.Distance, params.Effort)
+		quality := "lossless"
+		if params.Distance > 0 {
+			quality = fmt.Sprintf("lossy_d%.1f", params.Distance)
+		}
+
+		return &OptimizationResult{
+			Success:    true,
+			OutputPath: outputPath,
+			NewSize:    stat.Size(),
+			Method:     method,
+			Quality:    quality,
+		}
+	}
+
+	os.Remove(outputPath)
+	return &OptimizationResult{Success: false}
+}
+
+// executePredictedAVIFConversion 执行预测的AVIF转换
+func (bo *BalanceOptimizer) executePredictedAVIFConversion(ctx context.Context, filePath string, params *predictor.ConversionParams) *OptimizationResult {
+	outputPath := bo.generateTempPath(filePath, ".avif")
+
+	// 使用FFmpeg进行AVIF转换（使用预测的CRF）
+	cmd := exec.CommandContext(ctx, bo.toolPaths.FfmpegStablePath,
+		"-i", filePath,
+		"-c:v", "libaom-av1",
+		"-crf", fmt.Sprintf("%d", params.CRF),
+		"-cpu-used", fmt.Sprintf("%d", params.Speed),
+		"-y",
+		outputPath)
+
+	if err := cmd.Run(); err != nil {
+		os.Remove(outputPath)
+		bo.logger.Warn("预测AVIF转换失败",
+			zap.String("file", filepath.Base(filePath)),
+			zap.Error(err))
+		return &OptimizationResult{Success: false, Error: err}
+	}
+
+	if stat, err := os.Stat(outputPath); err == nil {
+		return &OptimizationResult{
+			Success:    true,
+			OutputPath: outputPath,
+			NewSize:    stat.Size(),
+			Method:     fmt.Sprintf("avif_predicted_crf%d", params.CRF),
+			Quality:    fmt.Sprintf("crf_%d", params.CRF),
+		}
+	}
+
+	os.Remove(outputPath)
+	return &OptimizationResult{Success: false}
 }
