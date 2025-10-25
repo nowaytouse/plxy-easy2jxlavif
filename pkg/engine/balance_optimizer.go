@@ -126,8 +126,8 @@ func (bo *BalanceOptimizer) OptimizeFile(ctx context.Context, filePath string, m
 		ProcessTime:  0,
 	}
 
-	// v3.0新增：优先尝试智能预测（仅对PNG生效）
-	if bo.enablePrediction && mediaType == types.MediaTypeImage {
+	// v3.0新增：优先尝试智能预测（图像+视频）
+	if bo.enablePrediction && (mediaType == types.MediaTypeImage || mediaType == types.MediaTypeVideo) {
 		if predictResult := bo.tryPredictiveOptimization(ctx, filePath, originalSize); predictResult != nil {
 			if predictResult.Success && predictResult.NewSize < originalSize {
 				bo.logger.Info("✨ 智能预测成功（v3.0）",
@@ -150,8 +150,8 @@ func (bo *BalanceOptimizer) OptimizeFile(ctx context.Context, filePath string, m
 		}
 	}
 
-	// v1.0流程：如果预测失败或未启用，回退到原有的平衡优化步骤
-	bo.logger.Debug("使用v1.0平衡优化流程（预测未覆盖此格式）",
+	// 后备流程：如果预测失败或未启用，使用经典平衡优化步骤
+	bo.logger.Debug("使用经典平衡优化流程（预测未覆盖此格式）",
 		zap.String("file", filepath.Base(filePath)))
 
 	// README要求的平衡优化步骤：
@@ -535,7 +535,7 @@ func (bo *BalanceOptimizer) tryPredictiveOptimization(ctx context.Context, fileP
 	// 步骤1: 使用预测器预测最优参数
 	prediction, err := bo.predictor.PredictOptimalParams(filePath)
 	if err != nil {
-		bo.logger.Warn("预测失败，回退到v1.0流程",
+		bo.logger.Warn("预测失败，使用经典流程",
 			zap.String("file", filepath.Base(filePath)),
 			zap.Error(err))
 		return nil
@@ -632,8 +632,13 @@ func (bo *BalanceOptimizer) executeConversionWithPrediction(ctx context.Context,
 	case "avif":
 		return bo.executePredictedAVIFConversion(ctx, filePath, params)
 	case "mov":
-		// 视频重封装（未来实现）
-		return nil
+		// 视频重封装（v3.1.1）
+		fileInfo, _ := os.Stat(filePath)
+		origSize := int64(0)
+		if fileInfo != nil {
+			origSize = fileInfo.Size()
+		}
+		return bo.executeMOVRepackage(ctx, filePath, origSize)
 	default:
 		bo.logger.Warn("未知的目标格式",
 			zap.String("format", params.TargetFormat))
@@ -723,4 +728,65 @@ func (bo *BalanceOptimizer) executePredictedAVIFConversion(ctx context.Context, 
 
 	os.Remove(outputPath)
 	return &OptimizationResult{Success: false}
+}
+
+// executeMOVRepackage 执行MOV重封装（v3.1.1视频处理）
+func (bo *BalanceOptimizer) executeMOVRepackage(
+	ctx context.Context,
+	filePath string,
+	originalSize int64,
+) *OptimizationResult {
+	startTime := time.Now()
+
+	// 生成输出文件路径
+	dir := filepath.Dir(filePath)
+	base := filepath.Base(filePath)
+	ext := filepath.Ext(base)
+	nameWithoutExt := base[:len(base)-len(ext)]
+	outputPath := filepath.Join(dir, nameWithoutExt+".mov")
+
+	// 视频重封装：仅改容器，不重编码（快速！）
+	args := []string{
+		"-i", filePath,
+		"-c", "copy", // 复制编码流（关键：不重编码）
+		"-avoid_negative_ts", "make_zero", // 修复时间戳
+		"-f", "mov", // 明确MOV格式
+		"-y", outputPath, // 覆盖输出
+	}
+
+	cmd := exec.CommandContext(ctx, bo.toolPaths.FfmpegStablePath, args...)
+
+	bo.logger.Info("🎬 视频重封装（-c copy，不重编码）",
+		zap.String("file", filepath.Base(filePath)))
+
+	// 执行命令
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		bo.logger.Warn("MOV重封装失败",
+			zap.String("file", filepath.Base(filePath)),
+			zap.Error(err))
+		return nil
+	}
+
+	// 检查输出文件
+	outputInfo, err := os.Stat(outputPath)
+	if err != nil {
+		return nil
+	}
+
+	newSize := outputInfo.Size()
+
+	bo.logger.Info("🎬 MOV重封装完成（快速）",
+		zap.String("file", filepath.Base(filePath)),
+		zap.Duration("time", time.Since(startTime)))
+
+	return &OptimizationResult{
+		Success:      true,
+		OutputPath:   outputPath,
+		OriginalSize: originalSize,
+		NewSize:      newSize,
+		SpaceSaved:   originalSize - newSize,
+		Method:       "mov_repackage",
+		ProcessTime:  time.Since(startTime),
+	}
 }

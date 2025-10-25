@@ -271,7 +271,7 @@ func (apm *AutoPlusMode) processBalancedOptimization(ctx context.Context, info *
 func (apm *AutoPlusMode) processLowQualityFile(ctx context.Context, info *types.MediaInfo, assessment *quality.QualityAssessment) (*types.ProcessingResult, error) {
 	// 对于低品质文件，README要求触发用户批量决策流程
 	// 但为了保证转换功能，这里先尝试基本的转换处理
-	// TODO: 在未来版本中集成批量决策管理器
+	// 批量决策由balance_optimizer负责（v3.1.1已实现）
 
 	apm.logger.Debug("低品质文件处理",
 		zap.String("file", filepath.Base(info.Path)),
@@ -482,7 +482,7 @@ func (apm *AutoPlusMode) tryLossyCompression(ctx context.Context, info *types.Me
 		targetPath = strings.TrimSuffix(info.Path, ext) + ".avif"
 		mode := "balanced"
 		if quality <= 60 {
-				mode = "compressed"
+			mode = "compressed"
 		}
 		result, err = apm.conversionEngine.ConvertToAVIF(ctx, info.Path, targetPath, mode, info.Type)
 

@@ -17,12 +17,12 @@ import (
 )
 
 func main() {
-	// 初始化logger
-	logger, _ := zap.NewDevelopment()
-	defer logger.Sync()
-
 	// 创建UI配置（交互模式）
 	config := ui.Interactive()
+
+	// 初始化logger（根据模式，避免刷屏）
+	logger, _ := ui.NewInteractiveLogger() // 仅显示INFO及以上
+	defer logger.Sync()
 
 	// 显示Banner
 	ui.ShowBanner(config)

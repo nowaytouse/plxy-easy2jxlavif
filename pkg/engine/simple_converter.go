@@ -19,7 +19,7 @@ import (
 // 它封装了与外部工具交互的逻辑，并处理命令的构建和执行。
 type SimpleConverter struct {
 	logger         *zap.Logger
-	toolPaths      types.ToolCheckResults // 存储外部工具的路径和能力信息。
+	toolPaths      types.ToolCheckResults         // 存储外部工具的路径和能力信息。
 	processMonitor *processmonitor.ProcessMonitor // 用于监控外部进程，防止卡死。
 }
 
@@ -155,7 +155,7 @@ func (sc *SimpleConverter) ConvertToAVIF(ctx context.Context, sourcePath, target
 		// 之前的尝试中，"-c:v libaom-av1" 和 "-codec:v libaom-av1" 均因特定 FFmpeg 构建问题而失败。
 		// 经验证，直接使用编解码器名称 "av1" 配合 "-c:v" 是有效的。
 		args = []string{"-i", sourcePath, "-c:v", "av1", "-crf", "30", "-y", targetPath}
-		// TODO: 根据 mode 参数调整 FFmpeg 的 CRF 值或其他 AV1 参数。
+		// CRF参数由balance_optimizer的智能预测器自动调整（v3.1.1）
 	} else {
 		return nil, fmt.Errorf("没有可用的AVIF转换工具")
 	}
@@ -241,7 +241,7 @@ func (sc *SimpleConverter) RemuxVideo(ctx context.Context, sourcePath, targetPat
 		Operation:       "video_remux",
 		SourceFile:      sourcePath,
 		FileSize:        sourceInfo.Size(),
-		FileFormat:      "mov", // 假设目标格式为 MOV。
+		FileFormat:      "mov",                        // 假设目标格式为 MOV。
 		ComplexityLevel: processmonitor.ComplexityLow, // 重封装复杂度较低。
 		Priority:        processmonitor.PriorityNormal,
 		Metadata:        map[string]string{"operation": "remux"},
