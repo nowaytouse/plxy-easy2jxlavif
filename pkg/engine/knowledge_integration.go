@@ -28,10 +28,14 @@ func (bo *BalanceOptimizer) recordConversion(
 	fileName := filepath.Base(filePath)
 	originalSize := features.FileSize
 
+	// 转换类型
+	kFeatures := convertToKnowledgeFeatures(features)
+	kPrediction := convertToKnowledgePrediction(prediction)
+
 	record := knowledge.NewRecordBuilder().
 		WithFileInfo(filePath, fileName, features.Format, originalSize).
-		WithFeatures(features).
-		WithPrediction(prediction, predictorName)
+		WithFeatures(kFeatures).
+		WithPrediction(kPrediction, predictorName)
 
 	// 添加实际结果
 	if result.Success {
@@ -190,4 +194,46 @@ func (bo *BalanceOptimizer) EnableKnowledge(enable bool) {
 // IsKnowledgeEnabled 检查知识库是否启用
 func (bo *BalanceOptimizer) IsKnowledgeEnabled() bool {
 	return bo.enableKnowledge && bo.knowledgeDB != nil
+}
+
+// convertToKnowledgeFeatures 转换特征类型
+func convertToKnowledgeFeatures(f *predictor.FileFeatures) *knowledge.FileFeatures {
+	if f == nil {
+		return nil
+	}
+
+	return &knowledge.FileFeatures{
+		Format:           f.Format,
+		FileSize:         f.FileSize,
+		Width:            f.Width,
+		Height:           f.Height,
+		HasAlpha:         f.HasAlpha,
+		PixFmt:           f.PixFmt,
+		EstimatedQuality: f.EstimatedQuality,
+		IsAnimated:       f.IsAnimated,
+	}
+}
+
+// convertToKnowledgePrediction 转换预测类型
+func convertToKnowledgePrediction(p *predictor.Prediction) *knowledge.Prediction {
+	if p == nil {
+		return nil
+	}
+
+	return &knowledge.Prediction{
+		Params: &knowledge.ConversionParams{
+			TargetFormat: p.Params.TargetFormat,
+			Lossless:     p.Params.Lossless,
+			LosslessJPEG: p.Params.LosslessJPEG,
+			Distance:     p.Params.Distance,
+			Effort:       p.Params.Effort,
+			CRF:          p.Params.CRF,
+			Speed:        p.Params.Speed,
+		},
+		Confidence:        p.Confidence,
+		RuleName:          p.RuleName,
+		ExpectedSaving:    p.ExpectedSaving,
+		ExpectedSizeBytes: p.ExpectedSizeBytes,
+		PredictionTime:    p.PredictionTime,
+	}
 }

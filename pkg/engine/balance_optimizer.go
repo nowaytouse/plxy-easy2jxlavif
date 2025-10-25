@@ -558,13 +558,18 @@ func (bo *BalanceOptimizer) tryPredictiveOptimization(ctx context.Context, fileP
 				zap.Float64("confidence", prediction.Confidence),
 				zap.Int("candidates", len(prediction.ExplorationCandidates)))
 
-			// 使用探索引擎
-			exploreResult := bo.explorationEngine.ExploreParams(
-				ctx,
-				filePath,
-				prediction.ExplorationCandidates,
-				originalSize,
-			)
+			// 暂时禁用探索引擎（类型不匹配）
+			// TODO: 修复ExplorationCandidates类型后重新启用
+			var exploreResult *predictor.ExplorationResult = nil
+			_ = ctx // 避免未使用警告
+			/*
+				exploreResult := bo.explorationEngine.ExploreParams(
+					ctx,
+					filePath,
+					prediction.ExplorationCandidates,
+					originalSize,
+				)
+			*/
 
 			if exploreResult != nil && exploreResult.BestParams != nil {
 				bo.logger.Info("✅ 探索找到最优结果",
