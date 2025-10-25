@@ -234,7 +234,14 @@ func (sc *SimpleConverter) RemuxVideo(ctx context.Context, sourcePath, targetPat
 
 	// 构建 FFmpeg 重封装命令。
 	// "-c copy" 表示直接复制视频和音频流，不进行重新编码，因此是无损的。
-	args := []string{"-i", sourcePath, "-c", "copy", "-y", targetPath}
+	// ✅ 添加元数据保留参数
+	args := []string{
+		"-i", sourcePath,
+		"-c", "copy",
+		"-map_metadata", "0", // ✅ 复制所有元数据
+		"-movflags", "use_metadata_tags", // ✅ 保留MOV元数据标签
+		"-y", targetPath,
+	}
 
 	// 创建进程上下文，用于进程监控。
 	processCtx := &processmonitor.ProcessContext{

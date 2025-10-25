@@ -22,8 +22,6 @@ import (
 	"go.uber.org/zap"
 )
 
-
-
 type ConversionEngine struct {
 	logger           *zap.Logger
 	config           *EngineConfig
@@ -413,10 +411,10 @@ func (e *ConversionEngine) scanDirectory(dir string) ([]*types.MediaInfo, error)
 
 	// 支持的文件扩展名
 	supportedExts := map[string]bool{
-		".jpg":  true, ".jpeg": true, ".png": true, ".gif": true,
+		".jpg": true, ".jpeg": true, ".png": true, ".gif": true,
 		".webp": true, ".heif": true, ".heic": true, ".avif": true,
-		".jxl":  true, ".tiff": true, ".tif": true, ".bmp": true,
-		".mp4":  true, ".mov": true, ".avi": true, ".mkv": true,
+		".jxl": true, ".tiff": true, ".tif": true, ".bmp": true,
+		".mp4": true, ".mov": true, ".avi": true, ".mkv": true,
 		".webm": true, ".m4v": true,
 	}
 
@@ -1517,6 +1515,8 @@ func (e *ConversionEngine) remuxVideo(ctx context.Context, task ConversionTask) 
 	var args []string
 	args = append(args, "-i", task.SourcePath)
 	args = append(args, "-c", "copy")                      // 复制流，不重新编码
+	args = append(args, "-map_metadata", "0")              // ✅ 复制所有元数据
+	args = append(args, "-movflags", "use_metadata_tags")  // ✅ 保留MOV元数据标签
 	args = append(args, "-avoid_negative_ts", "make_zero") // 处理时间戳
 	
 	// README新增要求：明确指定容器参数以解决"Could not find tag for codec"等错误
@@ -1534,7 +1534,7 @@ func (e *ConversionEngine) remuxVideo(ctx context.Context, task ConversionTask) 
 		args = append(args, "-f", "webm") // 明确指定WebM容器格式
 	}
 	
-	args = append(args, "-y", task.TargetPath)             // 覆盖输出文件
+	args = append(args, "-y", task.TargetPath) // 覆盖输出文件
 
 	// 创建命令
 	cmd := exec.CommandContext(ctx, e.toolCheck.FfmpegDevPath, args...)

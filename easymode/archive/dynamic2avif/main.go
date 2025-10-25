@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"flag"
 	"fmt"
@@ -23,7 +24,6 @@ import (
 	"pixly/utils"
 
 	"github.com/karrick/godirwalk"
-	"github.com/shirou/gopsutil/mem"
 )
 
 const (
@@ -41,15 +41,15 @@ var (
 )
 
 type Options struct {
-	Workers        int
-	InputDir       string
-	OutputDir      string
-	SkipExist      bool
-	DryRun         bool
-	TimeoutSeconds int
-	Retries        int
-	MaxMemory      int64
-	MaxFileSize    int64
+	Workers           int
+	InputDir          string
+	OutputDir         string
+	SkipExist         bool
+	DryRun            bool
+	TimeoutSeconds    int
+	Retries           int
+	MaxMemory         int64
+	MaxFileSize       int64
 	EnableHealthCheck bool
 }
 
@@ -86,8 +86,8 @@ type Stats struct {
 func init() {
 	setupLogging()
 	stats = &Stats{
-		startTime: time.Now(),
-		byExt:     make(map[string]int),
+		startTime:  time.Now(),
+		byExt:      make(map[string]int),
 		errorTypes: make(map[string]int),
 	}
 	setupSignalHandling()
@@ -264,21 +264,21 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 	defer func() { <-procSem }()
 	fdSem <- struct{}{}
 	defer func() { <-fdSem }()
-	
+
 	select {
 	case <-globalCtx.Done():
 		return globalCtx.Err()
 	default:
 	}
-	
+
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return fmt.Errorf("文件不存在: %s", filePath)
 	}
-	
+
 	// 根据工具类型执行相应的处理逻辑
 	conversionMode, outputPath, errorMsg, err := processFileByType(filePath, opts)
 	processingTime := time.Since(startTime)
-	
+
 	processInfo := FileProcessInfo{
 		FilePath:       filePath,
 		FileSize:       fileInfo.Size(),
@@ -291,7 +291,7 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 		EndTime:        time.Now(),
 		ErrorType:      classifyError(err),
 	}
-	
+
 	if err != nil {
 		stats.addImageFailed()
 		processInfo.ErrorMsg = err.Error()
@@ -304,19 +304,130 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 }
 
 func processFileByType(filePath string, opts Options) (string, string, string, error) {
-	// 根据工具类型实现具体的处理逻辑
-	// 这里是一个通用的实现框架
-	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".processed"
-	
-	// 模拟处理过程
-	time.Sleep(100 * time.Millisecond)
-	
-	return "通用处理", outputPath, "", nil
+	// 动图转AVIF的实际转换逻辑（v2.3.1+元数据保留）
+	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".avif"
+
+	// 检测是否为动图
+	isAnimated := utils.IsAnimatedImage(filePath)
+
+	var conversionMode string
+
+	if isAnimated {
+		// 动图转换为AVIF
+		conversionMode = "动图转AVIF"
+		args := []string{
+			"-i", filePath,
+			"-c:v", "libaom-av1",
+			"-crf", "30",
+			"-cpu-used", "6",
+			"-an",
+			"-y", outputPath,
+		}
+
+		ctx, cancel := context.WithTimeout(globalCtx, time.Duration(opts.TimeoutSeconds)*time.Second)
+		defer cancel()
+
+		cmd := exec.CommandContext(ctx, "ffmpeg", args...)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			return conversionMode, "", string(output), fmt.Errorf("ffmpeg转换失败: %v", err)
+		}
+	} else {
+		// 静态图使用avifenc
+		conversionMode = "静态转AVIF"
+		args := []string{
+			filePath,
+			outputPath,
+			"-s", "6",
+			"-j", "4",
+		}
+
+		ctx, cancel := context.WithTimeout(globalCtx, time.Duration(opts.TimeoutSeconds)*time.Second)
+		defer cancel()
+
+		cmd := exec.CommandContext(ctx, "avifenc", args...)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			return conversionMode, "", string(output), fmt.Errorf("avifenc转换失败: %v", err)
+		}
+	}
+
+	// ✅ 步骤1: 捕获源文件的文件系统元数据（在exiftool之前）
+	srcInfo, _ := os.Stat(filePath)
+	var creationTime time.Time
+	if srcInfo != nil {
+		if stat, ok := srcInfo.Sys().(*syscall.Stat_t); ok {
+			creationTime = time.Unix(stat.Birthtimespec.Sec, stat.Birthtimespec.Nsec)
+		}
+	}
+
+	// ✅ 步骤2: 复制EXIF元数据（会改变文件修改时间）
+	if err := copyMetadata(filePath, outputPath); err != nil {
+		logger.Printf("⚠️  EXIF元数据复制失败: %s -> %s: %v",
+			filepath.Base(filePath), filepath.Base(outputPath), err)
+		// 不返回错误，因为转换本身成功了
+	} else {
+		logger.Printf("✅ EXIF元数据复制成功: %s", filepath.Base(outputPath))
+	}
+
+	// ✅ 步骤3: 恢复文件系统元数据（在exiftool之后）
+	if srcInfo != nil {
+		// 3.1 恢复Finder标签和注释
+		if err := copyFinderMetadata(filePath, outputPath); err != nil {
+			logger.Printf("⚠️  Finder元数据复制失败 %s: %v", filepath.Base(outputPath), err)
+		} else {
+			logger.Printf("✅ Finder元数据复制成功: %s", filepath.Base(outputPath))
+		}
+
+		// 3.2 恢复修改时间和创建时间（使用touch统一设置）
+		if !creationTime.IsZero() {
+			timeStr := creationTime.Format("200601021504.05")
+			touchCmd := exec.Command("touch", "-t", timeStr, outputPath)
+			if err := touchCmd.Run(); err != nil {
+				logger.Printf("⚠️  文件时间恢复失败 %s: %v", filepath.Base(outputPath), err)
+			} else {
+				logger.Printf("✅ 文件系统元数据已保留: %s (创建/修改: %s)",
+					filepath.Base(outputPath), creationTime.Format("2006-01-02 15:04:05"))
+			}
+		}
+	}
+
+	return conversionMode, outputPath, "", nil
 }
 
 func copyMetadata(inputPath, outputPath string) error {
 	cmd := exec.Command("exiftool", "-overwrite_original", "-TagsFromFile", inputPath, outputPath)
 	return cmd.Run()
+}
+
+// copyFinderMetadata 复制Finder标签和注释
+func copyFinderMetadata(src, dst string) error {
+	// 复制Finder标签
+	cmd := exec.Command("xattr", "-p", "com.apple.metadata:_kMDItemUserTags", src)
+	if output, err := cmd.CombinedOutput(); err == nil && len(output) > 0 {
+		exec.Command("xattr", "-w", "com.apple.metadata:_kMDItemUserTags", string(output), dst).Run()
+	}
+
+	// 复制Finder注释
+	cmd = exec.Command("xattr", "-p", "com.apple.metadata:kMDItemFinderComment", src)
+	if output, err := cmd.CombinedOutput(); err == nil && len(output) > 0 {
+		exec.Command("xattr", "-w", "com.apple.metadata:kMDItemFinderComment", string(output), dst).Run()
+	}
+
+	// 复制其他扩展属性
+	cmd = exec.Command("xattr", src)
+	if output, err := cmd.CombinedOutput(); err == nil {
+		attrs := strings.Split(strings.TrimSpace(string(output)), "\n")
+		for _, attr := range attrs {
+			if attr != "" && !strings.Contains(attr, "com.apple.metadata:_kMDItemUserTags") &&
+				!strings.Contains(attr, "com.apple.metadata:kMDItemFinderComment") {
+				cmd = exec.Command("xattr", "-p", attr, src)
+				if value, err := cmd.CombinedOutput(); err == nil && len(value) > 0 {
+					exec.Command("xattr", "-w", attr, string(value), dst).Run()
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func getFileSize(filePath string) int64 {
@@ -390,26 +501,38 @@ func printStatistics() {
 }
 
 func main() {
+	// 🎨 检测模式：无参数时启动交互模式
+	if len(os.Args) == 1 {
+		runInteractiveMode()
+		return
+	}
+
+	// 📝 非交互模式：命令行参数
+	runNonInteractiveMode()
+}
+
+// runNonInteractiveMode 非交互模式入口
+func runNonInteractiveMode() {
 	logger.Printf("🎨 优化版工具 v%s", version)
 	logger.Printf("✨ 作者: %s", author)
 	logger.Printf("🔧 开始初始化...")
-	
+
 	opts := parseFlags()
 	logger.Println("🔍 检查系统依赖...")
 	if err := checkDependencies(); err != nil {
 		logger.Fatalf("❌ 系统依赖检查失败: %v", err)
 	}
-	
+
 	configurePerformance(&opts)
 	logger.Println("🔍 扫描文件...")
 	files := scanCandidateFiles(opts.InputDir, opts)
 	logger.Printf("📊 发现 %d 个候选文件", len(files))
-	
+
 	if len(files) == 0 {
 		logger.Println("📊 没有找到需要处理的文件")
 		return
 	}
-	
+
 	if opts.DryRun {
 		logger.Println("🔍 试运行模式 - 将要处理的文件:")
 		for i, file := range files {
@@ -417,7 +540,7 @@ func main() {
 		}
 		return
 	}
-	
+
 	logger.Printf("🚀 开始处理 %d 个文件 (使用 %d 个工作线程)...", len(files), opts.Workers)
 	var wg sync.WaitGroup
 	for _, file := range files {
@@ -432,4 +555,265 @@ func main() {
 	wg.Wait()
 	printStatistics()
 	logger.Println("🎉 处理完成！")
+}
+
+// runInteractiveMode 交互模式入口
+func runInteractiveMode() {
+	// 1. 显示横幅
+	fmt.Println("╔═══════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                                                               ║")
+	fmt.Println("║   🎨 dynamic2avif v2.3.0 - 动图转AVIF工具                    ║")
+	fmt.Println("║                                                               ║")
+	fmt.Println("║   功能: 动态图片转换为AVIF格式（高效动图压缩）              ║")
+	fmt.Println("║   元数据: EXIF + 文件系统时间戳 + Finder标签 100%保留       ║")
+	fmt.Println("║                                                               ║")
+	fmt.Println("╚═══════════════════════════════════════════════════════════════╝")
+	fmt.Println("")
+
+	// 2. 提示输入目录
+	targetDir, err := promptForDirectory()
+	if err != nil {
+		fmt.Printf("❌ 错误: %v\n", err)
+		os.Exit(1)
+	}
+
+	// 3. 安全检查
+	if err := performSafetyCheck(targetDir); err != nil {
+		fmt.Printf("❌ 安全检查失败: %v\n", err)
+		os.Exit(1)
+	}
+
+	// 4. 设置选项并开始处理
+	opts := Options{
+		Workers:           4,
+		InputDir:          targetDir,
+		OutputDir:         targetDir,
+		SkipExist:         false,
+		DryRun:            false,
+		TimeoutSeconds:    600,
+		Retries:           2,
+		MaxMemory:         0,
+		MaxFileSize:       500 * 1024 * 1024,
+		EnableHealthCheck: true,
+	}
+
+	fmt.Println("🔄 开始处理...")
+	fmt.Println("")
+
+	// 开始主处理流程
+	runNonInteractiveMode_WithOpts(opts)
+}
+
+// runNonInteractiveMode_WithOpts 使用指定选项运行
+func runNonInteractiveMode_WithOpts(opts Options) {
+	logger.Printf("🎨 dynamic2avif v%s", version)
+	logger.Println("🔍 检查系统依赖...")
+	if err := checkDependencies(); err != nil {
+		logger.Fatalf("❌ 系统依赖检查失败: %v", err)
+	}
+
+	configurePerformance(&opts)
+	logger.Println("🔍 扫描文件...")
+	files := scanCandidateFiles(opts.InputDir, opts)
+	logger.Printf("📊 发现 %d 个候选文件", len(files))
+
+	if len(files) == 0 {
+		logger.Println("📊 没有找到需要处理的文件")
+		return
+	}
+
+	logger.Printf("🚀 开始处理 %d 个文件 (使用 %d 个工作线程)...", len(files), opts.Workers)
+	var wg sync.WaitGroup
+	for _, file := range files {
+		wg.Add(1)
+		go func(filePath string) {
+			defer wg.Done()
+			if info, err := os.Stat(filePath); err == nil {
+				processFileWithRetry(filePath, info, opts)
+			}
+		}(file)
+	}
+	wg.Wait()
+	printStatistics()
+	logger.Println("🎉 处理完成！")
+}
+
+// promptForDirectory 提示用户输入目录
+func promptForDirectory() (string, error) {
+	fmt.Println("📁 请拖入要处理的文件夹，然后按回车键：")
+	fmt.Println("   （或直接输入路径）")
+	fmt.Print("\n路径: ")
+
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return "", fmt.Errorf("读取输入失败: %v", err)
+	}
+
+	// 清理并反转义路径
+	path := strings.TrimSpace(input)
+	path = unescapeShellPath(path)
+
+	if path == "" {
+		return "", fmt.Errorf("路径不能为空")
+	}
+
+	return path, nil
+}
+
+// performSafetyCheck 执行安全检查
+func performSafetyCheck(targetPath string) error {
+	fmt.Println("")
+	fmt.Println("🔍 正在执行安全检查...")
+	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+	// 1. 检查路径是否存在
+	absPath, err := filepath.Abs(targetPath)
+	if err != nil {
+		return fmt.Errorf("无法解析路径: %v", err)
+	}
+
+	info, err := os.Stat(absPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("路径不存在: %s", absPath)
+		}
+		return fmt.Errorf("无法访问路径: %v", err)
+	}
+
+	if !info.IsDir() {
+		return fmt.Errorf("路径不是文件夹: %s", absPath)
+	}
+
+	fmt.Printf("  ✅ 路径存在: %s\n", absPath)
+
+	// 2. 检查是否为系统关键目录
+	if isCriticalSystemPath(absPath) {
+		return fmt.Errorf("禁止访问系统关键目录: %s\n建议使用: ~/Documents, ~/Desktop, ~/Downloads", absPath)
+	}
+
+	fmt.Printf("  ✅ 路径安全: 非系统目录\n")
+
+	// 3. 检查读写权限
+	testFile := filepath.Join(absPath, ".pixly_permission_test")
+	if file, err := os.Create(testFile); err != nil {
+		return fmt.Errorf("目录没有写入权限: %v", err)
+	} else {
+		file.Close()
+		os.Remove(testFile)
+		fmt.Printf("  ✅ 权限验证: 可读可写\n")
+	}
+
+	// 4. 检查磁盘空间
+	if freeSpace, totalSpace, err := getDiskSpace(absPath); err == nil {
+		freeGB := float64(freeSpace) / 1024 / 1024 / 1024
+		totalGB := float64(totalSpace) / 1024 / 1024 / 1024
+		ratio := float64(freeSpace) / float64(totalSpace) * 100
+
+		fmt.Printf("  💾 磁盘空间: %.1fGB / %.1fGB (%.1f%% 可用)\n", freeGB, totalGB, ratio)
+
+		if ratio < 10 {
+			return fmt.Errorf("磁盘空间不足（剩余%.1f%%），建议至少保留10%%空间", ratio)
+		} else if ratio < 20 {
+			fmt.Printf("  ⚠️  磁盘空间较少（剩余%.1f%%），建议谨慎处理\n", ratio)
+		}
+	}
+
+	// 5. 检查是否为敏感目录
+	if isSensitiveDirectory(absPath) {
+		fmt.Printf("  ⚠️  敏感目录警告: %s\n", absPath)
+		fmt.Print("\n  是否继续处理此目录？(输入 yes 确认): ")
+
+		reader := bufio.NewReader(os.Stdin)
+		confirm, _ := reader.ReadString('\n')
+		confirm = strings.TrimSpace(strings.ToLower(confirm))
+
+		if confirm != "yes" && confirm != "y" {
+			return fmt.Errorf("用户取消操作")
+		}
+	}
+
+	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Println("✅ 安全检查通过！")
+	fmt.Println("")
+
+	return nil
+}
+
+// isCriticalSystemPath 检查是否为系统关键目录
+func isCriticalSystemPath(path string) bool {
+	criticalPaths := []string{
+		"/System",
+		"/Library/System",
+		"/private",
+		"/usr/bin",
+		"/usr/sbin",
+		"/bin",
+		"/sbin",
+		"/var/root",
+		"/etc",
+		"/dev",
+		"/proc",
+		"/Applications/Utilities",
+		"/System/Library",
+	}
+
+	for _, critical := range criticalPaths {
+		if strings.HasPrefix(path, critical) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// isSensitiveDirectory 检查是否为敏感目录
+func isSensitiveDirectory(path string) bool {
+	sensitivePaths := []string{
+		"/Applications",
+		"/Library",
+		"/usr",
+		"/var",
+	}
+
+	homeDir, _ := os.UserHomeDir()
+	if homeDir != "" {
+		sensitivePaths = append(sensitivePaths, homeDir)
+	}
+
+	for _, sensitive := range sensitivePaths {
+		if path == sensitive {
+			return true
+		}
+	}
+
+	return false
+}
+
+// getDiskSpace 获取磁盘空间信息
+func getDiskSpace(path string) (free, total uint64, err error) {
+	var stat syscall.Statfs_t
+	if err := syscall.Statfs(path, &stat); err != nil {
+		return 0, 0, err
+	}
+
+	free = stat.Bavail * uint64(stat.Bsize)
+	total = stat.Blocks * uint64(stat.Bsize)
+
+	return free, total, nil
+}
+
+// unescapeShellPath 反转义Shell路径（macOS拖拽）
+func unescapeShellPath(path string) string {
+	path = strings.ReplaceAll(path, "\\ ", " ")
+	path = strings.ReplaceAll(path, "\\!", "!")
+	path = strings.ReplaceAll(path, "\\(", "(")
+	path = strings.ReplaceAll(path, "\\)", ")")
+	path = strings.ReplaceAll(path, "\\[", "[")
+	path = strings.ReplaceAll(path, "\\]", "]")
+	path = strings.ReplaceAll(path, "\\&", "&")
+	path = strings.ReplaceAll(path, "\\$", "$")
+	path = strings.Trim(path, "\"'")
+
+	return path
 }

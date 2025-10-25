@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -20,10 +21,7 @@ import (
 	"syscall"
 	"time"
 
-	"pixly/utils"
-
 	"github.com/karrick/godirwalk"
-	"github.com/shirou/gopsutil/mem"
 )
 
 const (
@@ -41,15 +39,15 @@ var (
 )
 
 type Options struct {
-	Workers        int
-	InputDir       string
-	OutputDir      string
-	SkipExist      bool
-	DryRun         bool
-	TimeoutSeconds int
-	Retries        int
-	MaxMemory      int64
-	MaxFileSize    int64
+	Workers           int
+	InputDir          string
+	OutputDir         string
+	SkipExist         bool
+	DryRun            bool
+	TimeoutSeconds    int
+	Retries           int
+	MaxMemory         int64
+	MaxFileSize       int64
 	EnableHealthCheck bool
 }
 
@@ -86,8 +84,8 @@ type Stats struct {
 func init() {
 	setupLogging()
 	stats = &Stats{
-		startTime: time.Now(),
-		byExt:     make(map[string]int),
+		startTime:  time.Now(),
+		byExt:      make(map[string]int),
 		errorTypes: make(map[string]int),
 	}
 	setupSignalHandling()
@@ -304,19 +302,105 @@ func processFileWithOpts(filePath string, fileInfo os.FileInfo, stats *Stats, op
 }
 
 func processFileByType(filePath string, opts Options) (string, string, string, error) {
-	// 根据工具类型实现具体的处理逻辑
-	// 这里是一个通用的实现框架
-	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".processed"
-	
-	// 模拟处理过程
-	time.Sleep(100 * time.Millisecond)
-	
-	return "通用处理", outputPath, "", nil
+	// 静态图转AVIF的实际转换逻辑（v2.3.1+元数据保留）
+	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".avif"
+
+	conversionMode := "静态转AVIF"
+
+	// 使用avifenc转换静态图
+	args := []string{
+		filePath,
+		outputPath,
+		"-s", "6", // 速度6（平衡）
+		"-j", "4", // 4个任务线程
+	}
+
+	ctx, cancel := context.WithTimeout(globalCtx, time.Duration(opts.TimeoutSeconds)*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, "avifenc", args...)
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return conversionMode, "", string(output), fmt.Errorf("avifenc转换失败: %v", err)
+	}
+
+	// ✅ 步骤1: 捕获源文件的文件系统元数据（在exiftool之前）
+	srcInfo, _ := os.Stat(filePath)
+	var creationTime, modTime time.Time
+	if srcInfo != nil {
+		modTime = srcInfo.ModTime()
+		if stat, ok := srcInfo.Sys().(*syscall.Stat_t); ok {
+			creationTime = time.Unix(stat.Birthtimespec.Sec, stat.Birthtimespec.Nsec)
+		}
+	}
+
+	// ✅ 步骤2: 复制EXIF元数据（会改变文件修改时间）
+	if err := copyMetadata(filePath, outputPath); err != nil {
+		logger.Printf("⚠️  EXIF元数据复制失败: %s -> %s: %v",
+			filepath.Base(filePath), filepath.Base(outputPath), err)
+	} else {
+		logger.Printf("✅ EXIF元数据复制成功: %s", filepath.Base(outputPath))
+	}
+
+	// ✅ 步骤3: 恢复文件系统元数据（在exiftool之后）
+	if srcInfo != nil {
+		// 3.1 恢复Finder标签和注释
+		if err := copyFinderMetadata(filePath, outputPath); err != nil {
+			logger.Printf("⚠️  Finder元数据复制失败 %s: %v", filepath.Base(outputPath), err)
+		} else {
+			logger.Printf("✅ Finder元数据复制成功: %s", filepath.Base(outputPath))
+		}
+
+		// 3.2 恢复修改时间和创建时间（使用touch统一设置）
+		if !creationTime.IsZero() {
+			timeStr := creationTime.Format("200601021504.05")
+			touchCmd := exec.Command("touch", "-t", timeStr, outputPath)
+			if err := touchCmd.Run(); err != nil {
+				logger.Printf("⚠️  文件时间恢复失败 %s: %v", filepath.Base(outputPath), err)
+			} else {
+				logger.Printf("✅ 文件系统元数据已保留: %s (创建/修改: %s)",
+					filepath.Base(outputPath), creationTime.Format("2006-01-02 15:04:05"))
+			}
+		}
+	}
+
+	return conversionMode, outputPath, "", nil
 }
 
 func copyMetadata(inputPath, outputPath string) error {
 	cmd := exec.Command("exiftool", "-overwrite_original", "-TagsFromFile", inputPath, outputPath)
 	return cmd.Run()
+}
+
+// copyFinderMetadata 复制Finder标签和注释
+func copyFinderMetadata(src, dst string) error {
+	// 复制Finder标签
+	cmd := exec.Command("xattr", "-p", "com.apple.metadata:_kMDItemUserTags", src)
+	if output, err := cmd.CombinedOutput(); err == nil && len(output) > 0 {
+		exec.Command("xattr", "-w", "com.apple.metadata:_kMDItemUserTags", string(output), dst).Run()
+	}
+
+	// 复制Finder注释
+	cmd = exec.Command("xattr", "-p", "com.apple.metadata:kMDItemFinderComment", src)
+	if output, err := cmd.CombinedOutput(); err == nil && len(output) > 0 {
+		exec.Command("xattr", "-w", "com.apple.metadata:kMDItemFinderComment", string(output), dst).Run()
+	}
+
+	// 复制其他扩展属性
+	cmd = exec.Command("xattr", src)
+	if output, err := cmd.CombinedOutput(); err == nil {
+		attrs := strings.Split(strings.TrimSpace(string(output)), "\n")
+		for _, attr := range attrs {
+			if attr != "" && !strings.Contains(attr, "com.apple.metadata:_kMDItemUserTags") &&
+				!strings.Contains(attr, "com.apple.metadata:kMDItemFinderComment") {
+				cmd = exec.Command("xattr", "-p", attr, src)
+				if value, err := cmd.CombinedOutput(); err == nil && len(value) > 0 {
+					exec.Command("xattr", "-w", attr, string(value), dst).Run()
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func getFileSize(filePath string) int64 {

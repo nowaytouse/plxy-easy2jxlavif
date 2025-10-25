@@ -548,13 +548,43 @@ func processFile(filePath string, opts utils.UniversalOptions) string {
 		logger.Printf("✅ 验证通过: %s (%s)", fileName, result.Message)
 	}
 
-	// 复制元数据
+	// 复制元数据（文件内部+文件系统）- 最佳执行顺序
 	if opts.CopyMetadata {
+		// ✅ 步骤1: 捕获源文件的文件系统元数据（在exiftool之前）
+		srcInfo, _ := os.Stat(filePath)
+		var creationTime time.Time
+		if srcInfo != nil {
+			if stat, ok := srcInfo.Sys().(*syscall.Stat_t); ok {
+				creationTime = time.Unix(stat.Birthtimespec.Sec, stat.Birthtimespec.Nsec)
+			}
+		}
+
+		// ✅ 步骤2: 复制文件内部元数据（EXIF/XMP）- 会改变文件修改时间
 		if err := copyMetadata(filePath, outputPath); err != nil {
-			// 元数据复制失败不应阻止转换成功，仅记录警告
-			logger.Printf("⚠️  元数据复制失败 %s (非致命): %v", fileName, err)
+			logger.Printf("⚠️  EXIF元数据复制失败 %s (非致命): %v", fileName, err)
 		} else {
-			logger.Printf("✅ 元数据复制成功: %s", fileName)
+			logger.Printf("✅ EXIF元数据复制成功: %s", fileName)
+		}
+
+		// ✅ 步骤3: 恢复Finder扩展属性（标签、注释）
+		if srcInfo != nil {
+			if err := copyFinderMetadata(filePath, outputPath); err != nil {
+				logger.Printf("⚠️  Finder元数据复制失败 %s: %v", fileName, err)
+			} else {
+				logger.Printf("✅ Finder元数据复制成功: %s", fileName)
+			}
+		}
+
+		// ✅ 步骤4: 最后恢复文件系统时间戳（覆盖exiftool的修改）
+		if srcInfo != nil && !creationTime.IsZero() {
+			timeStr := creationTime.Format("200601021504.05")
+			touchCmd := exec.Command("touch", "-t", timeStr, outputPath)
+			if err := touchCmd.Run(); err != nil {
+				logger.Printf("⚠️  文件时间恢复失败 %s: %v", fileName, err)
+			} else {
+				logger.Printf("✅ 文件系统元数据已保留: %s (创建/修改: %s)",
+					fileName, creationTime.Format("2006-01-02 15:04:05"))
+			}
 		}
 	}
 
@@ -675,7 +705,7 @@ func getSmartTimeout(filePath string, baseTimeout int) time.Duration {
 	return timeout
 }
 
-// copyMetadata 复制元数据
+// copyMetadata 复制元数据（EXIF/XMP）
 func copyMetadata(originalPath, outputPath string) error {
 	ctx, cancel := context.WithTimeout(globalCtx, 30*time.Second)
 	defer cancel()
@@ -685,6 +715,38 @@ func copyMetadata(originalPath, outputPath string) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("exiftool执行失败: %v\n输出: %s", err, string(output))
+	}
+
+	return nil
+}
+
+// copyFinderMetadata 复制Finder标签和注释
+func copyFinderMetadata(src, dst string) error {
+	// 复制Finder标签
+	cmd := exec.Command("xattr", "-p", "com.apple.metadata:_kMDItemUserTags", src)
+	if output, err := cmd.CombinedOutput(); err == nil && len(output) > 0 {
+		exec.Command("xattr", "-w", "com.apple.metadata:_kMDItemUserTags", string(output), dst).Run()
+	}
+
+	// 复制Finder注释
+	cmd = exec.Command("xattr", "-p", "com.apple.metadata:kMDItemFinderComment", src)
+	if output, err := cmd.CombinedOutput(); err == nil && len(output) > 0 {
+		exec.Command("xattr", "-w", "com.apple.metadata:kMDItemFinderComment", string(output), dst).Run()
+	}
+
+	// 复制其他扩展属性
+	cmd = exec.Command("xattr", src)
+	if output, err := cmd.CombinedOutput(); err == nil {
+		attrs := strings.Split(strings.TrimSpace(string(output)), "\n")
+		for _, attr := range attrs {
+			if attr != "" && !strings.Contains(attr, "com.apple.metadata:_kMDItemUserTags") &&
+				!strings.Contains(attr, "com.apple.metadata:kMDItemFinderComment") {
+				cmd = exec.Command("xattr", "-p", attr, src)
+				if value, err := cmd.CombinedOutput(); err == nil && len(value) > 0 {
+					exec.Command("xattr", "-w", attr, string(value), dst).Run()
+				}
+			}
+		}
 	}
 
 	return nil

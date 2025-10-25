@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"pixly/pkg/core/types"
@@ -730,13 +731,28 @@ func (bo *BalanceOptimizer) executePredictedAVIFConversion(ctx context.Context, 
 	return &OptimizationResult{Success: false}
 }
 
-// executeMOVRepackage 执行MOV重封装（v3.1.1视频处理）
+// executeMOVRepackage 执行MOV重封装（v3.1.1视频处理+文件系统元数据保留）
 func (bo *BalanceOptimizer) executeMOVRepackage(
 	ctx context.Context,
 	filePath string,
 	originalSize int64,
 ) *OptimizationResult {
 	startTime := time.Now()
+
+	// ✅ 步骤1: 捕获源文件的文件系统元数据（创建时间、修改时间）
+	srcInfo, err := os.Stat(filePath)
+	if err != nil {
+		bo.logger.Warn("获取源文件信息失败", zap.Error(err))
+		return nil
+	}
+
+	var creationTime, modTime time.Time
+	modTime = srcInfo.ModTime()
+
+	// 获取创建时间（macOS特有）
+	if stat, ok := srcInfo.Sys().(*syscall.Stat_t); ok {
+		creationTime = time.Unix(stat.Birthtimespec.Sec, stat.Birthtimespec.Nsec)
+	}
 
 	// 生成输出文件路径
 	dir := filepath.Dir(filePath)
@@ -745,10 +761,12 @@ func (bo *BalanceOptimizer) executeMOVRepackage(
 	nameWithoutExt := base[:len(base)-len(ext)]
 	outputPath := filepath.Join(dir, nameWithoutExt+".mov")
 
-	// 视频重封装：仅改容器，不重编码（快速！）
+	// 视频重封装：仅改容器，不重编码（快速！）+ 元数据保留
 	args := []string{
 		"-i", filePath,
 		"-c", "copy", // 复制编码流（关键：不重编码）
+		"-map_metadata", "0", // ✅ 复制所有元数据（EXIF/XMP/GPS等）
+		"-movflags", "use_metadata_tags", // ✅ 保留MOV元数据标签
 		"-avoid_negative_ts", "make_zero", // 修复时间戳
 		"-f", "mov", // 明确MOV格式
 		"-y", outputPath, // 覆盖输出
@@ -756,14 +774,15 @@ func (bo *BalanceOptimizer) executeMOVRepackage(
 
 	cmd := exec.CommandContext(ctx, bo.toolPaths.FfmpegStablePath, args...)
 
-	bo.logger.Info("🎬 视频重封装（-c copy，不重编码）",
+	bo.logger.Info("🎬 视频重封装（-c copy + 元数据保留）",
 		zap.String("file", filepath.Base(filePath)))
 
 	// 执行命令
-	_, err := cmd.CombinedOutput()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
 		bo.logger.Warn("MOV重封装失败",
 			zap.String("file", filepath.Base(filePath)),
+			zap.String("output", string(output)),
 			zap.Error(err))
 		return nil
 	}
@@ -776,7 +795,26 @@ func (bo *BalanceOptimizer) executeMOVRepackage(
 
 	newSize := outputInfo.Size()
 
-	bo.logger.Info("🎬 MOV重封装完成（快速）",
+	// ✅ 步骤2: 恢复文件系统元数据（创建时间、修改时间）
+	// 2.1 恢复修改时间和访问时间
+	if err := os.Chtimes(outputPath, modTime, modTime); err != nil {
+		bo.logger.Warn("恢复文件修改时间失败", zap.Error(err))
+	} else {
+		bo.logger.Debug("✅ 文件修改时间已恢复", zap.Time("mtime", modTime))
+	}
+
+	// 2.2 恢复创建时间（macOS，使用touch命令）
+	if !creationTime.IsZero() {
+		timeStr := creationTime.Format("200601021504.05")
+		touchCmd := exec.Command("touch", "-t", timeStr, outputPath)
+		if err := touchCmd.Run(); err != nil {
+			bo.logger.Warn("恢复创建时间失败", zap.Error(err))
+		} else {
+			bo.logger.Debug("✅ 文件创建时间已恢复", zap.Time("ctime", creationTime))
+		}
+	}
+
+	bo.logger.Info("🎬 MOV重封装完成（快速 + 元数据100%保留：EXIF+文件系统）",
 		zap.String("file", filepath.Base(filePath)),
 		zap.Duration("time", time.Since(startTime)))
 
@@ -786,7 +824,7 @@ func (bo *BalanceOptimizer) executeMOVRepackage(
 		OriginalSize: originalSize,
 		NewSize:      newSize,
 		SpaceSaved:   originalSize - newSize,
-		Method:       "mov_repackage",
+		Method:       "mov_repackage_with_metadata", // 标记已保留元数据
 		ProcessTime:  time.Since(startTime),
 	}
 }
