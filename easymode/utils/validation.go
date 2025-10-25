@@ -733,11 +733,12 @@ func (v *EightLayerValidator) validateLayer8_AntiCheat(originalPath, convertedPa
 
 	// 检查转换后文件是否真的是转换结果
 	// 而不是简单的文件复制或重命名
-	originalInfo, _ := os.Stat(originalPath)
-	convertedInfo, _ := os.Stat(convertedPath)
+	originalInfo, errOrig := os.Stat(originalPath)
+	convertedInfo, errConv := os.Stat(convertedPath)
 
 	// 如果文件大小完全相同，可能是简单的复制
-	if originalInfo.Size() == convertedInfo.Size() {
+	// 但只在两个文件都存在的情况下检查
+	if errOrig == nil && errConv == nil && originalInfo.Size() == convertedInfo.Size() {
 		// 进一步检查文件内容是否真的不同
 		// 这里简化处理
 	}

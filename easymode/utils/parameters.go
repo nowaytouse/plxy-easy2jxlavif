@@ -239,7 +239,11 @@ func ParseUniversalFlags() UniversalOptions {
 	}
 
 	// 归一化输入目录（支持 -input 与 -dir）
-	opts.InputDir, _ = NormalizeInputFlags(inputFlag, dirAlias)
+	if inputFlag != "" {
+		opts.InputDir = inputFlag
+	} else {
+		opts.InputDir = dirAlias
+	}
 
 	// 验证参数
 	if err := opts.Validate(); err != nil {

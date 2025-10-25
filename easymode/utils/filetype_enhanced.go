@@ -83,7 +83,25 @@ func DetectFileType(filePath string) (EnhancedFileType, error) {
 		// 设置基本类型信息
 		result.IsImage = isImageType(kind)
 		result.IsVideo = isVideoType(kind)
-		result.IsAnimated = isAnimatedType(kind, ext)
+
+		// 对特殊格式使用专门的检测函数（修复：统一使用新逻辑）
+		switch ext {
+		case "webp":
+			// WEBP使用专门的动画检测
+			result.IsAnimated = detectWebPAnimation(header[:n])
+		case "gif":
+			// GIF使用专门的动画检测
+			result.IsAnimated = detectGIFAnimation(header[:n])
+		case "apng":
+			// APNG使用专门的动画检测
+			result.IsAnimated = detectAPNGAnimation(header[:n])
+		case "avif", "heic", "heif":
+			// AVIF/HEIF使用专门的动画检测
+			result.IsAnimated = detectAVIFAnimation(filePath)
+		default:
+			// 其他格式不判定为动画
+			result.IsAnimated = false
+		}
 	}
 
 	return result, nil
@@ -187,12 +205,16 @@ func isVideoType(kind types.Type) bool {
 	return strings.HasPrefix(kind.MIME.Type, "video")
 }
 
-// isAnimatedType 检查是否为动画类型
+// isAnimatedType 检查是否为动画类型（已废弃 - 不应该无条件判断）
+// 注意：这个函数已不应该被使用，因为它对webp等格式的判断不准确
+// 应该使用具体的检测函数如 detectWebPAnimation, detectGIFAnimation 等
 func isAnimatedType(kind types.Type, ext string) bool {
+	// 只对GIF保持简单判断（GIF一般都是动画，由detectGIFAnimation细化）
 	switch ext {
-	case "gif", "webp", "avif", "heic", "heif", "apng":
+	case "gif":
 		return true
 	}
+	// 其他格式不在这里无条件判断，应该使用专门的检测函数
 	return false
 }
 
@@ -203,25 +225,91 @@ func detectAVIFAnimation(filePath string) bool {
 	return false // 默认返回false，可以根据需要增强
 }
 
-// detectWebPAnimation 检测WebP是否为动画
+// detectWebPAnimation 检测WebP是否包含动画（改进版 - 修复误判）
 func detectWebPAnimation(header []byte) bool {
-	// WebP动画检测：检查VP8X chunk
-	if len(header) >= 12 {
-		// 检查WebP文件头
-		if bytes.HasPrefix(header, []byte("RIFF")) && bytes.Contains(header[8:12], []byte("WEBP")) {
-			// 查找VP8X chunk
-			for i := 12; i < len(header)-8; i++ {
-				if bytes.Equal(header[i:i+4], []byte("VP8X")) {
-					// 检查动画标志位
-					if i+8 < len(header) {
-						flags := header[i+8]
-						return (flags & 0x02) != 0 // 动画标志位
-					}
+	if len(header) < 20 {
+		return false
+	}
+
+	// 检查RIFF WEBP签名
+	if !bytes.HasPrefix(header, []byte("RIFF")) || !bytes.Contains(header[8:12], []byte("WEBP")) {
+		return false
+	}
+
+	// 直接检查ANIM chunk (Animation) - 最可靠的标志
+	if bytes.Contains(header, []byte("ANIM")) {
+		return true
+	}
+
+	// 检查ANMF chunk (Animation Frame) - 也很可靠
+	if bytes.Contains(header, []byte("ANMF")) {
+		return true
+	}
+
+	// 查找VP8X chunk (Extended format) - 需要严格验证
+	for i := 12; i < len(header)-10; i++ {
+		if bytes.Equal(header[i:i+4], []byte("VP8X")) {
+			// VP8X chunk找到，检查flags
+			// VP8X结构: "VP8X" + 4字节大小 + 1字节flags
+			if i+8 < len(header) {
+				flags := header[i+8]
+				// 第1位（从右数第2位，即0x02）是动画标志
+				hasAnimationFlag := (flags & 0x02) != 0
+
+				// 仅当VP8X有动画标志，并且能在header中找到ANIM或ANMF时才确认
+				// 这避免了VP8X扩展格式但实际是静态图的误判
+				if hasAnimationFlag {
+					// 再次确认ANIM或ANMF存在
+					return bytes.Contains(header, []byte("ANIM")) || bytes.Contains(header, []byte("ANMF"))
 				}
 			}
 		}
 	}
+
+	// 都不满足，确认为静态WEBP
 	return false
+}
+
+// IsAnimatedWebP 专门检测动态WEBP文件（扩大读取范围）
+func IsAnimatedWebP(filePath string) bool {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return false
+	}
+	defer file.Close()
+
+	// 读取更大的header来确保检测到所有chunk (4KB)
+	header := make([]byte, 4096)
+	n, err := file.Read(header)
+	if err != nil || n < 20 {
+		return false
+	}
+
+	return detectWebPAnimation(header[:n])
+}
+
+// IsWebM 检测是否为WEBM视频格式
+func IsWebM(filePath string) bool {
+	ext := strings.ToLower(filepath.Ext(filePath))
+	if ext != ".webm" {
+		return false
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return false
+	}
+	defer file.Close()
+
+	// WEBM是EBML容器格式
+	header := make([]byte, 4)
+	n, err := file.Read(header)
+	if err != nil || n < 4 {
+		return false
+	}
+
+	// EBML header signature: 0x1A 0x45 0xDF 0xA3
+	return bytes.Equal(header, []byte{0x1A, 0x45, 0xDF, 0xA3})
 }
 
 // detectAPNGAnimation 检测APNG是否为动画

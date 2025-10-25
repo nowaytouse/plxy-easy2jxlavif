@@ -1,0 +1,267 @@
+# Pixly v4.0 配置文件
+# 此文件包含所有可配置的参数，支持完全自定义
+
+# 项目信息
+project:
+  name: "Pixly"
+  version: "4.0.0"
+  author: "Pixly Team"
+
+# 并发控制
+concurrency:
+  auto_adjust: true          # 自动调整worker数量
+  conversion_workers: 8      # 默认转换worker数
+  scan_workers: 4            # 扫描worker数
+  memory_limit_mb: 8192      # 内存限制（MB）
+  enable_monitoring: true    # 启用性能监控
+
+# 转换设置
+conversion:
+  default_mode: "auto+"      # 默认模式: auto+, auto, smart, batch
+  
+  # 预测引擎
+  predictor:
+    enable_knowledge_base: true    # 启用知识库学习
+    confidence_threshold: 0.8      # 置信度阈值 (0-1)
+    enable_exploration: true       # 启用探索引擎（低置信度时）
+    exploration_candidates: 3      # 探索候选数量
+  
+  # 格式配置
+  formats:
+    # PNG设置
+    png:
+      target: "jxl"              # 目标格式
+      lossless: true             # 无损转换
+      distance: 0                # 质量距离（0=无损）
+      effort: 7                  # 默认effort (1-9)
+      effort_large_file: 5       # 大文件effort (>10MB)
+      effort_small_file: 9       # 小文件effort (<100KB)
+      large_file_size_mb: 10     # 大文件阈值（MB）
+      small_file_size_kb: 100    # 小文件阈值（KB）
+    
+    # JPEG设置
+    jpeg:
+      target: "jxl"              # 目标格式
+      lossless_jpeg: true        # JPEG可逆转换
+      effort: 7                  # 压缩effort (1-9)
+    
+    # GIF设置
+    gif:
+      static_target: "jxl"       # 静态GIF目标格式
+      animated_target: "avif"    # 动态GIF目标格式
+      static_distance: 0         # 静态图质量（0=无损）
+      animated_crf: 30           # 动图CRF (0-63, 越低质量越高)
+      animated_speed: 6          # 动图编码速度 (0-10, 越低越慢)
+    
+    # WebP设置
+    webp:
+      static_target: "jxl"       # 静态WebP目标
+      animated_target: "avif"    # 动态WebP目标
+    
+    # 视频设置
+    video:
+      target: "mov"              # 目标格式
+      repackage_only: true       # 仅重封装（不重编码）
+      enable_reencode: false     # 启用重编码（慎用）
+      crf: 23                    # 重编码CRF（如果启用）
+  
+  # 质量阈值（用于分类和决策）
+  quality_thresholds:
+    enable: true
+    # 图像质量阈值（bytes/pixel）
+    image:
+      high_quality: 2.0          # > 2.0 认为高质量
+      medium_quality: 0.5
+      low_quality: 0.1
+    # 照片质量阈值
+    photo:
+      high_quality: 3.0
+      medium_quality: 1.0
+      low_quality: 0.1
+    # 动画质量阈值
+    animation:
+      high_quality: 20.0
+      medium_quality: 1.0
+      low_quality: 0.1
+    # 视频质量阈值
+    video:
+      high_quality: 100.0
+      medium_quality: 10.0
+      low_quality: 1.0
+  
+  # 支持的格式（白名单）
+  supported_extensions:
+    image:
+      - ".jpg"
+      - ".jpeg"
+      - ".png"
+      - ".gif"
+      - ".bmp"
+      - ".tiff"
+      - ".webp"
+      - ".heic"
+      - ".heif"
+    video:
+      - ".mp4"
+      - ".avi"
+      - ".mkv"
+      - ".mov"
+      - ".flv"
+      - ".m4v"
+      - ".3gp"
+  
+  # 排除的格式（黑名单）
+  excluded_extensions:
+    - ".jxl"      # 不处理已转换格式
+    - ".avif"
+
+# 输出设置
+output:
+  keep_original: false       # 是否保留原文件
+  generate_report: true      # 生成转换报告
+  generate_performance_report: true  # 生成性能报告
+  report_format: "both"      # 报告格式: json, txt, both
+  filename_template: ""      # 文件名模板（空=保持原名）
+  directory_template: ""     # 目录模板（空=原地替换）
+
+# 安全设置
+security:
+  enable_path_check: true    # 启用路径安全检查
+  # 禁止访问的目录
+  forbidden_directories:
+    - "/System"
+    - "/Library"
+    - "/usr"
+    - "/bin"
+    - "/sbin"
+    - "/etc"
+    - "/var"
+    - "/tmp"
+    - "/private"
+    - "/Applications"
+  allowed_directories: []    # 允许的目录（空=所有非禁止目录）
+  check_disk_space: true     # 检查磁盘空间
+  min_free_space_mb: 1024    # 最小剩余空间（MB）
+  max_file_size_mb: 10240    # 最大文件大小（10GB）
+  enable_backup: true        # 原地替换时启用备份
+
+# 问题文件处理
+problem_files:
+  corrupted_strategy: "skip"    # 损坏文件: skip, ignore, delete
+  codec_incompatible_strategy: "skip"
+  container_incompatible_strategy: "skip"
+  # 垃圾文件清理
+  trash_strategy: "delete"      # skip, delete, move
+  trash_extensions:
+    - ".tmp"
+    - ".bak"
+    - ".old"
+    - ".cache"
+    - ".log"
+    - ".db"
+  trash_keywords:
+    - "temp"
+    - "cache"
+    - "backup"
+    - "old"
+    - "trash"
+
+# 断点续传
+resume:
+  enable: true               # 启用断点续传
+  save_interval: 10          # 每N个文件保存一次进度
+  auto_resume_on_crash: false  # 崩溃后自动续传
+  prompt_user: true          # 提示用户选择
+
+# UI设置
+ui:
+  mode: "interactive"        # interactive, non-interactive, silent
+  theme: "dark"              # dark, light, auto
+  enable_emoji: true         # 启用Emoji
+  enable_ascii_art: true     # 启用ASCII艺术
+  enable_animations: true    # 启用动画
+  animation_intensity: "normal"  # low, normal, high
+  
+  # 颜色方案（Dracula主题）
+  colors:
+    primary: "#00ff9f"       # Gemini绿
+    secondary: "#bd93f9"     # 紫色
+    success: "#50fa7b"       # 绿色
+    warning: "#ffb86c"       # 橙色
+    error: "#ff5555"         # 红色
+    info: "#8be9fd"          # 青色
+  
+  # 进度条设置
+  progress:
+    refresh_interval_ms: 100   # 刷新间隔（毫秒）
+    anti_flicker: true         # 防闪烁
+    show_file_icons: true      # 显示文件图标
+    show_eta: true             # 显示预计剩余时间
+  
+  # 监控面板
+  monitor_panel:
+    enable: true               # 启用监控面板
+    position: "top"            # top, bottom, left, right, floating
+    refresh_interval_s: 3      # 刷新间隔（秒）
+    show_charts: false         # 显示ASCII图表（未来功能）
+
+# 日志设置
+logging:
+  level: "info"              # debug, info, warn, error
+  output: "file"             # console, file, both
+  file_path: "~/.pixly/logs/pixly.log"
+  max_size_mb: 100           # 单个日志文件最大大小
+  max_backups: 3             # 保留的旧日志文件数
+  max_age_days: 7            # 日志保留天数
+  compress: true             # 压缩旧日志
+
+# 工具路径（留空则自动检测）
+tools:
+  auto_detect: true          # 自动检测工具路径
+  cjxl_path: ""              # JPEG XL编码器
+  djxl_path: ""              # JPEG XL解码器
+  avifenc_path: ""           # AVIF编码器
+  avifdec_path: ""           # AVIF解码器
+  ffmpeg_path: ""            # FFmpeg
+  ffprobe_path: ""           # FFprobe
+  exiftool_path: ""          # ExifTool
+
+# 知识库设置
+knowledge_base:
+  enable: true               # 启用知识库
+  db_path: "~/.pixly/knowledge.db"
+  auto_learn: true           # 自动学习
+  min_confidence: 0.8        # 最小置信度
+  # 统计分析
+  analysis:
+    enable: true             # 启用分析
+    report_interval: 100     # 每N个文件生成一次分析
+    show_suggestions: true   # 显示优化建议
+
+# 高级设置
+advanced:
+  enable_experimental: false  # 启用实验性功能
+  enable_debug: false        # 启用调试模式
+  # 内存优化
+  memory_pool:
+    enable: true             # 启用内存池
+    buffer_size_mb: 64       # 缓冲区大小
+  # 文件校验
+  validation:
+    enable_pixel_check: false  # 像素级验证（慢）
+    enable_hash_check: false   # 哈希验证
+    magic_byte_check: true     # 魔术字节验证
+    size_ratio_check: true     # 文件大小比验证
+    max_size_ratio: 1.5        # 最大允许文件膨胀倍数
+
+# 多语言设置
+language:
+  default: "zh_CN"           # zh_CN, en_US, ja_JP
+  auto_detect: true          # 自动检测系统语言
+
+# 更新检查
+update:
+  auto_check: true           # 自动检查更新
+  check_interval_days: 7     # 检查间隔（天）
+  notify_on_update: true     # 有更新时通知
+
